@@ -1,0 +1,25 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.FountainAR" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary_color_light</item>
+        <item name="colorPrimaryVariant">@color/primary_color_middle</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/primary_color_light</item>
+        <item name="colorSecondaryVariant">@color/primary_color_middle</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" >@color/black</item>
+        <!-- Customize your theme here. -->
+        <item name="android:navigationBarColor">@color/primary_color_dark</item>
+        <item name="android:actionBarStyle">@color/primary_color_dark</item>
+        <item name="colorControlActivated">@color/primary_color_light</item>
+        <item name="colorControlNormal">@color/primary_color_light</item>
+        <item name="colorControlHighlight">@color/primary_color_light</item>
+        <item name="android:colorAccent">@color/primary_color_light</item>
+        <item name="android:editTextColor">@color/primary_color_light</item>
+        <item name="android:editTextStyle">@color/primary_color_light</item>
+        <item name="android:editTextBackground">@color/primary_color_light</item>
+    </style>
+</resources>

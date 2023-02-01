@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_color_middle"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    tools:context= "com.example.fountainar.activities.ArView">
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/ar_title_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_color_middle"
+        android:text="@string/faculty_fountain"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:translationZ="10dp" />
+
+    <RelativeLayout
+        android:id="@+id/ar_layout_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="157dp"
+        android:elevation="10dp"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/ar_quiz_instructions"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/ar_button_start"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:elevation="10dp"
+            android:text="@string/start"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ar_layout_task1"
+        android:layout_width="match_parent"
+        android:layout_height="157dp"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/ar_tv_task1"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="@string/ar_question_task1"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <RadioGroup
+            android:id="@+id/ar_rg_task1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ar_tv_task1"
+            android:layout_marginStart="36dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task1_6"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task1_8"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task1_10"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task1_12"
+                android:textColor="@color/black" />
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/ar_button_task1"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:elevation="10dp"
+            android:text="@string/ar_further"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ar_layout_task2"
+        android:layout_width="match_parent"
+        android:layout_height="157dp"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/ar_tv_task2"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/ar_question_task2"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <RadioGroup
+            android:id="@+id/ar_rg_task2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ar_tv_task2"
+            android:layout_marginStart="40dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task2_5"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task2_6"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task2_7"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task2_8"
+                android:textColor="@color/black" />
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/ar_button_task2"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:elevation="10dp"
+            android:text="@string/further"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ar_layout_task3"
+        android:layout_width="match_parent"
+        android:layout_height="157dp"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/ar_tv_task3"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/ar_question_task3"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <RadioGroup
+            android:id="@+id/ar_rg_task3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ar_tv_task3"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task3_holz"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task3_plastik"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task3_glas"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ar_answer_task3_bronze"
+                android:textColor="@color/black" />
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/ar_button_task3"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:elevation="10dp"
+            android:text="@string/further"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
+</LinearLayout>

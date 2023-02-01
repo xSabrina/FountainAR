@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+  <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <item name="android:gravity">center_horizontal</item>
+    <item name="android:windowBackground">@drawable/dialog_bg</item>
+    <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+    <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+  </style>
+
+  <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <item name="android:textColor">@android:color/darker_gray</item>
+    <item name="android:paddingLeft">@dimen/dialog_btn_padding</item>
+    <item name="android:paddingRight">@dimen/dialog_btn_padding</item>
+  </style>
+
+  <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <item name="android:textColor">@android:color/white</item>
+    <item name="android:background">@drawable/button_bg</item>
+    <item name="android:paddingLeft">@dimen/dialog_btn_padding</item>
+    <item name="android:paddingRight">@dimen/dialog_btn_padding</item>
+  </style>
+
+</resources>

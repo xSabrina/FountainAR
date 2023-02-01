@@ -1,0 +1,188 @@
+<resources>
+    <string name="app_name">FountainAR</string>
+
+    <!-- General -->
+    <string name="further">Weiter</string>
+    <string name="fill_out_first">Bitte beantworte erst alle Fragen.</string>
+
+    <!-- Main Activity -->
+    <string name="app_logo">App Logo</string>
+    <string name="play_button">Play Button</string>
+
+    <!-- Demographic Questionnaire -->
+    <string name="dq_title">Demographischer Fragebogen</string>
+    <string name="dq_instructions">Bitte füllen Sie zunächst folgenden Fragebogen zu Ihren demographischen Daten aus und kreuzen Sie dabei Zutreffendes an.</string>
+
+    <string name="dq_alternative_answer">Eigene Antwort:</string>
+    <string name="dq_yes">Ja</string>
+    <string name="dq_no">Nein</string>
+    <string name="dq_maybe">Unsicher</string>
+
+    <string name="dq_q1">Probandennummer:</string>
+
+    <string name="dq_q2">Alter:</string>
+
+    <string name="dq_q3">Geschlecht:</string>
+    <string name="dq_q3_female">Weiblich</string>
+    <string name="dq_q3_male">Männlich</string>
+    <string name="dq_q3_diverse">Divers</string>
+    <string name="dq_q3_no_answer">Keine Angabe</string>
+
+    <string name="dq_q4">Muttersprache:</string>
+    <string name="dq_q4_german">Deutsch</string>
+    <string name="dq_q4_alternative_answer_hint">Sprache…</string>
+
+    <string name="dq_q5">Beruf:</string>
+    <string name="dq_q5_student">Student/-in im Fach:</string>
+    <string name="dq_q5_student_subject_hint">Studienfach…</string>
+    <string name="dq_q5_pupil">Schüler/-in</string>
+    <string name="dq_q5_employee">Angestellte/-r</string>
+    <string name="dq_q5_official">Beamtin/Beamter</string>
+    <string name="dq_q5_self_employed">Selbstständig</string>
+    <string name="dq_q5_alternative_answer_hint">Tätigkeit…</string>
+
+    <string name="dq_q6">Höchster Bildungsabschluss:</string>
+    <string name="dq_q6_abitur">Abitur/Fachabitur</string>
+    <string name="dq_q6_realschulabschluss">Realschulabschluss</string>
+    <string name="dq_q6_hauptschulabschluss">Hauptschulabschluss</string>
+    <string name="dq_q6_no_graduation">Kein Schulabschluss</string>
+    <string name="dq_q6_professional_training">Abgeschlossene Berufsausbildung</string>
+    <string name="dq_q6_polytechnic_degree">Fachhochschulabschluss (Bachelor, Master, etc.)</string>
+    <string name="dq_q6_college_degree">Universitätsabschluss (Bachelor, Master, etc.)</string>
+    <string name="dq_q6_alternative_answer_hint">Abschluss…</string>
+
+    <string name="dq_q7">Wissen Sie, was Augmented Reality ist?</string>
+
+    <string name="dq_q8">Welche Vorerfahrung mit Augmented-Reality-Anwendungen haben Sie?</string>
+
+    <string name="dq_q9">Welche Vorerfahrung mit Smartphone-Anwendungen zu Kunstgegenständen haben Sie?</string>
+
+    <string name="dq_routinely">Ich nutze solche Anwendungen regelmäßig.</string>
+    <string name="dq_already_used">Ich habe solche Anwendungen schon mal benutzt.</string>
+    <string name="dq_known">Ich kenne solche Anwendungen.</string>
+    <string name="dq_no_usage">Ich hatte bisher keinen Kontakt zu solchen Anwendungen.</string>
+    <string name="dq_experience_hint">Vorerfahrung…</string>
+
+    <string name="dq_log_answer">Antwort: </string>
+    <string name="dq_log_question">Frage: </string>
+
+    <!-- AR View quiz -->
+    <string name="faculty_fountain">Fakultätenbrunnen, Heinrich Kirchner, 1968</string>
+    <string name="ar_quiz_instructions">Hier sehen Sie ein Modell des Fakultätenbrunnens der Universität Regensburg. Sie können es sich gerne erst einmal ein wenig ansehen. Nachfolgend werden Sie einige Fragen zu diesem in einem kleinen Multiple-Choice-Quiz beantworten.</string>
+    <string name="ar_further">Weiter</string>
+    <string name="ar_missing_answer">Bitte entscheide Dich zunächst für eine Antwortmöglichkeit.</string>
+    <string name="start">Los geht\'s</string>
+
+    <string name="ar_question_task1">Wieviele Fakultäten sind, dargestellt durch Einzelbilder, auf dem Brunnen abgebildet?</string>
+    <string name="ar_answer_task1_6">6</string>
+    <string name="ar_answer_task1_8">8</string>
+    <string name="ar_answer_task1_10">10</string>
+    <string name="ar_answer_task1_12">12</string>
+
+    <string name="ar_question_task2">Wieviele Standfüße hat der Brunnen?</string>
+    <string name="ar_answer_task2_5">5</string>
+    <string name="ar_answer_task2_6">6</string>
+    <string name="ar_answer_task2_7">7</string>
+    <string name="ar_answer_task2_8">8</string>
+
+    <string name="ar_question_task3">Aus welchem Material besteht der Brunnen?</string>
+    <string name="ar_answer_task3_holz">Holz</string>
+    <string name="ar_answer_task3_plastik">Plastik</string>
+    <string name="ar_answer_task3_glas">Glas</string>
+    <string name="ar_answer_task3_bronze">Bronze</string>
+
+    <!-- TAM Questionnaire -->
+    <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>
+    <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen oder nicht zustimmen. \nIm Sinne der Verwendung eines anerkannten Fragebogens ist dieser in englischer Originalfassung verfasst.</string>
+    <string name="tam_strongly_disagree">Strongly \nDisagree</string>
+    <string name="tam_strongly_agree">Strongly \nAgree</string>
+
+    <string name="tam_1">1</string>
+    <string name="tam_2">2</string>
+    <string name="tam_3">3</string>
+    <string name="tam_4">4</string>
+    <string name="tam_5">5</string>
+    <string name="tam_7">7</string>
+    <string name="tam_6">6</string>
+
+    <string name="tam_pu1">By using the app, I can more quickly and easily find historical pictures and information.</string>
+    <string name="tam_pu2">By using the app, I learn more about history in art</string>
+    <string name="tam_pu3">By using the app, I can quickly find historical pictures and information from places nearby.</string>
+    <string name="tam_pu4">By using the app, I am more likely to find historical pictures and information that interests me.</string>
+
+    <string name="tam_peou1">Interaction with the app is clear and understandable.</string>
+    <string name="tam_peou2">Interaction with the app des not require a lot of mental effort.</string>
+    <string name="tam_peou3">I find the app easy to use.</string>
+    <string name="tam_peou4">I find it easy to get the app to do what I want it to do.</string>
+
+    <string name="tam_pe1">Rate how enjoyable the app is for you.</string>
+    <string name="tam_pe2">Rate how exciting the app is for you.</string>
+    <string name="tam_pe3">Rate how pleasant the app is for you.</string>
+    <string name="tam_pe4">Rate how interesting the app is for you.</string>
+    <string name="tam_disgusting">Disgusting</string>
+    <string name="tam_enjoyable">Enjoyable</string>
+    <string name="tam_unpleasant">Unpleasant</string>
+    <string name="tam_pleasant">Unpleasant</string>
+    <string name="tam_boring">Boring</string>
+    <string name="tam_interesting">Interesting</string>
+    <string name="tam_dull">Dull</string>
+    <string name="tam_exciting">Exciting</string>
+
+    <string name="tam_bi1">I intend to use the app on a smartphone.</string>
+    <string name="tam_bi2">I predict that I will use the app on a smartphone.</string>
+    <string name="tam_bi3">I intend to use the app on a tablet.</string>
+    <string name="tam_bi4">I predict that I will use the app on a tablet.</string>
+    <string name="tam_bi5">I intend to use the app in a city I visit as a tourist.</string>
+    <string name="tam_bi6">I predict that I will use the app in a city I visit as a tourist.</string>
+    <string name="tam_bi7">I intend to use the app in my hometown.</string>
+    <string name="tam_bi8">I predict that I will use the app in my hometown.</string>
+
+    <string name="tam_finished_button">Fertig</string>
+
+    <string name="tam_time_spent">"Time spent for this questionnaire in seconds: "</string>
+
+    <!-- End Activity -->
+    <string name="study_end">Der Studiendurchlauf ist hiermit beendet.\n\nVielen Dank für Ihre Teilnahme!</string>
+    <string name="error_loading_3D_model">3D Model can not be loaded</string>
+
+    <!-- Privacy Notice Dialog -->
+    <string  name="share_experience_title">AR in Echtzeit</string>
+    <string name="share_experience_message">Zur Nutzung dieser App wird Google visuelle Daten deiner Kamera verarbeiten.</string>
+    <string name="learn_more">Weitere Informationen</string>
+    <string translatable="false" name="learn_more_url">https://developers.google.com/ar/data-privacy</string>
+
+    <!-- VPS -->
+    <string  name="vps_unavailable_title">VPS nicht verfügbar.</string>
+    <string name="vps_unavailable_message">Ihr aktueller Standort hat keine VPS-Abdeckung. Ihre Sitzung verwendet Ihr GPS-Signal nur, wenn VPS nicht verfügbar ist.</string>
+    <string name="continue_button">Weiter</string>
+    <string name="agree_to_share">Alles klar</string>
+
+
+
+    <!-- ARCore session -->
+
+
+    <!-- ARCore session error messages -->
+    <string name="install_arcore">Bitte installieren Sie ARCore.</string>
+    <string name="update_arcore">Bitte updaten Sie ARCore.</string>
+    <string name="update_app">Bitte updaten Sie diese App.</string>
+    <string name="ar_not_supported">Dieses Gerät unterstützt kein AR.</string>
+    <string name="ar_session_failed">AR-Sitzung konnte nicht erstellt werden.</string>
+    <string name="cam_not_available">Kamera nicht verfügbar. Versuchen Sie, die App neu zu starten.</string>
+    <string name="proguard_error">Die Standortbibliothek der Google Play-Dienste ist nicht mit Proguard verknüpft oder verschleiert.</string>
+    <string name="no_permission_fine_location">Die Android-Berechtigung für genaue Standortermittlung wurde nicht erteilt.</string>
+    <string name="geospatial_not_supported">Dieses Gerät unterstützt die Geospatial-API nicht.</string>
+    <string name="cam_or_network_error">Kamerafehler oder die Internetberechtigung wurde nicht erteilt.</string>
+    <string name="session_create_or_config_error">Fehler beim Konfigurieren und Fortsetzen der Sitzung.</string>
+    <string name="vps_check_error">Fehler beim Überprüfen der VPS-Verfügbarkeit.</string>
+    <string name="cam_permission_needed">Zum Ausführen dieser Anwendung ist eine Kameraberechtigung erforderlich.</string>
+    <string name="read_asset_failed">Fehler beim Lesen eines erforderlichen Assets: </string>
+    <string name="opengl_version_required">Die App benötigt OpenGl Version 3.0 oder neuer.</string>
+    <string name="fine_loc_needed">Zum Ausführen dieser Anwendung ist eine genaue Standortberechtigung erforderlich.</string>
+    <string name="error_create_anchor">Fehler beim Erstellen des Terrain-Ankers</string>
+
+
+    <!-- Study Data To Save -->
+    <string name="time_spent_questionnaire">Time spent for this questionnaire in seconds: </string>
+
+</resources>
