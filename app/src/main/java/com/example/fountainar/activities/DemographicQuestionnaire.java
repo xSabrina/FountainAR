@@ -19,11 +19,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fountainar.R;
-import com.example.fountainar.helpers.SnackbarHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +30,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class DemographicQuestionnaire extends AppCompatActivity {
 
