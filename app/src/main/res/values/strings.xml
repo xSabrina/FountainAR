@@ -66,6 +66,8 @@
     <string name="dq_log_answer">Antwort: </string>
     <string name="dq_log_question">Frage: </string>
 
+    <string name="stor_permission_needed">Speicher-Zugriff für Sammlung der Studiendaten erforderlich.</string>
+
     <!-- AR View quiz -->
     <string name="faculty_fountain">Fakultätenbrunnen, Heinrich Kirchner, 1968</string>
     <string name="ar_quiz_instructions">Hier sehen Sie ein Modell des Fakultätenbrunnens der Universität Regensburg. Sie können es sich gerne erst einmal ein wenig ansehen. Nachfolgend werden Sie einige Fragen zu diesem in einem kleinen Multiple-Choice-Quiz beantworten.</string>
@@ -157,10 +159,7 @@
     <string name="continue_button">Weiter</string>
     <string name="agree_to_share">Alles klar</string>
 
-
-
     <!-- ARCore session -->
-
 
     <!-- ARCore session error messages -->
     <string name="install_arcore">Bitte installieren Sie ARCore.</string>

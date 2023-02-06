@@ -28,7 +28,7 @@ import androidx.core.app.ActivityCompat;
  * Helper to ask location permission.
  */
 public final class LocationPermissionHelper {
-  private static final int LOCATION_PERMISSION_CODE = 1;
+  private static final int LOCATION_PERMISSION_CODE = 2;
   private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
   /**

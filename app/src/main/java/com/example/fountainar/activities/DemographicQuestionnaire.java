@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -17,9 +19,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fountainar.R;
+import com.example.fountainar.helpers.SnackbarHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class DemographicQuestionnaire extends AppCompatActivity {
 
@@ -53,15 +58,22 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         startTime = System.currentTimeMillis();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
             if (Environment.isExternalStorageManager()) {
                 setupRadioGroups();
                 setupInputListeners();
                 setupFinishButton();
             } else {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
+                Toast.makeText(this, R.string.stor_permission_needed, Toast.LENGTH_LONG)
+                        .show();
+
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Intent intent =
+                            new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }, 2000);
             }
         }
 

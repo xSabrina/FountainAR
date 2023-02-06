@@ -46,7 +46,7 @@ public class Texture implements Closeable {
     /* package-private */
     final int glesEnum;
 
-    private WrapMode(int glesEnum) {
+    WrapMode(int glesEnum) {
       this.glesEnum = glesEnum;
     }
   }
@@ -64,7 +64,7 @@ public class Texture implements Closeable {
 
     final int glesEnum;
 
-    private Target(int glesEnum) {
+    Target(int glesEnum) {
       this.glesEnum = glesEnum;
     }
   }
@@ -81,7 +81,7 @@ public class Texture implements Closeable {
 
     final int glesEnum;
 
-    private ColorFormat(int glesEnum) {
+    ColorFormat(int glesEnum) {
       this.glesEnum = glesEnum;
     }
   }

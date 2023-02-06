@@ -96,7 +96,7 @@ public class BackgroundRenderer {
       screenCoordsVertexBuffer, cameraTexCoordsVertexBuffer, virtualSceneTexCoordsVertexBuffer,
     };
     mesh =
-        new Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
+        new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
   }
 
   /**
@@ -178,8 +178,6 @@ public class BackgroundRenderer {
    */
   public void updateDisplayGeometry(Frame frame) {
     if (frame.hasDisplayGeometryChanged()) {
-      // If display rotation changed (also includes view size change), we need to re-query the UV
-      // coordinates for the screen rect, as they may have changed as well.
       frame.transformCoordinates2d(
           Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
           NDC_QUAD_COORDS_BUFFER,
@@ -191,7 +189,6 @@ public class BackgroundRenderer {
 
   /** Update depth texture with Image contents. */
   public void updateCameraDepthTexture(Image image) {
-    // SampleRender abstraction leaks here
     GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, cameraDepthTexture.getTextureId());
     GLES30.glTexImage2D(
         GLES30.GL_TEXTURE_2D,

@@ -56,7 +56,7 @@ public class Mesh implements Closeable {
     /* package-private */
     final int glesEnum;
 
-    private PrimitiveMode(int glesEnum) {
+    PrimitiveMode(int glesEnum) {
       this.glesEnum = glesEnum;
     }
   }
@@ -79,7 +79,6 @@ public class Mesh implements Closeable {
    * be used in the vertex shader code to explicitly associate attributes with these indices.
    */
   public Mesh(
-      SampleRender render,
       PrimitiveMode primitiveMode,
       IndexBuffer indexBuffer,
       VertexBuffer[] vertexBuffers) {
@@ -145,9 +144,9 @@ public class Mesh implements Closeable {
         new VertexBuffer(render, 3, normals),
       };
 
-      IndexBuffer indexBuffer = new IndexBuffer(render, vertexIndices);
+      IndexBuffer indexBuffer = new IndexBuffer(vertexIndices);
 
-      return new Mesh(render, PrimitiveMode.TRIANGLES, indexBuffer, vertexBuffers);
+      return new Mesh(PrimitiveMode.TRIANGLES, indexBuffer, vertexBuffers);
     }
   }
 

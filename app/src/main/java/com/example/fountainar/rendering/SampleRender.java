@@ -24,10 +24,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 /** A SampleRender context. */
 public class SampleRender {
-  private static final String TAG = SampleRender.class.getSimpleName();
 
   private final AssetManager assetManager;
-
   private int viewportWidth = 1;
   private int viewportHeight = 1;
 
@@ -102,27 +100,27 @@ public class SampleRender {
   }
 
   /** Interface to be implemented for rendering callbacks. */
-  public static interface Renderer {
+  public interface Renderer {
     /**
      * Called by {@link SampleRender} when the GL render surface is created.
      *
      * <p>See {@link GLSurfaceView.Renderer#onSurfaceCreated}.
      */
-    public void onSurfaceCreated(SampleRender render);
+    void onSurfaceCreated(SampleRender render);
 
     /**
      * Called by {@link SampleRender} when the GL render surface dimensions are changed.
      *
      * <p>See {@link GLSurfaceView.Renderer#onSurfaceChanged}.
      */
-    public void onSurfaceChanged(SampleRender render, int width, int height);
+    void onSurfaceChanged(SampleRender render, int width, int height);
 
     /**
      * Called by {@link SampleRender} when a GL frame is to be rendered.
      *
      * <p>See {@link GLSurfaceView.Renderer#onDrawFrame}.
      */
-    public void onDrawFrame(SampleRender render);
+    void onDrawFrame(SampleRender render);
   }
 
   /* package-private */

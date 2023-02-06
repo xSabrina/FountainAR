@@ -770,7 +770,7 @@ public class ArView extends AppCompatActivity implements
                     quaternion[3]);
         } catch (ResourceExhaustedException e) {
             snackbarHelper.showMessageWithDismiss(this,
-                    String.valueOf(R.string.error_create_anchor));
+                    getString(R.string.error_create_anchor));
             Log.e(TAG, "Exception creating terrain anchor");
         }
     }

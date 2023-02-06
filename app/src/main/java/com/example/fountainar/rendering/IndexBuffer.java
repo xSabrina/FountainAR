@@ -42,7 +42,7 @@ public class IndexBuffer implements Closeable {
    * <p>The {@code entries} buffer may be null, in which case an empty buffer is constructed
    * instead.
    */
-  public IndexBuffer(SampleRender render, IntBuffer entries) {
+  public IndexBuffer(IntBuffer entries) {
     buffer = new GpuBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, GpuBuffer.INT_SIZE, entries);
   }
 
@@ -66,12 +66,10 @@ public class IndexBuffer implements Closeable {
     buffer.free();
   }
 
-  /* package-private */
   int getBufferId() {
     return buffer.getBufferId();
   }
 
-  /* package-private */
   int getSize() {
     return buffer.getSize();
   }
