@@ -140,9 +140,7 @@ public class ArView extends AppCompatActivity implements
     private Mesh virtualFountainMesh;
     private Shader virtualFountainShader;
     private Mesh virtualWaterSurfaceMesh;
-    private Shader virtualWaterSurfaceShader;
     private final ArrayList<Mesh> virtualWaterJetMeshes = new ArrayList<>(5);
-
     private Shader virtualWaterJetShader;
     private Shader virtualWaterShader;
     private Framebuffer virtualSceneFramebuffer;
@@ -158,7 +156,6 @@ public class ArView extends AppCompatActivity implements
     private static final int CUBEMAP_RESOLUTION = 16;
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private final DepthSettings depthSettings = new DepthSettings();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
