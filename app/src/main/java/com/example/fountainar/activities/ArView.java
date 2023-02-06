@@ -165,7 +165,6 @@ public class ArView extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences(ALLOW_GEOSPATIAL_ACCESS_KEY, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_ar_view);
-        showPrivacyNoticeDialog();
         depthSettings.onCreate(this);
 
         if(DemographicQuestionnaire.probNum % 2 == 0){
@@ -846,8 +845,10 @@ public class ArView extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        if (sharedPreferences.getBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, false)) {
+        if (sharedPreferences.getBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY,false)) {
             createSession();
+        } else {
+            showPrivacyNoticeDialog();
         }
         surfaceView.onResume();
         displayRotationHelper.onResume();
