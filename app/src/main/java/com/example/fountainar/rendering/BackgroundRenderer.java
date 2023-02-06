@@ -33,9 +33,7 @@ import java.util.HashMap;
  * can be composited with or without depth occlusion.
  */
 public class BackgroundRenderer {
-  private static final String TAG = BackgroundRenderer.class.getSimpleName();
 
-  // components_per_vertex * number_of_vertices * float_size
   private static final int COORDS_BUFFER_SIZE = 2 * 4 * 4;
 
   private static final FloatBuffer NDC_QUAD_COORDS_BUFFER =
@@ -47,11 +45,11 @@ public class BackgroundRenderer {
   static {
     NDC_QUAD_COORDS_BUFFER.put(
         new float[] {
-          /*0:*/ -1f, -1f, /*1:*/ +1f, -1f, /*2:*/ -1f, +1f, /*3:*/ +1f, +1f,
+                -1f, -1f, +1f, -1f, -1f, +1f, +1f, +1f,
         });
     VIRTUAL_SCENE_TEX_COORDS_BUFFER.put(
         new float[] {
-          /*0:*/ 0f, 0f, /*1:*/ 1f, 0f, /*2:*/ 0f, 1f, /*3:*/ 1f, 1f,
+                0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f,
         });
   }
 
@@ -64,7 +62,6 @@ public class BackgroundRenderer {
   private Shader occlusionShader;
   private final Texture cameraDepthTexture;
   private final Texture cameraColorTexture;
-  private Texture depthColorPaletteTexture;
 
   private boolean useDepthVisualization;
   private boolean useOcclusion;
@@ -81,17 +78,14 @@ public class BackgroundRenderer {
             render,
             Texture.Target.TEXTURE_EXTERNAL_OES,
             Texture.WrapMode.CLAMP_TO_EDGE,
-            /*useMipmaps=*/ false);
+            false);
     cameraDepthTexture =
         new Texture(
             render,
             Texture.Target.TEXTURE_2D,
             Texture.WrapMode.CLAMP_TO_EDGE,
-            /*useMipmaps=*/ false);
+            false);
 
-    // Create a Mesh with three vertex buffers: one for the screen coordinates (normalized device
-    // coordinates), one for the camera texture coordinates (to be populated with proper data later
-    // before drawing), and one for the virtual scene texture coordinates (unit texture quad)
     VertexBuffer screenCoordsVertexBuffer =
         new VertexBuffer(render, /* numberOfEntriesPerVertex=*/ 2, NDC_QUAD_COORDS_BUFFER);
     cameraTexCoordsVertexBuffer =
@@ -120,12 +114,11 @@ public class BackgroundRenderer {
       this.useDepthVisualization = useDepthVisualization;
     }
     if (useDepthVisualization) {
-     depthColorPaletteTexture =
-        Texture.createFromAsset(
-            render,
-            "models/depth_color_palette.png",
-            Texture.WrapMode.CLAMP_TO_EDGE,
-            Texture.ColorFormat.LINEAR);
+      Texture depthColorPaletteTexture = Texture.createFromAsset(
+              render,
+              "models/depth_color_palette.png",
+              Texture.WrapMode.CLAMP_TO_EDGE,
+              Texture.ColorFormat.LINEAR);
       backgroundShader =
           Shader.createFromAssets(
                   render,
@@ -165,7 +158,8 @@ public class BackgroundRenderer {
     HashMap<String, String> defines = new HashMap<>();
     defines.put("USE_OCCLUSION", useOcclusion ? "1" : "0");
     occlusionShader =
-        Shader.createFromAssets(render, "shaders/occlusion.vert", "shaders/occlusion.frag", defines)
+        Shader.createFromAssets(render, "shaders/occlusion.vert",
+                        "shaders/occlusion.frag", defines)
             .setDepthTest(false)
             .setDepthWrite(false)
             .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);

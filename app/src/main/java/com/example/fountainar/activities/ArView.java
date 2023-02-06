@@ -142,6 +142,8 @@ public class ArView extends AppCompatActivity implements
     private Mesh virtualWaterSurfaceMesh;
     private Shader virtualWaterSurfaceShader;
     private final ArrayList<Mesh> virtualWaterJetMeshes = new ArrayList<>(5);
+
+    private Shader virtualWaterJetShader;
     private Shader virtualWaterShader;
     private Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
@@ -543,22 +545,37 @@ public class ArView extends AppCompatActivity implements
                                 render,
                                 "models/texture_water.png",
                                 Texture.WrapMode.CLAMP_TO_EDGE,
-                                Texture.ColorFormat.LINEAR);
+                                Texture.ColorFormat.SRGB);
+
+                Texture virtualWaterJetTexture =
+                        Texture.createFromAsset(
+                                render,
+                                "models/texture_water_jet.png",
+                                Texture.WrapMode.CLAMP_TO_EDGE,
+                                Texture.ColorFormat.SRGB);
 
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/water_surface.obj");
 
-                for (int i = 100; i < 150; i++){
+                for (int i = 50; i < 110; i++){
                     virtualWaterJetMeshes.add(Mesh.createFromAsset(render,
                             "models/animation/fountain_animated" + i + ".obj"));
                 }
+                virtualWaterJetShader = Shader.createFromAssets(
+                                render,
+                                "shaders/water.vert",
+                                "shaders/water.frag",
+                                null)
+                        .setTexture("u_Texture", virtualWaterJetTexture)
+                        .setDepthWrite(false);
 
                 virtualWaterShader = Shader.createFromAssets(
                         render,
-                                "shaders/ar_unlit_object.vert",
-                                "shaders/ar_unlit_object.frag",
+                                "shaders/water.vert",
+                                "shaders/water.frag",
                                 null)
-                        .setTexture("u_Texture", virtualWaterTexture);
+                        .setTexture("u_Texture", virtualWaterTexture)
+                        .setDepthWrite(false);
             }
 
             virtualFountainShader =
@@ -785,27 +802,28 @@ public class ArView extends AppCompatActivity implements
 
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     modelViewProjectionMatrix);
-
             render.draw(virtualFountainMesh, virtualFountainShader,
                     virtualSceneFramebuffer);
 
+            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
             if(isSubjectGroupWithAnimation) {
-                virtualWaterShader.setMat4("u_ModelViewProjection",
-                        modelViewProjectionMatrix);
-
-                Mesh virtualWaterMesh = virtualWaterJetMeshes.get(meshCounter);
+                Mesh virtualWaterJetMesh = virtualWaterJetMeshes.get(meshCounter);
                 meshCounter++;
-
                 if(meshCounter == virtualWaterJetMeshes.size()){
                     meshCounter = 0;
                 }
 
-                render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
-                render.draw(virtualWaterMesh, virtualWaterShader,
-                        virtualSceneFramebuffer);
-            }
+                virtualWaterShader.setMat4("u_ModelViewProjection",
+                        modelViewProjectionMatrix);
+                virtualWaterJetShader.setMat4("u_ModelViewProjection",
+                        modelViewProjectionMatrix);
 
-            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+                render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
+                render.draw(virtualWaterJetMesh, virtualWaterJetShader, virtualSceneFramebuffer);
+
+                backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+            }
         }
     }
 

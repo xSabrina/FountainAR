@@ -1,29 +1,15 @@
 #version 300 es
 
-out vec2 position;
+uniform mat4 u_ModelView;
+uniform mat4 u_ModelViewProjection;
 
-out vec2 textureCoords;
-out vec4 clipSpace;
+layout(location = 0) in vec4 a_Position;
+layout(location = 1) in vec2 a_TexCoord;
+layout(location = 2) in vec3 a_Normal;
 
-out vec3 toCameraVector;
+out vec2 v_TexCoord;
 
-out vec3 fromLightVector;
-
-uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
-
-uniform vec3 lightPosition;
-
-uniform vec3 cameraPosition;
-
-const float tiling = 6.0;
-
-void main(void) {
-  vec4 worldPosition = modelMatrix * vec4(position.x, 0.0, position.y, 1.0);
-  clipSpace = projectionMatrix * viewMatrix * worldPosition;
-  gl_Position = clipSpace;
-  textureCoords = vec2(position.x / 2.0 + 0.5, position.y / 2.0 + 0.5) * tiling;
-  toCameraVector = cameraPosition - worldPosition.xyz;
-  fromLightVector = worldPosition.xyz - lightPosition;
+void main() {
+  v_TexCoord = a_TexCoord;
+  gl_Position = u_ModelViewProjection * a_Position;
 }
