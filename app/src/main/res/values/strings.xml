@@ -178,6 +178,7 @@
     <string name="read_asset_failed">Fehler beim Lesen eines erforderlichen Assets: </string>
     <string name="opengl_version_required">Die App benötigt OpenGl Version 3.0 oder neuer.</string>
     <string name="fine_loc_needed">Zum Ausführen dieser Anwendung ist eine genaue Standortberechtigung erforderlich.</string>
+    <string name="cam_and_loc_needed">Diese App benötigt Kamera-und Standortberechtigung.</string>
     <string name="error_create_anchor">Fehler beim Erstellen des Terrain-Ankers</string>
 
 

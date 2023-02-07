@@ -67,13 +67,4 @@ public final class LocationPermissionHelper {
     return ActivityCompat.shouldShowRequestPermissionRationale(activity, LOCATION_PERMISSION);
   }
 
-  /**
-   * Launches Application Setting to grant permission.
-   */
-  public static void launchPermissionSettings(Activity activity) {
-    Intent intent = new Intent();
-    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-    intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-    activity.startActivity(intent);
-  }
 }
