@@ -452,33 +452,6 @@ public class ArView extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] results) {
-        super.onRequestPermissionsResult(requestCode, permissions, results);
-
-        if (CameraPermissionHelper.hasNoCameraPermission(this)) {
-            Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG).show();
-
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                CameraPermissionHelper.launchPermissionSettings(this);
-            }
-
-            finish();
-        }
-
-        if (LocationPermissionHelper.hasFineLocationPermissionsResponseInResult(permissions)
-                && LocationPermissionHelper.hasNoFineLocationPermission(this)) {
-            Toast.makeText(this, R.string.fine_loc_needed, Toast.LENGTH_LONG).show();
-
-            if (!LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                LocationPermissionHelper.launchPermissionSettings(this);
-            }
-
-            finish();
-        }
-    }
-
-    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus);
@@ -770,7 +743,7 @@ public class ArView extends AppCompatActivity implements
                     quaternion[3]);
         } catch (ResourceExhaustedException e) {
             snackbarHelper.showMessageWithDismiss(this,
-                    getString(R.string.error_create_anchor));
+                    String.valueOf(R.string.error_create_anchor));
             Log.e(TAG, "Exception creating terrain anchor");
         }
     }
