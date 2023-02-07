@@ -10,7 +10,7 @@
         android:id="@+id/dq_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_color_light"
+        android:background="@color/primary_color_middle"
         android:text="@string/dq_title"
         android:textAlignment="center"
         android:textColor="@color/white"

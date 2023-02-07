@@ -96,8 +96,8 @@
     <!-- TAM Questionnaire -->
     <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>
     <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen oder nicht zustimmen. \nIm Sinne der Verwendung eines anerkannten Fragebogens ist dieser in englischer Originalfassung verfasst.</string>
-    <string name="tam_strongly_disagree">Strongly \nDisagree</string>
-    <string name="tam_strongly_agree">Strongly \nAgree</string>
+    <string name="tam_strongly_disagree">Strongly\nDisagree</string>
+    <string name="tam_strongly_agree">Strongly\nAgree</string>
 
     <string name="tam_1">1</string>
     <string name="tam_2">2</string>
@@ -124,7 +124,7 @@
     <string name="tam_disgusting">Disgusting</string>
     <string name="tam_enjoyable">Enjoyable</string>
     <string name="tam_unpleasant">Unpleasant</string>
-    <string name="tam_pleasant">Unpleasant</string>
+    <string name="tam_pleasant">Pleasant</string>
     <string name="tam_boring">Boring</string>
     <string name="tam_interesting">Interesting</string>
     <string name="tam_dull">Dull</string>
@@ -174,10 +174,13 @@
     <string name="cam_or_network_error">Kamerafehler oder die Internetberechtigung wurde nicht erteilt.</string>
     <string name="session_create_or_config_error">Fehler beim Konfigurieren und Fortsetzen der Sitzung.</string>
     <string name="vps_check_error">Fehler beim Überprüfen der VPS-Verfügbarkeit.</string>
-    <string name="cam_permission_needed">Zum Ausführen dieser Anwendung ist eine Kameraberechtigung erforderlich.</string>
+    <string name="cam_permission_needed">Kameraberechtigung erforderlich.</string>
     <string name="read_asset_failed">Fehler beim Lesen eines erforderlichen Assets: </string>
     <string name="opengl_version_required">Die App benötigt OpenGl Version 3.0 oder neuer.</string>
-    <string name="fine_loc_needed">Zum Ausführen dieser Anwendung ist eine genaue Standortberechtigung erforderlich.</string>
+    <string name="fine_loc_needed">Genaue Standortberechtigung erforderlich</string>
+    <string name="read_stor_needed">Lesen im externen Speicher erforderlich</string>
+    <string name="write_stor_needed">Schreiben im externen Speicher erforderlich.</string>
+
     <string name="cam_and_loc_needed">Diese App benötigt Kamera-und Standortberechtigung.</string>
     <string name="error_create_anchor">Fehler beim Erstellen des Terrain-Ankers</string>
 
