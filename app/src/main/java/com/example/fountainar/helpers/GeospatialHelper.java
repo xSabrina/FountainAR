@@ -41,6 +41,7 @@ public class GeospatialHelper {
     private final QuizHelper quizHelper;
     private final Activity activity;
     private Session session;
+
     public GeospatialHelper(Activity activity) {
         this.activity = activity;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
