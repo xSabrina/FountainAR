@@ -169,7 +169,7 @@ public class SpecularCubemapFilter implements Closeable {
    * generally provide more accurate results, but in the case of ARCore, the cubemap estimations are
    * already very low resolution, and higher values provide rapidly diminishing returns.
    */
-  public SpecularCubemapFilter(SampleRender render, int resolution, int numberOfImportanceSamples)
+  public SpecularCubemapFilter(CustomRender render, int resolution, int numberOfImportanceSamples)
       throws IOException {
     this.resolution = resolution;
     this.numberOfImportanceSamples = numberOfImportanceSamples;
@@ -334,7 +334,7 @@ public class SpecularCubemapFilter implements Closeable {
     }
   }
 
-  private Shader[] createShaders(SampleRender render, ChunkIterable chunks) throws IOException {
+  private Shader[] createShaders(CustomRender render, ChunkIterable chunks) throws IOException {
     ImportanceSampleCacheEntry[][] importanceSampleCaches = generateImportanceSampleCaches();
 
     HashMap<String, String> commonDefines = new HashMap<>();

@@ -38,12 +38,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:lines="5"
-                android:paddingBottom="48dp"
+                android:layout_marginBottom="35dp"
                 android:text="@string/tam_instructions"
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 tools:layout_editor_absoluteX="44dp"
-                tools:layout_editor_absoluteY="1dp" />
+                tools:layout_editor_absoluteY="1dp"
+                android:background="@color/gray_light"/>
 
             <TextView
                 android:id="@+id/tam_pu1"
@@ -128,8 +129,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -195,8 +195,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -266,8 +265,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -333,8 +331,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -404,8 +401,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -471,8 +467,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -542,8 +537,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -609,8 +603,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -680,8 +673,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -747,8 +739,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -806,7 +797,7 @@
                 <TextView
                     android:layout_width="55dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="end"
                     android:textSize="12sp"
                     android:text="@string/tam_strongly_agree"
                     android:textColor="@color/black" />
@@ -818,8 +809,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -885,8 +875,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -956,8 +945,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1023,8 +1011,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -1094,8 +1081,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1161,14 +1147,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:text="@string/tam_disgusting"
+                    android:translationZ="1dp"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
@@ -1177,7 +1163,7 @@
                     android:layout_width="270dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginStart="-6dp">
+                    android:layout_marginStart="-4dp">
 
                     <RadioButton
                         android:id="@+id/tam_pe1_1"
@@ -1222,6 +1208,7 @@
                     android:layout_width="55dp"
                     android:layout_height="wrap_content"
                     android:gravity="end"
+                    android:layout_marginStart="4dp"
                     android:text="@string/tam_enjoyable"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
@@ -1233,8 +1220,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1300,13 +1286,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
                     android:gravity="start"
                     android:text="@string/tam_dull"
                     android:textColor="@color/black"
@@ -1317,7 +1301,7 @@
                     android:layout_width="270dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginStart="-30dp">
+                    android:layout_marginStart="3dp">
 
                     <RadioButton
                         android:id="@+id/tam_pe2_1"
@@ -1373,8 +1357,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1440,8 +1423,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="63dp"
@@ -1449,6 +1431,7 @@
                     android:layout_marginEnd="-2dp"
                     android:gravity="start"
                     android:text="@string/tam_unpleasant"
+                    android:translationZ="1dp"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
@@ -1513,8 +1496,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1580,8 +1562,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -1595,7 +1576,6 @@
                     android:id="@+id/pe4"
                     android:layout_width="270dp"
                     android:layout_height="wrap_content"
-                    android:paddingStart="5dp"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -1641,7 +1621,6 @@
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:layout_marginLeft="5dp"
                     android:text="@string/tam_interesting"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
@@ -1653,8 +1632,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1720,8 +1698,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -1791,8 +1768,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1858,8 +1834,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -1929,8 +1904,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1996,8 +1970,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -2067,8 +2040,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -2134,8 +2106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -2205,8 +2176,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -2272,8 +2242,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -2343,8 +2312,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -2410,8 +2378,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -2481,8 +2448,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -2548,8 +2514,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -2619,8 +2584,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -2686,8 +2650,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="55dp"
@@ -2757,8 +2720,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:layout_marginStart="70dp"
-                android:paddingBottom="10dp">
+                android:layout_marginStart="70dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -2820,6 +2782,7 @@
                 android:layout_marginBottom="48dp"
                 android:elevation="10dp"
                 android:text="@string/tam_finished_button"
+                android:textStyle="bold"
                 android:textColor="@color/white" />
 
         </LinearLayout>

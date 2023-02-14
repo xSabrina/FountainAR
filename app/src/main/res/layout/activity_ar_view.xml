@@ -35,10 +35,11 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/ar_layout_instructions_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="@string/ar_quiz_instructions"
+            android:text="@string/ar_quiz_loading"
             android:textColor="@color/black" />
 
         <Button
@@ -49,7 +50,8 @@
             android:layout_centerHorizontal="true"
             android:elevation="10dp"
             android:text="@string/start"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

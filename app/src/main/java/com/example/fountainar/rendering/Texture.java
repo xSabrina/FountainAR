@@ -93,11 +93,11 @@ public class Texture implements Closeable {
    * mostly only useful for creating {@link Target.TEXTURE_EXTERNAL_OES} textures. See {@link
    * #createFromAsset} if you want a texture with data.
    */
-  public Texture(SampleRender render, Target target, WrapMode wrapMode) {
+  public Texture(CustomRender render, Target target, WrapMode wrapMode) {
     this(render, target, wrapMode, /*useMipmaps=*/ true);
   }
 
-  public Texture(SampleRender render, Target target, WrapMode wrapMode, boolean useMipmaps) {
+  public Texture(CustomRender render, Target target, WrapMode wrapMode, boolean useMipmaps) {
     this.target = target;
 
     GLES30.glGenTextures(1, textureId, 0);
@@ -125,7 +125,7 @@ public class Texture implements Closeable {
 
   /** Create a texture from the given asset file name. */
   public static Texture createFromAsset(
-      SampleRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
+          CustomRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
       throws IOException {
     Texture texture = new Texture(render, Target.TEXTURE_2D, wrapMode);
     Bitmap bitmap = null;

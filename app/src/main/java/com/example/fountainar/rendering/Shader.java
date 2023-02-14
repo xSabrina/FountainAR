@@ -144,7 +144,7 @@ public class Shader implements Closeable {
    *     values
    */
   public static Shader createFromAssets(
-          SampleRender render,
+          CustomRender render,
           String vertexShaderFileName,
           String fragmentShaderFileName,
           Map<String, String> defines)
@@ -414,7 +414,7 @@ public class Shader implements Closeable {
 
   /**
    * Activates the shader. Don't call this directly unless you are doing low level OpenGL code;
-   * instead, prefer {@link SampleRender#draw}.
+   * instead, prefer {@link CustomRender#draw}.
    */
   public void lowLevelUse() {
     if (programId == 0) {

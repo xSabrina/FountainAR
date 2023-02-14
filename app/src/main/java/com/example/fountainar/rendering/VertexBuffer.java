@@ -47,7 +47,7 @@ public class VertexBuffer implements Closeable {
    * <p>The {@code entries} buffer may be null, in which case an empty buffer is constructed
    * instead.
    */
-  public VertexBuffer(SampleRender render, int numberOfEntriesPerVertex, FloatBuffer entries) {
+  public VertexBuffer(CustomRender render, int numberOfEntriesPerVertex, FloatBuffer entries) {
     if (entries != null && entries.limit() % numberOfEntriesPerVertex != 0) {
       throw new IllegalArgumentException(
           "If non-null, vertex buffer data must be divisible by the number of data points per"

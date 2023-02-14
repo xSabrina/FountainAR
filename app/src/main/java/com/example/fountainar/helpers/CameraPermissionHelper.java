@@ -28,11 +28,11 @@ import androidx.core.app.ActivityCompat;
  * Helper to ask for camera permission.
  */
 public final class CameraPermissionHelper {
-  private static final int CAMERA_PERMISSION_CODE = 1;
+  private static final int CAMERA_PERMISSION_CODE = 2;
   private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
 
   /**
-   * Checks to see we have the necessary permissions for this app.
+   * Checks, if we have the necessary permissions for this app.
    */
   public static boolean hasNoCameraPermission(Activity activity) {
     return ActivityCompat.checkSelfPermission(activity, CAMERA_PERMISSION)
@@ -40,7 +40,7 @@ public final class CameraPermissionHelper {
   }
 
   /**
-   * Checks to see we have the necessary permissions for this app, and ask for them if we don't.
+   * Asks for the camera permission.
    */
   public static void requestCameraPermission(Activity activity) {
     ActivityCompat.requestPermissions(
@@ -48,10 +48,18 @@ public final class CameraPermissionHelper {
   }
 
   /**
-   * Checks to see if we need to show the rationale for this permission.
+   * Checks, if we need to show the rationale for this permission.
    */
   public static boolean shouldShowRequestPermissionRationale(Activity activity) {
     return ActivityCompat.shouldShowRequestPermissionRationale(activity, CAMERA_PERMISSION);
+  }
+
+  /** Launch application settings to grant permission. */
+  public static void launchPermissionSettings(Activity activity) {
+    Intent intent = new Intent();
+    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+    activity.startActivity(intent);
   }
 
 }

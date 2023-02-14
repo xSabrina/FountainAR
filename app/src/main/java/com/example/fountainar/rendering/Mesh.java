@@ -32,7 +32,7 @@ import de.javagl.obj.ObjUtils;
 /**
  * A collection of vertices, faces, and other attributes that define how to render a 3D object.
  *
- * <p>To render the mesh, use {@link SampleRender#draw(Mesh, Shader)}.
+ * <p>To render the mesh, use {@link CustomRender#draw(Mesh, Shader)}.
  */
 public class Mesh implements Closeable {
   private static final String TAG = Mesh.class.getSimpleName();
@@ -53,9 +53,7 @@ public class Mesh implements Closeable {
     TRIANGLE_FAN(GLES30.GL_TRIANGLE_FAN),
     TRIANGLES(GLES30.GL_TRIANGLES);
 
-    /* package-private */
     final int glesEnum;
-
     PrimitiveMode(int glesEnum) {
       this.glesEnum = glesEnum;
     }
@@ -91,11 +89,8 @@ public class Mesh implements Closeable {
     this.vertexBuffers = vertexBuffers;
 
     try {
-      // Create vertex array
       GLES30.glGenVertexArrays(1, vertexArrayId, 0);
       GLError.maybeThrowGLException("Failed to generate a vertex array", "glGenVertexArrays");
-
-      // Bind vertex array
       GLES30.glBindVertexArray(vertexArrayId[0]);
       GLError.maybeThrowGLException("Failed to bind vertex array object", "glBindVertexArray");
 
@@ -104,11 +99,11 @@ public class Mesh implements Closeable {
       }
 
       for (int i = 0; i < vertexBuffers.length; ++i) {
-        // Bind each vertex buffer to vertex array
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vertexBuffers[i].getBufferId());
         GLError.maybeThrowGLException("Failed to bind vertex buffer", "glBindBuffer");
         GLES30.glVertexAttribPointer(
-            i, vertexBuffers[i].getNumberOfEntriesPerVertex(), GLES30.GL_FLOAT, false, 0, 0);
+            i, vertexBuffers[i].getNumberOfEntriesPerVertex(), GLES30.GL_FLOAT, false,
+                0, 0);
         GLError.maybeThrowGLException(
             "Failed to associate vertex buffer with vertex array", "glVertexAttribPointer");
         GLES30.glEnableVertexAttribArray(i);
@@ -128,14 +123,12 @@ public class Mesh implements Closeable {
    * coordinates (location 0, vec3), texture coordinates (location 1, vec2), and vertex normals
    * (location 2, vec3).
    */
-  public static Mesh createFromAsset(SampleRender render, String assetFileName) throws IOException {
+  public static Mesh createFromAsset(CustomRender render, String assetFileName) throws IOException {
     try (InputStream inputStream = render.getAssets().open(assetFileName)) {
       Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
-
-      // Obtain the data from the OBJ, as direct buffers:
-      IntBuffer vertexIndices = ObjData.getFaceVertexIndices(obj, /*numVerticesPerFace=*/ 3);
+      IntBuffer vertexIndices = ObjData.getFaceVertexIndices(obj, 3);
       FloatBuffer localCoordinates = ObjData.getVertices(obj);
-      FloatBuffer textureCoordinates = ObjData.getTexCoords(obj, /*dimensions=*/ 2);
+      FloatBuffer textureCoordinates = ObjData.getTexCoords(obj, 2);
       FloatBuffer normals = ObjData.getNormals(obj);
 
       VertexBuffer[] vertexBuffers = {
@@ -161,7 +154,7 @@ public class Mesh implements Closeable {
 
   /**
    * Draws the mesh. Don't call this directly unless you are doing low level OpenGL code; instead,
-   * prefer {@link SampleRender#draw}.
+   * prefer {@link CustomRender#draw}.
    */
   public void lowLevelDraw() {
     if (vertexArrayId[0] == 0) {
@@ -170,14 +163,16 @@ public class Mesh implements Closeable {
 
     GLES30.glBindVertexArray(vertexArrayId[0]);
     GLError.maybeThrowGLException("Failed to bind vertex array object", "glBindVertexArray");
+
     if (indexBuffer == null) {
-      // Sanity check for debugging
       int numberOfVertices = vertexBuffers[0].getNumberOfVertices();
+
       for (int i = 1; i < vertexBuffers.length; ++i) {
         if (vertexBuffers[i].getNumberOfVertices() != numberOfVertices) {
           throw new IllegalStateException("Vertex buffers have mismatching numbers of vertices");
         }
       }
+
       GLES30.glDrawArrays(primitiveMode.glesEnum, 0, numberOfVertices);
       GLError.maybeThrowGLException("Failed to draw vertex array object", "glDrawArrays");
     } else {

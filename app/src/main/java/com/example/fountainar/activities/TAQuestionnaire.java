@@ -175,8 +175,8 @@ public class TAQuestionnaire extends AppCompatActivity {
     private void saveAnswersToFile() {
         Date date = new Date();
         String dateString = date.toString();
-        String timeSpent = String.valueOf(R.string.time_spent_questionnaire +
-                ((System.currentTimeMillis() - startTime) / 1000));
+        String timeSpent = getString(R.string.time_spent_questionnaire) + " " +
+                ((System.currentTimeMillis() - startTime) / 1000);
 
         File file = createdFile();
 
@@ -185,8 +185,8 @@ public class TAQuestionnaire extends AppCompatActivity {
             OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
             try {
-                osw.write(DemographicQuestionnaire.probNum + "\n\n" + dateString + "\n" +
-                        timeSpent + "\n\n");
+                osw.write(getString(R.string.dq_q1) + " " + DemographicQuestionnaire.probNum +
+                        "\n\n" + dateString + "\n" + timeSpent + "\n\n");
 
                 for (int i = 0; i < questions.size(); i++) {
                     osw.write(questions.get(i));
@@ -210,8 +210,8 @@ public class TAQuestionnaire extends AppCompatActivity {
     private File createdFile() {
         File rootDirectory = new File(this.getApplicationContext().getFilesDir(),
                 "/Study_Data");
-        File directory = new File(rootDirectory.getPath(),
-                "/TAM_Questionnaires");
+        File directory = new File(rootDirectory.getPath(), "/TAM_Questionnaires");
+
         if (!directory.exists()) {
             boolean wasSuccessful = directory.mkdirs();
             if (!wasSuccessful) {
@@ -231,19 +231,21 @@ public class TAQuestionnaire extends AppCompatActivity {
                 scrollView.getHeight() / 3);
 
         for (int i = 0; i < missingRadioGroups.size(); i++) {
-            missingRadioGroups.get(i).setBackgroundColor(getColor(R.color.red_light));
+            LinearLayout linearLayout = (LinearLayout) missingRadioGroups.get(i).getParent();
+            linearLayout.setBackgroundColor(getColor(R.color.red_light));
 
             for (int j = 0; j < missingRadioGroups.get(i).getChildCount(); j++) {
                 missingRadioGroups.get(i).getChildAt(j)
                         .setBackgroundColor(getColor(R.color.red_light));
             }
         }
-
     }
 
     private void resetBackgrounds() {
         for (int i = 0; i < radioGroups.size(); i++) {
-            radioGroups.get(i).setBackgroundColor(getColor(R.color.white));
+            LinearLayout linearLayout = (LinearLayout) radioGroups.get(i).getParent();
+            linearLayout.setBackgroundColor(getColor(R.color.white));
+
             for (int j = 0; j < radioGroups.get(i).getChildCount(); j++) {
                 radioGroups.get(i).getChildAt(j)
                         .setBackgroundColor(getColor(R.color.white));

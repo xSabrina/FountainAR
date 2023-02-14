@@ -28,11 +28,11 @@ import androidx.core.app.ActivityCompat;
  * Helper to ask location permission.
  */
 public final class LocationPermissionHelper {
-  private static final int LOCATION_PERMISSION_CODE = 2;
+  private static final int LOCATION_PERMISSION_CODE = 3;
   private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
   /**
-   * Checks to see we have the necessary permissions for this app.
+   * Checks, if we have the necessary permissions for this app.
    */
   public static boolean hasNoFineLocationPermission(Activity activity) {
     return ActivityCompat.checkSelfPermission(activity, LOCATION_PERMISSION)
@@ -40,7 +40,7 @@ public final class LocationPermissionHelper {
   }
 
   /**
-   * Checks to see we have the necessary permissions for this app, and ask for them if we don't.
+   * Asks for fine location permission.
    */
   public static void requestFineLocationPermission(Activity activity) {
     ActivityCompat.requestPermissions(
@@ -48,7 +48,7 @@ public final class LocationPermissionHelper {
   }
 
   /**
-   * Checks to see if the array of given permissions contain the location permission.
+   * Checks, if the array of given permissions contains the location permission.
    */
   public static boolean hasFineLocationPermissionsResponseInResult(String[] permissions) {
     for (String permission : permissions) {
@@ -61,10 +61,18 @@ public final class LocationPermissionHelper {
   }
 
   /**
-   * Checks to see if we need to show the rationale for this permission.
+   * Checks, if we need to show the rationale for this permission.
    */
   public static boolean shouldShowRequestPermissionRationale(Activity activity) {
     return ActivityCompat.shouldShowRequestPermissionRationale(activity, LOCATION_PERMISSION);
+  }
+
+  /** Launch application settings to grant permission. */
+  public static void launchPermissionSettings(Activity activity) {
+    Intent intent = new Intent();
+    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+    activity.startActivity(intent);
   }
 
 }

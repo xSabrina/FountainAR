@@ -33,10 +33,10 @@ public class Framebuffer implements Closeable {
   /**
    * Constructs a {@link Framebuffer} which renders internally to a texture.
    *
-   * <p>In order to render to the {@link Framebuffer}, use {@link SampleRender#draw(Mesh, Shader,
+   * <p>In order to render to the {@link Framebuffer}, use {@link CustomRender#draw(Mesh, Shader,
    * Framebuffer)}.
    */
-  public Framebuffer(SampleRender render, int width, int height) {
+  public Framebuffer(CustomRender render, int width, int height) {
     try {
       colorTexture =
           new Texture(

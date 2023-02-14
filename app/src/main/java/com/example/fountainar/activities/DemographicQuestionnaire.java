@@ -19,9 +19,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fountainar.R;
+import com.example.fountainar.helpers.StoragePermissionHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +36,6 @@ import java.util.Date;
 public class DemographicQuestionnaire extends AppCompatActivity {
 
     private static final String TAG = DemographicQuestionnaire.class.getSimpleName();
-
     public static int probNum;
 
     private final ArrayList<String> questions = new ArrayList<>();
@@ -45,22 +46,18 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     private final ArrayList<EditText> missingInputFields = new ArrayList<>();
     private final ArrayList<RadioGroup> missingRadioGroups = new ArrayList<>();
 
-    private long startTime;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_demographic_questionnaire);
-        startTime = System.currentTimeMillis();
 
+        checkForStoragePermission();
+        setupActivity();
+    }
+
+    private void checkForStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-            if (Environment.isExternalStorageManager()) {
-                setupRadioGroups();
-                setupInputListeners();
-                setupFinishButton();
-            } else {
+            if (!Environment.isExternalStorageManager()) {
                 Toast.makeText(this, R.string.stor_permission_needed, Toast.LENGTH_LONG)
                         .show();
 
@@ -72,8 +69,15 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                     startActivity(intent);
                 }, 2000);
             }
+        } else {
+            checkStoragePermissions();
         }
+    }
 
+    private void setupActivity() {
+        setupRadioGroups();
+        setupInputListeners();
+        setupFinishButton();
     }
 
     private void setupRadioGroups() {
@@ -147,6 +151,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                 saveDataToFile();
                 Intent intentMain = new Intent(getApplicationContext(), ArView.class);
                 startActivity(intentMain);
+
             } else {
                 highlightMissingFields();
                 Toast.makeText(getApplicationContext(), R.string.fill_out_first,
@@ -176,7 +181,6 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                 if (editTexts.get(i).getText().length() == 0) {
                     missingInputFields.add(editTexts.get(i));
                 }
-
             } else {
                 if (radioButtons.get(i - 2).isChecked()) {
                     if (editTexts.get(i).getText().length() == 0) {
@@ -232,8 +236,6 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
         Date date = new Date();
         String dateString = date.toString();
-        String timeSpent = String.valueOf(R.string.time_spent_questionnaire +
-                ((System.currentTimeMillis() - startTime) / 1000));
 
         File file = createdFile();
 
@@ -243,7 +245,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
             try {
 
-                osw.write(probNum + "\n\n" + dateString + "\n" + timeSpent + "\n\n");
+                osw.write(getString(R.string.dq_q1) + " " + probNum + "\n\n" + dateString
+                        + "\n\n");
 
                 for (int i = 0; i < questions.size(); i++) {
                     osw.write(questions.get(i) + "\n");
@@ -331,6 +334,53 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                         .setBackgroundColor(getColor(R.color.white));
             }
         }
+    }
+
+    private void checkStoragePermissions() {
+        if (!StoragePermissionHelper.hasReadPermission(this)) {
+            StoragePermissionHelper.requestReadPermission(this);
+        }
+
+        if (!StoragePermissionHelper.hasWritePermission(this)) {
+            StoragePermissionHelper.requestWritePermission(this);
+        }
+
+        if (StoragePermissionHelper.hasReadPermission(this)) {
+            StoragePermissionHelper.hasWritePermission(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+
+        if (!StoragePermissionHelper.hasReadPermission(this)) {
+            Toast.makeText(this, R.string.read_stor_needed, Toast.LENGTH_LONG).show();
+
+            if (StoragePermissionHelper.shouldShowRequestReadPermissionRationale(this)) {
+                StoragePermissionHelper.launchReadPermissionSettings(this);
+            }
+
+            finish();
+        }
+
+        if (!StoragePermissionHelper.hasWritePermission(this)) {
+            Toast.makeText(this, R.string.write_stor_needed, Toast.LENGTH_LONG).show();
+
+            if (StoragePermissionHelper.shouldShowRequestWritePermissionRationale(this)) {
+                StoragePermissionHelper.launchWritePermissionSettings(this);
+            }
+
+            finish();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        checkForStoragePermission();
     }
 
 }

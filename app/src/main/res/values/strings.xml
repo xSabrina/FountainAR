@@ -70,7 +70,8 @@
 
     <!-- AR View quiz -->
     <string name="faculty_fountain">Fakultätenbrunnen, Heinrich Kirchner, 1968</string>
-    <string name="ar_quiz_instructions">Hier sehen Sie ein Modell des Fakultätenbrunnens der Universität Regensburg. Sie können es sich gerne erst einmal ein wenig ansehen. Nachfolgend werden Sie einige Fragen zu diesem in einem kleinen Multiple-Choice-Quiz beantworten.</string>
+    <string name="ar_quiz_loading">Blicke ein wenig mit der Kamera umher, damit das 3D-Objekt des Brunnens platziert werden kann.</string>
+    <string name="ar_quiz_instructions">Super! Hier sehen Sie nun ein Modell des Fakultätenbrunnens der Universität Regensburg. Nachfolgend werden Sie sich das Objekt genauer ansehen und einige Fragen zu diesem in einem kleinen Multiple-Choice-Quiz beantworten.</string>
     <string name="ar_further">Weiter</string>
     <string name="ar_missing_answer">Bitte entscheide Dich zunächst für eine Antwortmöglichkeit.</string>
     <string name="start">Los geht\'s</string>
@@ -95,7 +96,7 @@
 
     <!-- TAM Questionnaire -->
     <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>
-    <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen oder nicht zustimmen. \nIm Sinne der Verwendung eines anerkannten Fragebogens ist dieser in englischer Originalfassung verfasst.</string>
+    <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen beziehungsweise wie Sie die Anwendung bewerten. \nIm Sinne der Verwendung eines anerkannten Fragebogens handelt es sich hierbei um die englische Originalfassung.</string>
     <string name="tam_strongly_disagree">Strongly\nDisagree</string>
     <string name="tam_strongly_agree">Strongly\nAgree</string>
 
@@ -187,5 +188,6 @@
 
     <!-- Study Data To Save -->
     <string name="time_spent_questionnaire">Time spent for this questionnaire in seconds: </string>
-
+    <string name="time_spent_ar">Time spent on the AR view in seconds: </string>
+    <string name="time_spent_task">Time spent for this question in seconds: </string>
 </resources>

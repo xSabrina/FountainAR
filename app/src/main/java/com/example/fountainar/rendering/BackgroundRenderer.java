@@ -15,9 +15,6 @@
  */
 package com.example.fountainar.rendering;
 
-import android.media.Image;
-import android.opengl.GLES30;
-
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 
@@ -65,66 +62,58 @@ public class BackgroundRenderer {
 
   private boolean useDepthVisualization;
   private boolean useOcclusion;
-  private float aspectRatio;
 
   /**
    * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
-   * during a {@link SampleRender.Renderer} callback, typically in {link
-   * SampleRender.Renderer#onSurfaceCreated()}.
+   * during a {@link CustomRender.Renderer} callback, typically in {link
+   * CustomRender.Renderer#onSurfaceCreated()}.
    */
-  public BackgroundRenderer(SampleRender render) {
-    cameraColorTexture =
-        new Texture(
-            render,
-            Texture.Target.TEXTURE_EXTERNAL_OES,
-            Texture.WrapMode.CLAMP_TO_EDGE,
-            false);
-    cameraDepthTexture =
-        new Texture(
-            render,
-            Texture.Target.TEXTURE_2D,
-            Texture.WrapMode.CLAMP_TO_EDGE,
-            false);
+  public BackgroundRenderer(CustomRender render) {
+    cameraColorTexture = new Texture(render, Texture.Target.TEXTURE_EXTERNAL_OES,
+            Texture.WrapMode.CLAMP_TO_EDGE, false);
+    cameraDepthTexture = new Texture(render, Texture.Target.TEXTURE_2D,
+            Texture.WrapMode.CLAMP_TO_EDGE, false);
 
-    VertexBuffer screenCoordsVertexBuffer =
-        new VertexBuffer(render, 2, NDC_QUAD_COORDS_BUFFER);
-    cameraTexCoordsVertexBuffer =
-        new VertexBuffer(render, 2, null);
-    VertexBuffer virtualSceneTexCoordsVertexBuffer =
-        new VertexBuffer(render, 2, VIRTUAL_SCENE_TEX_COORDS_BUFFER);
+    VertexBuffer screenCoordsVertexBuffer = new VertexBuffer(render, 2,
+            NDC_QUAD_COORDS_BUFFER);
+    cameraTexCoordsVertexBuffer = new VertexBuffer(render, 2, null);
+    VertexBuffer virtualSceneTexCoordsVertexBuffer = new VertexBuffer(render, 2,
+            VIRTUAL_SCENE_TEX_COORDS_BUFFER);
     VertexBuffer[] vertexBuffers = {
-      screenCoordsVertexBuffer, cameraTexCoordsVertexBuffer, virtualSceneTexCoordsVertexBuffer,
-    };
-    mesh =
-        new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
+            screenCoordsVertexBuffer,
+            cameraTexCoordsVertexBuffer,
+            virtualSceneTexCoordsVertexBuffer};
+
+    mesh = new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
   }
 
   /**
    * Sets whether the background camera image should be replaced with a depth visualization instead.
    * This reloads the corresponding shader code, and must be called on the GL thread.
    */
-  public void setUseDepthVisualization(SampleRender render, boolean useDepthVisualization)
+  public void setUseDepthVisualization(CustomRender render, boolean useDepthVisualization)
       throws IOException {
     if (backgroundShader != null) {
       if (this.useDepthVisualization == useDepthVisualization) {
         return;
       }
+
       backgroundShader.close();
       backgroundShader = null;
       this.useDepthVisualization = useDepthVisualization;
     }
+
     if (useDepthVisualization) {
-      Texture depthColorPaletteTexture = Texture.createFromAsset(
-              render,
-              "models/depth_color_palette.png",
-              Texture.WrapMode.CLAMP_TO_EDGE,
+      Texture depthColorPaletteTexture = Texture.createFromAsset(render,
+              "models/depth_color_palette.png", Texture.WrapMode.CLAMP_TO_EDGE,
               Texture.ColorFormat.LINEAR);
+
       backgroundShader =
           Shader.createFromAssets(
                   render,
                   "shaders/background_show_depth_color_visualization.vert",
                   "shaders/background_show_depth_color_visualization.frag",
-                  /*defines=*/ null)
+                  null)
               .setTexture("u_CameraDepthTexture", cameraDepthTexture)
               .setTexture("u_ColorMap", depthColorPaletteTexture)
               .setDepthTest(false)
@@ -135,7 +124,7 @@ public class BackgroundRenderer {
                   render,
                   "shaders/background_show_camera.vert",
                   "shaders/background_show_camera.frag",
-                  /*defines=*/ null)
+                  null)
               .setTexture("u_CameraColorTexture", cameraColorTexture)
               .setDepthTest(false)
               .setDepthWrite(false);
@@ -146,15 +135,17 @@ public class BackgroundRenderer {
    * Sets whether to use depth for occlusion. This reloads the shader code with new {@code
    * #define}s, and must be called on the GL thread.
    */
-  public void setUseOcclusion(SampleRender render, boolean useOcclusion) throws IOException {
+  public void setUseOcclusion(CustomRender render, boolean useOcclusion) throws IOException {
     if (occlusionShader != null) {
       if (this.useOcclusion == useOcclusion) {
         return;
       }
+
       occlusionShader.close();
       occlusionShader = null;
       this.useOcclusion = useOcclusion;
     }
+
     HashMap<String, String> defines = new HashMap<>();
     defines.put("USE_OCCLUSION", useOcclusion ? "1" : "0");
     occlusionShader =
@@ -163,7 +154,9 @@ public class BackgroundRenderer {
             .setDepthTest(false)
             .setDepthWrite(false)
             .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+
     if (useOcclusion) {
+      float aspectRatio = 0;
       occlusionShader
           .setTexture("u_CameraDepthTexture", cameraDepthTexture)
           .setFloat("u_DepthAspectRatio", aspectRatio);
@@ -187,32 +180,13 @@ public class BackgroundRenderer {
     }
   }
 
-  /** Update depth texture with Image contents. */
-  public void updateCameraDepthTexture(Image image) {
-    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, cameraDepthTexture.getTextureId());
-    GLES30.glTexImage2D(
-        GLES30.GL_TEXTURE_2D,
-        0,
-        GLES30.GL_RG8,
-        image.getWidth(),
-        image.getHeight(),
-        0,
-        GLES30.GL_RG,
-        GLES30.GL_UNSIGNED_BYTE,
-        image.getPlanes()[0].getBuffer());
-    if (useOcclusion) {
-      aspectRatio = (float) image.getWidth() / (float) image.getHeight();
-      occlusionShader.setFloat("u_DepthAspectRatio", aspectRatio);
-    }
-  }
-
   /**
    * Draws the AR background image. The image will be drawn such that virtual content rendered with
    * the matrices provided by {@link com.google.ar.core.Camera#getViewMatrix(float[], int)} and
    * {@link com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)} will
    * accurately follow static physical objects.
    */
-  public void drawBackground(SampleRender render) {
+  public void drawBackground(CustomRender render) {
     render.draw(mesh, backgroundShader);
   }
 
@@ -225,25 +199,22 @@ public class BackgroundRenderer {
    * com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)}.
    */
   public void drawVirtualScene(
-      SampleRender render, Framebuffer virtualSceneFramebuffer, float zNear, float zFar) {
-    occlusionShader.setTexture(
-        "u_VirtualSceneColorTexture", virtualSceneFramebuffer.getColorTexture());
+          CustomRender render, Framebuffer virtualSceneFramebuffer, float zNear, float zFar) {
+    occlusionShader.setTexture("u_VirtualSceneColorTexture",
+            virtualSceneFramebuffer.getColorTexture());
+
     if (useOcclusion) {
       occlusionShader
           .setTexture("u_VirtualSceneDepthTexture", virtualSceneFramebuffer.getDepthTexture())
           .setFloat("u_ZNear", zNear)
           .setFloat("u_ZFar", zFar);
     }
+
     render.draw(mesh, occlusionShader);
   }
 
   /** Return the camera color texture generated by this object. */
   public Texture getCameraColorTexture() {
     return cameraColorTexture;
-  }
-
-  /** Return the camera depth texture generated by this object. */
-  public Texture getCameraDepthTexture() {
-    return cameraDepthTexture;
   }
 }

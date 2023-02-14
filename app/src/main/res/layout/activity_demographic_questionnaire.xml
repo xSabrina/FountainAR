@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/dq_title"
@@ -22,7 +22,6 @@
         android:id="@+id/dq_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/dq_title"
         android:padding="10dp"
         tools:layout_editor_absoluteX="0dp">
 
@@ -37,7 +36,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
-                android:paddingBottom="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/gray_light"
                 android:text="@string/dq_instructions"
                 android:textColor="@color/black"
                 android:textSize="15sp"
@@ -60,13 +60,14 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/white"
-                android:digits="1234567890"
                 android:elevation="10dp"
                 android:gravity="center"
+                android:importantForAutofill="no"
+                android:inputType="number"
                 android:maxLength="2"
-                android:padding="0dp"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="LabelFor" />
 
             <TextView
                 android:id="@+id/dq_q2"
@@ -85,13 +86,14 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/white"
-                android:digits="1234567890"
                 android:elevation="10dp"
                 android:gravity="center"
+                android:importantForAutofill="no"
+                android:inputType="number"
                 android:maxLength="2"
-                android:padding="0dp"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="LabelFor" />
 
             <TextView
                 android:id="@+id/dq_q3"
@@ -179,10 +181,12 @@
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
                     android:elevation="10dp"
                     android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
                     android:minWidth="150dp"
-                    android:paddingStart="10dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="LabelFor" />
 
             </RadioGroup>
 
@@ -209,7 +213,6 @@
                     android:text="@string/dq_q5_student"
                     android:textColor="@color/black" />
 
-
                 <EditText
                     android:id="@+id/dq_q5_student_subject"
                     android:layout_width="wrap_content"
@@ -220,10 +223,12 @@
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
                     android:elevation="10dp"
                     android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
                     android:minWidth="150dp"
-                    android:paddingStart="10dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="LabelFor" />
 
                 <RadioButton
                     android:id="@+id/dq_q5_employee"
@@ -263,10 +268,12 @@
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
                     android:elevation="10dp"
                     android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
                     android:minWidth="150dp"
-                    android:paddingStart="10dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="LabelFor" />
 
             </RadioGroup>
 
@@ -285,7 +292,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="15dp">
+                android:paddingBottom="20dp">
 
                 <RadioButton
                     android:id="@+id/dq_q6_abitur"
@@ -353,10 +360,12 @@
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
                     android:elevation="10dp"
                     android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
                     android:minWidth="150dp"
-                    android:paddingStart="10dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="LabelFor" />
 
             </RadioGroup>
 
@@ -373,7 +382,8 @@
             <RadioGroup
                 android:id="@+id/dq_q7_rg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:clipToPadding="false">
 
                 <RadioButton
                     android:id="@+id/dq_q7_yes"
@@ -413,7 +423,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="15dp">
+                android:paddingBottom="20dp">
 
                 <RadioButton
                     android:id="@+id/dq_q8_routinely"
@@ -460,10 +470,12 @@
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
                     android:elevation="10dp"
                     android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
                     android:minWidth="150dp"
-                    android:paddingStart="10dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="LabelFor" />
 
             </RadioGroup>
 
@@ -529,10 +541,12 @@
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
                     android:elevation="10dp"
                     android:enabled="false"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
                     android:minWidth="150dp"
-                    android:paddingStart="10dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="LabelFor" />
 
             </RadioGroup>
 
@@ -544,8 +558,9 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp"
                 android:elevation="10dp"
-                android:text="Weiter"
-                android:textColor="@color/white" />
+                android:text="@string/further"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
