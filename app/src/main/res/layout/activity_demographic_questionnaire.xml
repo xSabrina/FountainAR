@@ -21,7 +21,7 @@
     <ScrollView
         android:id="@+id/dq_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="10dp"
         tools:layout_editor_absoluteX="0dp">
 
@@ -37,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:layout_marginBottom="20dp"
-                android:background="@color/gray_light"
+                android:background="@drawable/rounded_corners"
+                android:backgroundTint="@color/gray_light"
                 android:text="@string/dq_instructions"
                 android:textColor="@color/black"
                 android:textSize="15sp"
@@ -55,18 +56,17 @@
 
             <EditText
                 android:id="@+id/dq_q1_input"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
+                android:layout_width="38dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/white"
-                android:elevation="10dp"
-                android:gravity="center"
+                android:background="@drawable/rounded_corners"
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:maxLength="2"
                 android:textColor="@color/black"
                 android:textSize="15sp"
+                android:gravity="center"
                 tools:ignore="LabelFor" />
 
             <TextView
@@ -81,18 +81,17 @@
 
             <EditText
                 android:id="@+id/dq_q2_input"
-                android:layout_width="50dp"
+                android:layout_width="38dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/white"
-                android:elevation="10dp"
-                android:gravity="center"
+                android:background="@drawable/rounded_corners"
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:maxLength="2"
                 android:textColor="@color/black"
                 android:textSize="15sp"
+                android:gravity="center"
                 tools:ignore="LabelFor" />
 
             <TextView
@@ -150,45 +149,43 @@
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <RadioGroup
-                android:id="@+id/dq_q4_rg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingBottom="20dp">
-
-                <RadioButton
-                    android:id="@+id/dq_q4_german"
+                <RadioGroup
+                    android:id="@+id/dq_q4_rg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/dq_q4_german"
-                    android:textColor="@color/black" />
+                    android:clipToPadding="false"
+                    android:paddingBottom="20dp">
 
-                <RadioButton
-                    android:id="@+id/dq_q4_alternative_answer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dq_alternative_answer"
-                    android:textColor="@color/black" />
+                    <RadioButton
+                        android:id="@+id/dq_q4_german"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dq_q4_german"
+                        android:textColor="@color/black" />
 
-                <EditText
-                    android:id="@+id/dq_q4_alternative_answer_input"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/white"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                    android:elevation="10dp"
-                    android:enabled="false"
-                    android:importantForAutofill="no"
-                    android:inputType="text"
-                    android:minWidth="150dp"
-                    android:textColor="@color/black"
-                    android:textSize="15sp"
-                    tools:ignore="LabelFor" />
+                    <RadioButton
+                        android:id="@+id/dq_q4_alternative_answer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dq_alternative_answer"
+                        android:textColor="@color/black" />
 
-            </RadioGroup>
+                    <EditText
+                        android:id="@+id/dq_q4_alternative_answer_input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/rounded_corners"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:minWidth="150dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        tools:ignore="LabelFor" />
+
+                </RadioGroup>
 
             <TextView
                 android:id="@+id/dq_q5"
@@ -219,10 +216,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@drawable/rounded_corners"
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                    android:elevation="10dp"
-                    android:enabled="false"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="150dp"
@@ -264,10 +259,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@drawable/rounded_corners"
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                    android:elevation="10dp"
-                    android:enabled="false"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="150dp"
@@ -356,10 +349,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@drawable/rounded_corners"
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                    android:elevation="10dp"
-                    android:enabled="false"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="150dp"
@@ -466,10 +457,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@drawable/rounded_corners"
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                    android:elevation="10dp"
-                    android:enabled="false"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="150dp"
@@ -537,10 +526,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/white"
+                    android:background="@drawable/rounded_corners"
                     android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                    android:elevation="10dp"
-                    android:enabled="false"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="150dp"
@@ -552,14 +539,15 @@
 
             <Button
                 android:id="@+id/dq_finished_button"
-                android:layout_width="200dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:elevation="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/basic_button"
                 android:text="@string/further"
                 android:textColor="@color/white"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
         </LinearLayout>

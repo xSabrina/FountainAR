@@ -1,11 +1,15 @@
 package com.example.fountainar.rendering;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.opengl.Matrix;
 import android.util.Log;
 
 import com.example.fountainar.R;
-import com.example.fountainar.activities.ArView;
+import com.example.fountainar.activities.ARActivity;
 import com.example.fountainar.activities.DemographicQuestionnaire;
 import com.example.fountainar.helpers.TrackingStateHelper;
 import com.google.ar.core.Anchor;
@@ -22,7 +26,7 @@ import java.util.HashMap;
 public class SceneRenderer {
 
     private static final String TAG = SceneRenderer.class.getSimpleName();
-    private static final ArrayList<Mesh> virtualWaterJetMeshes = new ArrayList<>(5);
+    private static final ArrayList<Mesh> virtualWaterJetMeshes = new ArrayList<>(30);
     private static final float[] modelMatrix = new float[16];
     private static final float[] viewMatrix = new float[16];
     private static final float[] projectionMatrix = new float[16];
@@ -45,6 +49,11 @@ public class SceneRenderer {
     public Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
+    private final static int waterjetsStart = 160;
+    private final static int waterjetsEnd = 170;
+    private SoundPool soundPool;
+    private int soundId;
+    private boolean soundPoolPlaying = false;
 
     public SceneRenderer(Activity activity) {
         this.activity = activity;
@@ -52,6 +61,7 @@ public class SceneRenderer {
 
         if (DemographicQuestionnaire.probNum % 2 == 0) {
             isSubjectGroupWithAnimation = true;
+            setupSoundPool();
         }
     }
 
@@ -72,40 +82,40 @@ public class SceneRenderer {
 
             Texture virtualFountainAlbedoTexture = Texture.createFromAsset(
                     render,
-                    "models/texture_fountain.png",
+                    "models/Fountain_Albedo.png",
                     Texture.WrapMode.CLAMP_TO_EDGE,
                     Texture.ColorFormat.SRGB);
 
             Texture virtualFountainTexture =
                     Texture.createFromAsset(
                             render,
-                            "models/texture_fountain.png",
+                            "models/Fountain_Baked.png",
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             Texture.ColorFormat.LINEAR);
 
-            virtualFountainMesh = Mesh.createFromAsset(render, "models/fountain.obj");
+            virtualFountainMesh = Mesh.createFromAsset(render, "models/Fountain.obj");
 
             if (isSubjectGroupWithAnimation) {
                 Texture virtualWaterTexture =
                         Texture.createFromAsset(
                                 render,
-                                "models/texture_water.png",
+                                "models/Water_Baked.png",
                                 Texture.WrapMode.CLAMP_TO_EDGE,
                                 Texture.ColorFormat.SRGB);
 
                 Texture virtualWaterJetTexture =
                         Texture.createFromAsset(
                                 render,
-                                "models/texture_water_jet.png",
+                                "models/Water_Baked.png",
                                 Texture.WrapMode.CLAMP_TO_EDGE,
                                 Texture.ColorFormat.SRGB);
 
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
-                        "models/water_surface.obj");
+                        "models/Water_Surface.obj");
 
-                for (int i = 30; i < 40; i++) {
+                for (int i = waterjetsStart; i < waterjetsEnd; i++) {
                     virtualWaterJetMeshes.add(Mesh.createFromAsset(render,
-                            "models/animation/fountain_animation" + i + ".obj"));
+                            "models/animation/Fountain_Animated" + i + ".obj"));
                 }
 
                 virtualWaterJetShader = Shader.createFromAssets(
@@ -113,16 +123,14 @@ public class SceneRenderer {
                                 "shaders/water.vert",
                                 "shaders/water.frag",
                                 null)
-                        .setTexture("u_Texture", virtualWaterJetTexture)
-                        .setDepthWrite(false);
+                        .setTexture("u_Texture", virtualWaterJetTexture);
 
                 virtualWaterShader = Shader.createFromAssets(
                                 render,
                                 "shaders/water.vert",
                                 "shaders/water.frag",
                                 null)
-                        .setTexture("u_Texture", virtualWaterTexture)
-                        .setDepthWrite(false);
+                        .setTexture("u_Texture", virtualWaterTexture);
             }
 
             virtualFountainShader =
@@ -151,7 +159,7 @@ public class SceneRenderer {
 
         } catch (IOException e) {
             Log.e(TAG, "Failed to read a required asset file", e);
-            ArView.snackbarHelper.showError(activity,
+            ARActivity.snackbarHelper.showError(activity,
                     String.valueOf(R.string.read_asset_failed) + e);
         }
     }
@@ -169,7 +177,8 @@ public class SceneRenderer {
             frame = session.update();
         } catch (CameraNotAvailableException e) {
             Log.e(TAG, "Camera not available during onDrawFrame", e);
-            ArView.snackbarHelper.showError(activity, String.valueOf(R.string.cam_not_available));
+            ARActivity.snackbarHelper.showError(activity,
+                    String.valueOf(R.string.cam_not_available));
             return;
         }
 
@@ -184,14 +193,19 @@ public class SceneRenderer {
             return;
         }
 
-        drawVirtualObjects(camera, render, anchor);
+        try {
+            drawVirtualObjects(camera, render, anchor);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Gets projection and camera matrices, visualize planes and virtual object and
      * compose virtual scene with background.
      */
-    public void drawVirtualObjects(Camera camera, CustomRender render, Anchor anchor) {
+    private void drawVirtualObjects(Camera camera, CustomRender render, Anchor anchor)
+            throws IOException {
         camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
         camera.getViewMatrix(viewMatrix, 0);
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
@@ -232,8 +246,37 @@ public class SceneRenderer {
                 render.draw(virtualWaterJetMesh, virtualWaterJetShader, virtualSceneFramebuffer);
 
                 backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+                if (!soundPoolPlaying) {
+                    soundPoolPlaying = true;
+                    soundPool.play(soundId, 0.8f, 0.8f, 1, -1,
+                            1.0f);
+                }
+
             }
         }
+    }
+
+    private void setupSoundPool() {
+        AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(attributes)
+                .build();
+
+        soundId = soundPool.load(activity, R.raw.fountain_animation_sound, 1);
+    }
+
+    public void pauseSoundPool(){
+        soundPool.pause(soundId);
+    }
+
+    public void releaseSoundPool(){
+        soundPool.stop(soundId);
+        soundPool.release();
+        soundPool = null;
     }
 
     public void resizeFramebuffer(int width, int height) {

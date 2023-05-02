@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.example.fountainar.R;
-import com.example.fountainar.activities.ArView;
+import com.example.fountainar.activities.ARActivity;
 import com.example.fountainar.rendering.DepthSettings;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Config;
@@ -25,7 +25,7 @@ public class ARCoreHelper {
     private static final String TAG = ARCoreHelper.class.getSimpleName();
     private final Activity activity;
     private final DepthSettings depthSettings = new DepthSettings();
-    public Session session = ArView.session;
+    public Session session = ARActivity.session;
     private boolean installRequested = false;
 
     public ARCoreHelper(Activity activity) {
@@ -85,9 +85,9 @@ public class ARCoreHelper {
 
         if (session == null) {
             createNewSession();
-            ArView.geospatialHelper.setSession(session);
+            ARActivity.geospatialHelper.setSession(session);
         } else {
-            ArView.geospatialHelper.getLastLocation();
+            ARActivity.geospatialHelper.getLastLocation();
         }
 
         try {
@@ -112,7 +112,7 @@ public class ARCoreHelper {
 
         if (message != null) {
             session = null;
-            ArView.snackbarHelper.showError(activity, message);
+            ARActivity.snackbarHelper.showError(activity, message);
             Log.e(TAG, String.valueOf(R.string.session_create_or_config_error), exception);
         }
     }
@@ -163,7 +163,7 @@ public class ARCoreHelper {
         }
 
         if (message != null) {
-            ArView.snackbarHelper.showError(activity, message);
+            ARActivity.snackbarHelper.showError(activity, message);
             Log.e(TAG, "Error creating session", exception);
         }
     }

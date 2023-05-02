@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FountainAR</string>
+    <string size="36" name="app_name">FountainAR</string>
 
     <!-- General -->
     <string name="further">Weiter</string>
@@ -8,6 +8,7 @@
     <!-- Main Activity -->
     <string name="app_logo">App Logo</string>
     <string name="play_button">Play Button</string>
+    <string name="app_instructions">Vielen Dank, dass Sie an dieser Studie teilnehmen und viel Spaß\nbeim Durchlaufen von FountainAR!</string>
 
     <!-- Demographic Questionnaire -->
     <string name="dq_title">Demographischer Fragebogen</string>
@@ -33,7 +34,7 @@
     <string name="dq_q4_alternative_answer_hint">Sprache…</string>
 
     <string name="dq_q5">Beruf:</string>
-    <string name="dq_q5_student">Student/-in im Fach:</string>
+    <string name="dq_q5_student">Student/-in mit Fachrichtung:</string>
     <string name="dq_q5_student_subject_hint">Studienfach…</string>
     <string name="dq_q5_pupil">Schüler/-in</string>
     <string name="dq_q5_employee">Angestellte/-r</string>

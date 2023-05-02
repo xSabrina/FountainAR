@@ -1,5 +1,6 @@
 package com.example.fountainar.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -98,6 +99,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         radioGroups.add(radioGroup_q9);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setupInputListeners() {
         EditText subjectNr = findViewById(R.id.dq_q1_input);
         editTexts.add(subjectNr);
@@ -134,12 +136,29 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         EditText q9_input = findViewById(R.id.dq_q9_alternative_answer_input);
         editTexts.add(q9_input);
 
-        for (int i = 0; i < radioButtons.size(); i++) {
-            int finalI = i;
-            radioButtons.get(finalI).setOnCheckedChangeListener((compoundButton, b) ->
-                    editTexts.get(finalI + 2).setEnabled(compoundButton.isChecked()));
-        }
+        setupEditTextListeners();
+    }
 
+    private void setupEditTextListeners() {
+        for (int i = 2; i < editTexts.size(); i++) {
+            EditText eT = editTexts.get(i);
+
+            eT.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    RadioGroup rg = (RadioGroup) v.getParent();
+                    int childNumber = 0;
+
+                    for (int j = 0; j < rg.getChildCount(); j++) {
+                        if (rg.getChildAt(j).equals(eT)) {
+                            childNumber = j - 1;
+                        }
+                    }
+
+                    RadioButton rb = (RadioButton) rg.getChildAt(childNumber);
+                    rb.setChecked(true);
+                }
+            });
+        }
     }
 
     private void setupFinishButton() {
@@ -149,7 +168,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
             if (everyRadioGroupFinished()) {
                 getQuestionsAndAnswers();
                 saveDataToFile();
-                Intent intentMain = new Intent(getApplicationContext(), ArView.class);
+                Intent intentMain = new Intent(getApplicationContext(), ARActivity.class);
                 startActivity(intentMain);
 
             } else {
@@ -163,31 +182,33 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     private boolean everyRadioGroupFinished() {
         missingRadioGroups.clear();
         missingInputFields.clear();
-        providedInputsCompleted();
+        checkProvidedInputs();
 
         for (int i = 0; i < radioGroups.size(); i++) {
             int selectedId = radioGroups.get(i).getCheckedRadioButtonId();
+
             if (selectedId == -1) {
                 missingRadioGroups.add(radioGroups.get(i));
-            }
-        }
-
-        return missingRadioGroups.size() == 0 && missingInputFields.size() == 0;
-    }
-
-    private void providedInputsCompleted() {
-        for (int i = 0; i < editTexts.size(); i++) {
-            if (i <= 1) {
-                if (editTexts.get(i).getText().length() == 0) {
-                    missingInputFields.add(editTexts.get(i));
-                }
             } else {
-                if (radioButtons.get(i - 2).isChecked()) {
-                    if (editTexts.get(i).getText().length() == 0) {
-                        missingInputFields.add(editTexts.get(i));
-                        missingRadioGroups.add((RadioGroup) radioButtons.get(i - 2).getParent());
+                for (int j = 0; j < radioButtons.size(); j++) {
+
+                    if (selectedId == radioButtons.get(j).getId()) {
+                        if (editTexts.get(j + 2).getText().toString().trim().length() == 0) {
+                            missingInputFields.add(editTexts.get(j + 2));
+                        }
                     }
                 }
+            }
+
+        }
+
+        return missingRadioGroups.isEmpty() && missingInputFields.isEmpty();
+    }
+
+    private void checkProvidedInputs() {
+        for (int i = 0; i < 2; i++) {
+            if (editTexts.get(i).getText().length() == 0) {
+                missingInputFields.add(editTexts.get(i));
             }
         }
     }
@@ -285,55 +306,78 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         return new File(directory, "DQ_" + probNum + ".txt");
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void highlightMissingFields() {
         resetBackgrounds();
 
-        for (int i = 0; i < missingRadioGroups.size(); i++) {
-            if (missingRadioGroups.get(i).getCheckedRadioButtonId() == -1) {
-                missingRadioGroups.get(i).setBackgroundColor(getColor(R.color.red_light));
-                for (int j = 0; j < missingRadioGroups.get(i).getChildCount(); j++) {
-                    missingRadioGroups.get(i).getChildAt(j)
-                            .setBackgroundColor(getColor(R.color.red_light));
-                }
+        if (!missingInputFields.isEmpty()) {
+            for (int i = 0; i < missingInputFields.size(); i++) {
+                missingInputFields.get(i)
+                        .setBackground(getDrawable(R.drawable.rounded_corners_highlighted));
             }
         }
 
-        if (missingInputFields.size() != 0) {
-            for (int i = 0; i < missingInputFields.size(); i++) {
-                missingInputFields.get(i).setBackgroundColor(getColor(R.color.red_light));
+        if (!missingRadioGroups.isEmpty()) {
+            for (int i = 0; i < missingRadioGroups.size(); i++) {
+                RadioGroup rG = missingRadioGroups.get(i);
+                rG.setBackgroundColor(getColor(R.color.red_light));
+                for (int j = 0; j < rG.getChildCount(); j++) {
+                    if (missingRadioGroups.get(i).getChildAt(j) instanceof EditText) {
+                        missingRadioGroups.get(i).getChildAt(j)
+                                .setBackground(getDrawable(R.drawable.rounded_corners_highlighted));
+                    } else {
+                        rG.getChildAt(j).setBackgroundColor(getColor(R.color.red_light));
+                    }
+                }
             }
         }
 
         scrollToFirstMissingField();
     }
 
-    private void scrollToFirstMissingField() {
-        int missingFieldY;
-
-        if (editTexts.get(0).getText().length() == 0) {
-            missingFieldY = editTexts.get(0).getTop();
-        } else if (editTexts.get(1).getText().length() == 0) {
-            missingFieldY = editTexts.get(1).getTop();
-        } else {
-            missingFieldY = missingRadioGroups.get(0).getTop();
-        }
-
-        ScrollView scrollView = findViewById(R.id.dq_scroll_view);
-        scrollView.scrollTo(0, missingFieldY - scrollView.getHeight() / 6);
-    }
-
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void resetBackgrounds() {
-        for (int i = 0; i < editTexts.size(); i++) {
-            editTexts.get(i).setBackgroundColor(getColor(R.color.white));
-        }
-
         for (int i = 0; i < radioGroups.size(); i++) {
+
+            if (i < 2) {
+                editTexts.get(i).setBackground(getDrawable(R.drawable.rounded_corners));
+            }
+
             radioGroups.get(i).setBackgroundColor(getColor(R.color.white));
+
             for (int j = 0; j < radioGroups.get(i).getChildCount(); j++) {
-                radioGroups.get(i).getChildAt(j)
-                        .setBackgroundColor(getColor(R.color.white));
+
+                if (radioGroups.get(i).getChildAt(j) instanceof EditText) {
+                    radioGroups.get(i).getChildAt(j)
+                            .setBackground(getDrawable(R.drawable.rounded_corners));
+                } else {
+                    radioGroups.get(i).getChildAt(j).setBackgroundColor(getColor(R.color.white));
+                }
             }
         }
+    }
+
+    private void scrollToFirstMissingField() {
+        ScrollView scrollView = findViewById(R.id.dq_scroll_view);
+        float missingFieldY = scrollView.getTop();
+
+        if (!missingInputFields.isEmpty()) {
+            missingFieldY = missingInputFields.get(0).getY() + 400;
+        }
+
+        if (!missingRadioGroups.isEmpty()) {
+
+            if (!missingInputFields.isEmpty()) {
+
+                if (missingRadioGroups.get(0).getY() < missingFieldY) {
+                    missingFieldY = missingRadioGroups.get(0).getY() - 300;
+                }
+            } else {
+                missingFieldY = missingRadioGroups.get(0).getY() - 300;
+            }
+        }
+
+        scrollView.scrollTo(0, (int) missingFieldY);
     }
 
     private void checkStoragePermissions() {
@@ -356,7 +400,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, results);
 
         if (!StoragePermissionHelper.hasReadPermission(this)) {
-            Toast.makeText(this, R.string.read_stor_needed, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.read_stor_needed,
+                    Toast.LENGTH_LONG).show();
 
             if (StoragePermissionHelper.shouldShowRequestReadPermissionRationale(this)) {
                 StoragePermissionHelper.launchReadPermissionSettings(this);
@@ -366,7 +411,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         }
 
         if (!StoragePermissionHelper.hasWritePermission(this)) {
-            Toast.makeText(this, R.string.write_stor_needed, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.write_stor_needed,
+                    Toast.LENGTH_LONG).show();
 
             if (StoragePermissionHelper.shouldShowRequestWritePermissionRationale(this)) {
                 StoragePermissionHelper.launchWritePermissionSettings(this);

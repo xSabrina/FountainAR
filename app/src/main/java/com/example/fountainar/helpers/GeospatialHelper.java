@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.fountainar.R;
-import com.example.fountainar.activities.ArView;
+import com.example.fountainar.activities.ARActivity;
 import com.example.fountainar.fragments.VpsAvailabilityNoticeDialogFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -168,7 +168,7 @@ public class GeospatialHelper {
                 <= LOCALIZING_ORIENTATION_YAW_ACCURACY_THRESHOLD_DEGREES) {
             state = State.LOCALIZED;
 
-            if (ArView.anchor == null) {
+            if (ARActivity.anchor == null) {
                 placeAnchor(earth);
                 quizHelper.setupQuiz();
             }
@@ -226,7 +226,7 @@ public class GeospatialHelper {
         float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
 
         try {
-            ArView.anchor = earth.resolveAnchorOnTerrain(
+            ARActivity.anchor = earth.resolveAnchorOnTerrain(
                     latitude,
                     longitude,
                     0.0f,
@@ -235,7 +235,7 @@ public class GeospatialHelper {
                     quaternion[2],
                     quaternion[3]);
         } catch (ResourceExhaustedException e) {
-            ArView.snackbarHelper.showMessageWithDismiss(activity,
+            ARActivity.snackbarHelper.showMessageWithDismiss(activity,
                     activity.getString(R.string.error_create_anchor));
             Log.e(TAG, "Exception creating terrain anchor");
         }
