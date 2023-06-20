@@ -77,7 +77,7 @@
     <string name="ar_missing_answer">Bitte entscheide Dich zunächst für eine Antwortmöglichkeit.</string>
     <string name="start">Los geht\'s</string>
 
-    <string name="ar_question_task1">Wieviele Fakultäten sind, dargestellt durch Einzelbilder, auf dem Brunnen abgebildet?</string>
+    <string name="ar_question_task1">Wie viele Einzeldarstellungen, die jeweils rechteckig umrahmt sind, sind auf dem Brunnen abgebildet?</string>
     <string name="ar_answer_task1_6">6</string>
     <string name="ar_answer_task1_8">8</string>
     <string name="ar_answer_task1_10">10</string>
@@ -92,12 +92,12 @@
     <string name="ar_question_task3">Aus welchem Material besteht der Brunnen?</string>
     <string name="ar_answer_task3_holz">Holz</string>
     <string name="ar_answer_task3_plastik">Plastik</string>
-    <string name="ar_answer_task3_glas">Glas</string>
-    <string name="ar_answer_task3_bronze">Bronze</string>
+    <string name="ar_answer_task3_glas">Bronze</string>
+    <string name="ar_answer_task3_bronze">Glas</string>
 
     <!-- TAM Questionnaire -->
     <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>
-    <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen beziehungsweise wie Sie die Anwendung bewerten. \nIm Sinne der Verwendung eines anerkannten Fragebogens handelt es sich hierbei um die englische Originalfassung.</string>
+    <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen beziehungsweise wie Sie die Anwendung bewerten. Im Sinne der Verwendung eines anerkannten Fragebogens handelt es sich um eine englische Originalfassung.</string>
     <string name="tam_strongly_disagree">Strongly\nDisagree</string>
     <string name="tam_strongly_agree">Strongly\nAgree</string>
 
@@ -109,13 +109,13 @@
     <string name="tam_7">7</string>
     <string name="tam_6">6</string>
 
-    <string name="tam_pu1">By using the app, I can more quickly and easily find historical pictures and information.</string>
-    <string name="tam_pu2">By using the app, I learn more about history in art</string>
-    <string name="tam_pu3">By using the app, I can quickly find historical pictures and information from places nearby.</string>
-    <string name="tam_pu4">By using the app, I am more likely to find historical pictures and information that interests me.</string>
+    <string name="tam_pu1">By using the app, I can more quickly and easily find 3D models of art objects.</string>
+    <string name="tam_pu2">By using the app, I learn more about art objects.</string>
+    <string name="tam_pu3">By using the app, I can quickly find 3d models of art objects from places nearby.</string>
+    <string name="tam_pu4">By using the app, I am more likely to find 3d models of art objects that interest me.</string>
 
     <string name="tam_peou1">Interaction with the app is clear and understandable.</string>
-    <string name="tam_peou2">Interaction with the app des not require a lot of mental effort.</string>
+    <string name="tam_peou2">Interaction with the app does not require a lot of mental effort.</string>
     <string name="tam_peou3">I find the app easy to use.</string>
     <string name="tam_peou4">I find it easy to get the app to do what I want it to do.</string>
 
@@ -161,8 +161,6 @@
     <string name="continue_button">Weiter</string>
     <string name="agree_to_share">Alles klar</string>
 
-    <!-- ARCore session -->
-
     <!-- ARCore session error messages -->
     <string name="install_arcore">Bitte installieren Sie ARCore.</string>
     <string name="update_arcore">Bitte updaten Sie ARCore.</string>
@@ -182,13 +180,12 @@
     <string name="fine_loc_needed">Genaue Standortberechtigung erforderlich</string>
     <string name="read_stor_needed">Lesen im externen Speicher erforderlich</string>
     <string name="write_stor_needed">Schreiben im externen Speicher erforderlich.</string>
-
     <string name="cam_and_loc_needed">Diese App benötigt Kamera-und Standortberechtigung.</string>
     <string name="error_create_anchor">Fehler beim Erstellen des Terrain-Ankers</string>
-
 
     <!-- Study Data To Save -->
     <string name="time_spent_questionnaire">Time spent for this questionnaire in seconds: </string>
     <string name="time_spent_ar">Time spent on the AR view in seconds: </string>
     <string name="time_spent_task">Time spent for this question in seconds: </string>
+
 </resources>
