@@ -75,7 +75,8 @@
             android:padding="10dp"
             android:text="@string/ar_question_task1"
             android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="bold"/>
 
         <RadioGroup
             android:id="@+id/ar_rg_task1"
@@ -149,7 +150,8 @@
             android:padding="10dp"
             android:text="@string/ar_question_task2"
             android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="bold"/>
 
         <RadioGroup
             android:id="@+id/ar_rg_task2"
@@ -223,7 +225,8 @@
             android:padding="10dp"
             android:text="@string/ar_question_task3"
             android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="bold"/>
 
         <RadioGroup
             android:id="@+id/ar_rg_task3"

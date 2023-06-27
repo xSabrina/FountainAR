@@ -28,22 +28,19 @@ import java.nio.ByteBuffer;
 /** A GPU-side texture. */
 public class Texture implements Closeable {
   private static final String TAG = Texture.class.getSimpleName();
-
   private final int[] textureId = {0};
   private final Target target;
 
   /**
    * Describes the way the texture's edges are rendered.
    *
-   * @see <a
-   *     href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexParameter.xhtml">GL_TEXTURE_WRAP_S</a>.
+   * @see <a href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexParameter.xhtml">GL_TEXTURE_WRAP_S</a>.
    */
   public enum WrapMode {
     CLAMP_TO_EDGE(GLES30.GL_CLAMP_TO_EDGE),
     MIRRORED_REPEAT(GLES30.GL_MIRRORED_REPEAT),
     REPEAT(GLES30.GL_REPEAT);
 
-    /* package-private */
     final int glesEnum;
 
     WrapMode(int glesEnum) {
@@ -54,8 +51,7 @@ public class Texture implements Closeable {
   /**
    * Describes the target this texture is bound to.
    *
-   * @see <a
-   *     href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glBindTexture.xhtml">glBindTexture</a>.
+   * @see <a href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glBindTexture.xhtml">glBindTexture</a>.
    */
   public enum Target {
     TEXTURE_2D(GLES30.GL_TEXTURE_2D),
@@ -72,8 +68,7 @@ public class Texture implements Closeable {
   /**
    * Describes the color format of the texture.
    *
-   * @see <a
-   *     href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexImage2D.xhtml">glTexImage2d</a>.
+   * @see <a href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexImage2D.xhtml">glTexImage2d</a>.
    */
   public enum ColorFormat {
     LINEAR(GLES30.GL_RGBA8),
@@ -94,7 +89,7 @@ public class Texture implements Closeable {
    * #createFromAsset} if you want a texture with data.
    */
   public Texture(CustomRender render, Target target, WrapMode wrapMode) {
-    this(render, target, wrapMode, /*useMipmaps=*/ true);
+    this(render, target, wrapMode, true);
   }
 
   public Texture(CustomRender render, Target target, WrapMode wrapMode, boolean useMipmaps) {
@@ -129,32 +124,28 @@ public class Texture implements Closeable {
       throws IOException {
     Texture texture = new Texture(render, Target.TEXTURE_2D, wrapMode);
     Bitmap bitmap = null;
-    try {
-      // The following lines up to glTexImage2D could technically be replaced with
-      // GLUtils.texImage2d, but this method does not allow for loading sRGB images.
 
-      // Load and convert the bitmap and copy its contents to a direct ByteBuffer. Despite its name,
-      // the ARGB_8888 config is actually stored in RGBA order.
-      bitmap =
-          convertBitmapToConfig(
-              BitmapFactory.decodeStream(render.getAssets().open(assetFileName)),
-              Bitmap.Config.ARGB_8888);
+    try {
+      bitmap = convertBitmapToConfig(
+              BitmapFactory.decodeStream(render.getAssets().open(assetFileName)));
       ByteBuffer buffer = ByteBuffer.allocateDirect(bitmap.getByteCount());
       bitmap.copyPixelsToBuffer(buffer);
       buffer.rewind();
 
       GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture.getTextureId());
       GLError.maybeThrowGLException("Failed to bind texture", "glBindTexture");
+
       GLES30.glTexImage2D(
           GLES30.GL_TEXTURE_2D,
-          /*level=*/ 0,
+          0,
           colorFormat.glesEnum,
           bitmap.getWidth(),
           bitmap.getHeight(),
-          /*border=*/ 0,
+          0,
           GLES30.GL_RGBA,
           GLES30.GL_UNSIGNED_BYTE,
           buffer);
+
       GLError.maybeThrowGLException("Failed to populate texture data", "glTexImage2D");
       GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D);
       GLError.maybeThrowGLException("Failed to generate mipmaps", "glGenerateMipmap");
@@ -166,6 +157,7 @@ public class Texture implements Closeable {
         bitmap.recycle();
       }
     }
+
     return texture;
   }
 
@@ -173,7 +165,8 @@ public class Texture implements Closeable {
   public void close() {
     if (textureId[0] != 0) {
       GLES30.glDeleteTextures(1, textureId, 0);
-      GLError.maybeLogGLError(Log.WARN, TAG, "Failed to free texture", "glDeleteTextures");
+      GLError.maybeLogGLError(Log.WARN, TAG, "Failed to free texture",
+              "glDeleteTextures");
       textureId[0] = 0;
     }
   }
@@ -183,19 +176,18 @@ public class Texture implements Closeable {
     return textureId[0];
   }
 
-  /* package-private */
-  Target getTarget() {
+  public Target getTarget() {
     return target;
   }
 
-  private static Bitmap convertBitmapToConfig(Bitmap bitmap, Bitmap.Config config) {
-    // We use this method instead of BitmapFactory.Options.outConfig to support a minimum of Android
-    // API level 24.
-    if (bitmap.getConfig() == config) {
+  private static Bitmap convertBitmapToConfig(Bitmap bitmap) {
+    if (bitmap.getConfig() == Bitmap.Config.ARGB_8888) {
       return bitmap;
     }
-    Bitmap result = bitmap.copy(config, /*isMutable=*/ false);
+
+    Bitmap result = bitmap.copy(Bitmap.Config.ARGB_8888, false);
     bitmap.recycle();
+
     return result;
   }
 }

@@ -1,6 +1,10 @@
 package com.example.fountainar.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -10,7 +14,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -78,85 +85,111 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     private void setupActivity() {
         setupRadioGroups();
         setupInputListeners();
+        setupLayoutListeners();
+        setupEditTextListeners();
         setupFinishButton();
     }
 
     private void setupRadioGroups() {
-        RadioGroup radioGroup_q3 = findViewById(R.id.dq_q3_rg);
-        RadioGroup radioGroup_q4 = findViewById(R.id.dq_q4_rg);
-        RadioGroup radioGroup_q5 = findViewById(R.id.dq_q5_rg);
-        RadioGroup radioGroup_q6 = findViewById(R.id.dq_q6_rg);
-        RadioGroup radioGroup_q7 = findViewById(R.id.dq_q7_rg);
-        RadioGroup radioGroup_q8 = findViewById(R.id.dq_q8_rg);
-        RadioGroup radioGroup_q9 = findViewById(R.id.dq_q9_rg);
+        int[] radioGroupIds = {R.id.dq_q3_rg, R.id.dq_q4_rg, R.id.dq_q5_rg, R.id.dq_q6_rg,
+                R.id.dq_q7_rg, R.id.dq_q8_rg, R.id.dq_q9_rg};
 
-        radioGroups.add(radioGroup_q3);
-        radioGroups.add(radioGroup_q4);
-        radioGroups.add(radioGroup_q5);
-        radioGroups.add(radioGroup_q6);
-        radioGroups.add(radioGroup_q7);
-        radioGroups.add(radioGroup_q8);
-        radioGroups.add(radioGroup_q9);
+        for (int id : radioGroupIds) {
+            RadioGroup radioGroup = findViewById(id);
+            radioGroups.add(radioGroup);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupInputListeners() {
-        EditText subjectNr = findViewById(R.id.dq_q1_input);
-        editTexts.add(subjectNr);
-        EditText age = findViewById(R.id.dq_q2_input);
-        editTexts.add(age);
+        int[] editTextIds = {R.id.dq_q1_input, R.id.dq_q2_input,
+                R.id.dq_q4_alternative_answer_input, R.id.dq_q5_student_subject,
+                R.id.dq_q5_alternative_answer_input, R.id.dq_q6_alternative_answer_input,
+                R.id.dq_q8_alternative_answer_input, R.id.dq_q9_alternative_answer_input};
 
-        RadioButton q4 = findViewById(R.id.dq_q4_alternative_answer);
-        radioButtons.add(q4);
-        EditText q4_input = findViewById(R.id.dq_q4_alternative_answer_input);
-        editTexts.add(q4_input);
+        for (int id : editTextIds) {
+            EditText editText = findViewById(id);
+            editTexts.add(editText);
+        }
 
-        RadioButton q5_student = findViewById(R.id.dq_q5_student);
-        radioButtons.add(q5_student);
-        EditText q5_stud_input = findViewById(R.id.dq_q5_student_subject);
-        editTexts.add(q5_stud_input);
-
-        RadioButton q5_alt_a = findViewById(R.id.dq_q5_alternative_answer);
-        radioButtons.add(q5_alt_a);
-        EditText q5_input = findViewById(R.id.dq_q5_alternative_answer_input);
-        editTexts.add(q5_input);
-
-        RadioButton q6 = findViewById(R.id.dq_q6_alternative_answer);
-        radioButtons.add(q6);
-        EditText q6_input = findViewById(R.id.dq_q6_alternative_answer_input);
-        editTexts.add(q6_input);
-
-        RadioButton q8 = findViewById(R.id.dq_q8_alternative_answer);
-        radioButtons.add(q8);
-        EditText q8_input = findViewById(R.id.dq_q8_alternative_answer_input);
-        editTexts.add(q8_input);
-
-        RadioButton q9 = findViewById(R.id.dq_q9_alternative_answer);
-        radioButtons.add(q9);
-        EditText q9_input = findViewById(R.id.dq_q9_alternative_answer_input);
-        editTexts.add(q9_input);
-
-        setupEditTextListeners();
+        for (EditText editText : editTexts) {
+            editText.setOnTouchListener((v, event) -> {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_SCROLL) {
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
+                    return true;
+                }
+                return false;
+            });
+        }
     }
 
+    private void clearEditTextFocus(View focusedView){
+        if (focusedView instanceof EditText) {
+            focusedView.clearFocus();
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+        }
+    }
+
+    /**
+     * Sets up the necessary layout listeners to remove the focus from previous used EditTexts
+     * and close they keyboard.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupLayoutListeners() {
+        LinearLayout parentLayout = findViewById(R.id.dq_layout);
+
+        parentLayout.setOnTouchListener((view, motionEvent) -> {
+            View focusedView = getCurrentFocus();
+
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                clearEditTextFocus(focusedView);
+            }
+
+            return false;
+        });
+
+        for (int i = 0; i < radioGroups.size(); i++) {
+            RadioGroup rg = radioGroups.get(i);
+
+            for(int j = 0; j < rg.getChildCount(); j++){
+                if(rg.getChildAt(j) instanceof RadioButton) {
+                    RadioButton rb = (RadioButton) rg.getChildAt(j);
+
+                    rb.setOnTouchListener((view, motionEvent) -> {
+                        View focusedView = getCurrentFocus();
+
+                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                            clearEditTextFocus(focusedView);
+                        }
+
+                        return false;
+                    });
+                }
+            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private void setupEditTextListeners() {
         for (int i = 2; i < editTexts.size(); i++) {
             EditText eT = editTexts.get(i);
 
-            eT.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    RadioGroup rg = (RadioGroup) v.getParent();
-                    int childNumber = 0;
+            eT.setOnTouchListener((v, event) -> {
+                RadioGroup rg = (RadioGroup) v.getParent();
+                int childNumber = 0;
 
-                    for (int j = 0; j < rg.getChildCount(); j++) {
-                        if (rg.getChildAt(j).equals(eT)) {
-                            childNumber = j - 1;
-                        }
+                for (int j = 0; j < rg.getChildCount(); j++) {
+                    if (rg.getChildAt(j).equals(eT)) {
+                        childNumber = j - 1;
                     }
-
-                    RadioButton rb = (RadioButton) rg.getChildAt(childNumber);
-                    rb.setChecked(true);
                 }
+
+                RadioButton rb = (RadioButton) rg.getChildAt(childNumber);
+                rb.setChecked(true);
+                return false;
             });
         }
     }
@@ -216,37 +249,30 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     private void getQuestionsAndAnswers() {
         LinearLayout linearLayout = findViewById(R.id.dq_layout);
 
-        for (int i = 0; i < linearLayout.getChildCount(); i++) {
-            View view = linearLayout.getChildAt(i + 1);
+        for (int i = 1; i < linearLayout.getChildCount(); i++) {
+            View view = linearLayout.getChildAt(i);
 
             if (view instanceof TextView && !(view instanceof EditText) &&
                     !(view instanceof Button)) {
                 questions.add(((TextView) view).getText().toString() + " ");
-            }
-
-            if (view instanceof EditText) {
-                if (((EditText) view).getText() != null) {
-                    answers.add(((EditText) view).getText().toString());
-                }
-            }
-
-            if (view instanceof RadioGroup) {
+            } else if (view instanceof EditText && ((EditText) view).getText() != null) {
+                answers.add(((EditText) view).getText().toString());
+            } else if (view instanceof RadioGroup) {
                 int checkedId = ((RadioGroup) view).getCheckedRadioButtonId();
                 RadioButton radioButton = findViewById(checkedId);
 
                 if (radioButton.getText().equals(getString(R.string.dq_alternative_answer))) {
                     View editView = ((RadioGroup) view).getChildAt(((RadioGroup) view)
                             .getChildCount() - 1);
-                    answers.add(radioButton.getText().toString() + ((EditText) editView)
-                            .getText().toString());
+                    answers.add(radioButton.getText().toString() + ((EditText) editView).getText()
+                            .toString());
                 } else if (radioButton.getText().equals(getString(R.string.dq_q5_student))) {
                     View editView = ((RadioGroup) view).getChildAt(1);
-                    answers.add(radioButton.getText().toString() + ((EditText) editView)
-                            .getText().toString());
+                    answers.add(radioButton.getText().toString() + ((EditText) editView).getText()
+                            .toString());
                 } else {
                     answers.add(radioButton.getText().toString());
                 }
-
             }
         }
     }
@@ -294,7 +320,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
             }
         }
 
-        File directory = new File(rootDirectory.getPath(), "/Demographic_Questionnaires");
+        File directory = new File(rootDirectory.getPath(), "/01_Demographic_Questionnaires");
         if (!directory.exists()) {
             boolean wasSuccessful = directory.mkdirs();
             if (!wasSuccessful) {
@@ -427,6 +453,23 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         super.onResume();
 
         checkForStoragePermission();
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("You cannot")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Optional: Perform any additional actions when the OK button is clicked
+                        // For example, you can close the dialog or take other actions
+                        dialog.dismiss();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 }

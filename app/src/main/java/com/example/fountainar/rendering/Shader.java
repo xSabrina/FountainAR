@@ -79,6 +79,9 @@ public class Shader implements Closeable {
   private BlendFactor sourceAlphaBlend = BlendFactor.ONE;
   private BlendFactor destAlphaBlend = BlendFactor.ZERO;
 
+  int vertexShaderId = 0;
+  int fragmentShaderId = 0;
+
   /**
    * Constructs a {@link Shader} given the shader code.
    *
@@ -86,8 +89,7 @@ public class Shader implements Closeable {
    *     values
    */
   public Shader(String vertexShaderCode, String fragmentShaderCode, Map<String, String> defines) {
-    int vertexShaderId = 0;
-    int fragmentShaderId = 0;
+
     String definesCode = createShaderDefinesCode(defines);
 
     try {
@@ -692,4 +694,15 @@ public class Shader implements Closeable {
 
     return builder.toString();
   }
+
+  public int getProgramId(){
+    return programId;
+  }
+  public int getFragShader(){
+    return  fragmentShaderId;
+  }
+  public int getVertShader(){
+    return vertexShaderId;
+  }
+
 }

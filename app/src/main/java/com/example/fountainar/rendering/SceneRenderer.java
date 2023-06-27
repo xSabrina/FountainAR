@@ -1,16 +1,13 @@
 package com.example.fountainar.rendering;
 
 import android.app.Activity;
-import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.opengl.Matrix;
 import android.util.Log;
 
 import com.example.fountainar.R;
 import com.example.fountainar.activities.ARActivity;
 import com.example.fountainar.activities.DemographicQuestionnaire;
+import com.example.fountainar.helpers.SoundPoolHelper;
 import com.example.fountainar.helpers.TrackingStateHelper;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Camera;
@@ -36,14 +33,15 @@ public class SceneRenderer {
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 1000f;
+
     private static boolean isSubjectGroupWithAnimation = false;
     private static BackgroundRenderer backgroundRenderer;
     private static Mesh virtualFountainMesh;
     private static Mesh virtualWaterSurfaceMesh;
     private static Shader virtualFountainShader;
-    private static Shader virtualWaterJetShader;
     private static Shader virtualWaterShader;
     private static int meshCounter = 0;
+
     private final Activity activity;
     private final TrackingStateHelper trackingStateHelper;
     public Framebuffer virtualSceneFramebuffer;
@@ -51,9 +49,7 @@ public class SceneRenderer {
     private SpecularCubemapFilter cubemapFilter;
     private final static int waterjetsStart = 160;
     private final static int waterjetsEnd = 170;
-    private SoundPool soundPool;
-    private int soundId;
-    private boolean soundPoolPlaying = false;
+    private SoundPoolHelper soundPoolHelper;
 
     public SceneRenderer(Activity activity) {
         this.activity = activity;
@@ -61,7 +57,7 @@ public class SceneRenderer {
 
         if (DemographicQuestionnaire.probNum % 2 == 0) {
             isSubjectGroupWithAnimation = true;
-            setupSoundPool();
+            soundPoolHelper = new SoundPoolHelper(activity);
         }
     }
 
@@ -80,12 +76,6 @@ public class SceneRenderer {
                     Texture.WrapMode.CLAMP_TO_EDGE,
                     false);
 
-            Texture virtualFountainAlbedoTexture = Texture.createFromAsset(
-                    render,
-                    "models/Fountain_Albedo.png",
-                    Texture.WrapMode.CLAMP_TO_EDGE,
-                    Texture.ColorFormat.SRGB);
-
             Texture virtualFountainTexture =
                     Texture.createFromAsset(
                             render,
@@ -93,45 +83,13 @@ public class SceneRenderer {
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             Texture.ColorFormat.LINEAR);
 
+            Texture virtualFountainAlbedoTexture = Texture.createFromAsset(
+                    render,
+                    "models/Fountain_Albedo.png",
+                    Texture.WrapMode.CLAMP_TO_EDGE,
+                    Texture.ColorFormat.SRGB);
+
             virtualFountainMesh = Mesh.createFromAsset(render, "models/Fountain.obj");
-
-            if (isSubjectGroupWithAnimation) {
-                Texture virtualWaterTexture =
-                        Texture.createFromAsset(
-                                render,
-                                "models/Water_Baked.png",
-                                Texture.WrapMode.CLAMP_TO_EDGE,
-                                Texture.ColorFormat.SRGB);
-
-                Texture virtualWaterJetTexture =
-                        Texture.createFromAsset(
-                                render,
-                                "models/Water_Baked.png",
-                                Texture.WrapMode.CLAMP_TO_EDGE,
-                                Texture.ColorFormat.SRGB);
-
-                virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
-                        "models/Water_Surface.obj");
-
-                for (int i = waterjetsStart; i < waterjetsEnd; i++) {
-                    virtualWaterJetMeshes.add(Mesh.createFromAsset(render,
-                            "models/animation/Fountain_Animated" + i + ".obj"));
-                }
-
-                virtualWaterJetShader = Shader.createFromAssets(
-                                render,
-                                "shaders/water.vert",
-                                "shaders/water.frag",
-                                null)
-                        .setTexture("u_Texture", virtualWaterJetTexture);
-
-                virtualWaterShader = Shader.createFromAssets(
-                                render,
-                                "shaders/water.vert",
-                                "shaders/water.frag",
-                                null)
-                        .setTexture("u_Texture", virtualWaterTexture);
-            }
 
             virtualFountainShader =
                     Shader.createFromAssets(
@@ -153,6 +111,22 @@ public class SceneRenderer {
                             .setTexture("u_Cubemap",
                                     cubemapFilter.getFilteredCubemapTexture())
                             .setTexture("u_DfgTexture", dfgTexture);
+
+            if (isSubjectGroupWithAnimation) {
+                virtualWaterShader = Shader.createFromAssets(
+                        render,
+                        "shaders/water.vert",
+                        "shaders/water.frag",
+                        null);
+
+                virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
+                        "models/Water_Surface.obj");
+
+                for (int i = waterjetsStart; i < waterjetsEnd; i++) {
+                    virtualWaterJetMeshes.add(Mesh.createFromAsset(render,
+                            "models/animation/Fountain_Animated" + i + ".obj"));
+                }
+            }
 
             backgroundRenderer.setUseDepthVisualization(render, false);
             backgroundRenderer.setUseOcclusion(render, false);
@@ -206,6 +180,7 @@ public class SceneRenderer {
      */
     private void drawVirtualObjects(Camera camera, CustomRender render, Anchor anchor)
             throws IOException {
+
         camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
         camera.getViewMatrix(viewMatrix, 0);
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
@@ -224,6 +199,7 @@ public class SceneRenderer {
 
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     modelViewProjectionMatrix);
+
             render.draw(virtualFountainMesh, virtualFountainShader,
                     virtualSceneFramebuffer);
 
@@ -237,49 +213,29 @@ public class SceneRenderer {
                     meshCounter = 0;
                 }
 
-                virtualWaterShader.setMat4("u_ModelViewProjection",
-                        modelViewProjectionMatrix);
-                virtualWaterJetShader.setMat4("u_ModelViewProjection",
-                        modelViewProjectionMatrix);
-
+                virtualWaterShader.setMat4("uMVPMatrix", modelViewProjectionMatrix);
                 render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
-                render.draw(virtualWaterJetMesh, virtualWaterJetShader, virtualSceneFramebuffer);
-
+                render.draw(virtualWaterJetMesh, virtualWaterShader, virtualSceneFramebuffer);
                 backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-                if (!soundPoolPlaying) {
-                    soundPoolPlaying = true;
-                    soundPool.play(soundId, 0.8f, 0.8f, 1, -1,
-                            1.0f);
-                }
+                soundPoolHelper.play();
 
             }
         }
     }
 
-    private void setupSoundPool() {
-        AudioAttributes attributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build();
-
-        soundPool = new SoundPool.Builder()
-                .setAudioAttributes(attributes)
-                .build();
-
-        soundId = soundPool.load(activity, R.raw.fountain_animation_sound, 1);
+    public void resizeFramebuffer(int width, int height) {
+        virtualSceneFramebuffer.resize(width, height);
     }
 
     public void pauseSoundPool(){
-        soundPool.pause(soundId);
+        if(soundPoolHelper != null) {
+            soundPoolHelper.pause();
+        }
     }
 
     public void releaseSoundPool(){
-        soundPool.stop(soundId);
-        soundPool.release();
-        soundPool = null;
-    }
-
-    public void resizeFramebuffer(int width, int height) {
-        virtualSceneFramebuffer.resize(width, height);
+        if(soundPoolHelper != null) {
+            soundPoolHelper.release();
+        }
     }
 }

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.example.fountainar.R;
 import com.example.fountainar.activities.DemographicQuestionnaire;
-import com.example.fountainar.activities.TAQuestionnaire;
+import com.example.fountainar.activities.TAMQuestionnaire;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -83,7 +83,7 @@ public class QuizHelper {
                 getQuestionsAndAnswers();
                 saveAnswersToFile();
                 Intent intentMain = new Intent(activity.getApplicationContext(),
-                        TAQuestionnaire.class);
+                        TAMQuestionnaire.class);
                 activity.startActivity(intentMain);
             }
         });
@@ -180,7 +180,7 @@ public class QuizHelper {
     private File createdFile() {
         File rootDirectory = new File(activity.getApplicationContext().getFilesDir(),
                 "/Study_Data");
-        File directory = new File(rootDirectory.getPath(), "/AR_Quiz");
+        File directory = new File(rootDirectory.getPath(), "/02_AR_Quiz");
 
         if (!directory.exists()) {
             boolean wasSuccessful = directory.mkdirs();

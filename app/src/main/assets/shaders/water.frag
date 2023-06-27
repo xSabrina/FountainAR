@@ -2,54 +2,36 @@
 
 precision mediump float;
 
-uniform sampler2D u_Texture;
+in vec4 o_Position;
 
-uniform vec4 u_LightingParameters;
-uniform vec4 u_MaterialParameters;
+const float refractionIndex = 1.5;
+const float reflectivity = 0.8;
+const float fresnelPower = 5.0;
 
-in vec3 v_ViewPosition;
-in vec3 v_ViewNormal;
-in vec2 v_TexCoord;
+vec3 calculateRefraction(vec3 incidentRay, vec3 normal, float refractionIndex) {
+    return refract(incidentRay, normal, refractionIndex);
+}
 
-layout(location = 0) out vec4 o_FragColor;
+vec3 calculateReflection(vec3 incidentRay, vec3 normal) {
+    return reflect(incidentRay, normal);
+}
+
+out vec4 o_FragColor;
 
 void main() {
-    // We support approximate sRGB gamma.
-    const float kGamma = 0.4545454;
-    const float kInverseGamma = 2.2;
+    vec3 incidentRay = normalize(o_Position.xyz);
 
-    // Unpack lighting and material parameters for better naming.
-    vec3 viewLightDirection = u_LightingParameters.xyz;
-    float lightIntensity = u_LightingParameters.w;
+    vec3 normal = vec3(0.0, 0.0, 1.0);
+    vec3 refractedRay = calculateRefraction(incidentRay, normal, refractionIndex);
+    vec3 reflectedRay = calculateReflection(incidentRay, normal);
 
-    float materialAmbient = u_MaterialParameters.x;
-    float materialDiffuse = u_MaterialParameters.y;
-    float materialSpecular = u_MaterialParameters.z;
-    float materialSpecularPower = u_MaterialParameters.w;
+    float fresnel = reflectivity + (1.0 - reflectivity) * pow(1.0 - dot(-incidentRay, refractedRay), fresnelPower);
 
-    // Normalize varying parameters, because they are linearly interpolated in the vertex shader.
-    vec3 viewFragmentDirection = normalize(v_ViewPosition);
-    vec3 viewNormal = normalize(v_ViewNormal);
+    vec4 refractedColor = vec4(0.5, 0.5, 1.0, 1.0);
+    vec4 reflectedColor = vec4(1.0, 1.0, 1.0, 1.0);
 
-    // Apply inverse SRGB gamma to the texture before making lighting calculations.
-    // Flip the y-texture coordinate to address the texture from top-left.
-    vec4 objectColor =  o_FragColor = vec4(texture(u_Texture, v_TexCoord).rgb, 0.5);
-    objectColor.rgb = pow(objectColor.rgb, vec3(kInverseGamma));
+    vec4 finalColor = mix(refractedColor, reflectedColor, fresnel);
+    finalColor.a = 1.0 - fresnel;
 
-    // Ambient light is unaffected by the light intensity.
-    float ambient = materialAmbient;
-
-    // Approximate a hemisphere light (not a harsh directional light).
-    float diffuse = lightIntensity * materialDiffuse *
-    0.5 * (dot(viewNormal, viewLightDirection) + 1.0);
-
-    // Compute specular light.
-    vec3 reflectedLightDirection = reflect(viewLightDirection, viewNormal);
-    float specularStrength = max(0.0, dot(viewFragmentDirection, reflectedLightDirection));
-    float specular = lightIntensity * materialSpecular *
-    pow(specularStrength, materialSpecularPower);
-
-    // Apply SRGB gamma before writing the fragment color.
-    o_FragColor.a = objectColor.a;
-    o_FragColor.rgb = pow(objectColor.rgb * (ambient + diffuse) + specular, vec3(kGamma));
+    o_FragColor = finalColor;
 }
