@@ -3,7 +3,7 @@
 
     <!-- General -->
     <string name="further">Weiter</string>
-    <string name="fill_out_first">Bitte beantworte erst alle Fragen.</string>
+    <string name="fill_out_first">Bitte beantworten Sie erst alle Fragen.</string>
 
     <!-- Main Activity -->
     <string name="app_logo">App Logo</string>
@@ -98,16 +98,10 @@
     <!-- TAM Questionnaire -->
     <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>
     <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen beziehungsweise wie Sie die Anwendung bewerten. Im Sinne der Verwendung eines anerkannten Fragebogens handelt es sich um eine englische Originalfassung.</string>
+    <string name="tam_default_question">Question</string>
     <string name="tam_strongly_disagree">Strongly\nDisagree</string>
     <string name="tam_strongly_agree">Strongly\nAgree</string>
-
-    <string name="tam_1">1</string>
-    <string name="tam_2">2</string>
-    <string name="tam_3">3</string>
-    <string name="tam_4">4</string>
-    <string name="tam_5">5</string>
-    <string name="tam_7">7</string>
-    <string name="tam_6">6</string>
+    <string name="tam_numeric_scale">1 \t\t\u0020\u0020 2\t\t\t\u0020\u00203 \t\t\t\u00204\t\t\t5\t\t\t\u0020 6\t\t\t 7</string>
 
     <string name="tam_pu1">By using the app, I can more quickly and easily find 3D models of art objects.</string>
     <string name="tam_pu2">By using the app, I learn more about art objects.</string>
