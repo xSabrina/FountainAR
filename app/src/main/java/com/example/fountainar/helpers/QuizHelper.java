@@ -11,6 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.example.fountainar.R;
 import com.example.fountainar.activities.DemographicQuestionnaire;
 import com.example.fountainar.activities.TAMQuestionnaire;
@@ -38,9 +40,6 @@ public class QuizHelper {
         startTime = System.currentTimeMillis();
     }
 
-    /**
-     * Sets up the quiz related to provided AR content.
-     */
     public void setupQuiz() {
         Button startButton = activity.findViewById(R.id.ar_button_start);
         Button task1Button = activity.findViewById(R.id.ar_button_task1);
@@ -53,8 +52,10 @@ public class QuizHelper {
         RelativeLayout task3Layout = activity.findViewById(R.id.ar_layout_task3);
 
         activity.runOnUiThread(() -> {
-            TextView title = activity.findViewById(R.id.ar_layout_instructions_text);
-            title.setText(R.string.ar_quiz_instructions);
+            TextView instructions = activity.findViewById(R.id.ar_layout_instructions_text);
+            instructions.setText(R.string.ar_quiz_instructions);
+            TextView title = activity.findViewById(R.id.ar_quiz_title);
+            title.setText(R.string.faculty_fountain);
             startButton.setVisibility(View.VISIBLE);
         });
 
@@ -64,24 +65,22 @@ public class QuizHelper {
             quizStart = (System.currentTimeMillis() - startTime) / 1000;
         });
 
-        task1Button.setOnClickListener(view -> {
-            RadioGroup radioGroup = activity.findViewById(R.id.ar_rg_task1);
-            continueQuiz(radioGroup, task1Layout, task2Layout);
-        });
+        task1Button.setOnClickListener(view -> continueQuiz(activity.findViewById(R.id.ar_rg_task1),
+                task1Layout, task2Layout));
 
-        task2Button.setOnClickListener(view -> {
-            RadioGroup radioGroup = activity.findViewById(R.id.ar_rg_task2);
-            continueQuiz(radioGroup, task2Layout, task3Layout);
-        });
+        task2Button.setOnClickListener(view -> continueQuiz(activity.findViewById(R.id.ar_rg_task2),
+                task2Layout, task3Layout));
 
         task3Button.setOnClickListener(view -> {
             RadioGroup radioGroup = activity.findViewById(R.id.ar_rg_task3);
+
             if (radioGroup.getCheckedRadioButtonId() == -1) {
                 Toast.makeText(activity.getApplicationContext(), R.string.ar_missing_answer,
                         Toast.LENGTH_SHORT).show();
             } else {
                 getQuestionsAndAnswers();
                 saveAnswersToFile();
+
                 Intent intentMain = new Intent(activity.getApplicationContext(),
                         TAMQuestionnaire.class);
                 activity.startActivity(intentMain);
@@ -89,16 +88,10 @@ public class QuizHelper {
         });
     }
 
-    /**
-     * Continues quiz, if current question is answered yet.
-     *
-     * @param rg            RadioGroup of multiple choice options
-     * @param currentLayout Layout of the current quiz page.
-     * @param nextLayout    Layout of the next quiz page.
-     */
     private void continueQuiz(RadioGroup rg, RelativeLayout currentLayout,
                               RelativeLayout nextLayout) {
         if (rg.getCheckedRadioButtonId() == -1) {
+            currentLayout.setBackgroundColor(ContextCompat.getColor(activity, R.color.red_light));
             Toast.makeText(activity.getApplicationContext(), R.string.ar_missing_answer,
                     Toast.LENGTH_SHORT).show();
         } else {
@@ -115,12 +108,9 @@ public class QuizHelper {
     }
 
     private void getQuestionsAndAnswers() {
-        View view1 = activity.findViewById(R.id.ar_tv_task1);
-        questions.add(((TextView) view1).getText().toString() + " ");
-        View view2 = activity.findViewById(R.id.ar_tv_task2);
-        questions.add(((TextView) view2).getText().toString() + " ");
-        View view3 = activity.findViewById(R.id.ar_tv_task3);
-        questions.add(((TextView) view3).getText().toString() + " ");
+        questions.add(getTextFromTextView(R.id.ar_tv_task1) + " ");
+        questions.add(getTextFromTextView(R.id.ar_tv_task2) + " ");
+        questions.add(getTextFromTextView(R.id.ar_tv_task3) + " ");
 
         saveTime();
         setupRadioGroups();
@@ -128,26 +118,37 @@ public class QuizHelper {
         for (int i = 0; i < radioGroups.size(); i++) {
             int checkedId = radioGroups.get(i).getCheckedRadioButtonId();
             RadioButton radioButton = activity.findViewById(checkedId);
-            answers.add(radioButton.getText().toString());
+            String answer = radioButton.getText().toString();
+            String correctness = "False";
+
+            if (i == 0 && answer.equals(activity.getString(R.string.ar_answer_task1_12))) {
+                correctness = "Correct";
+            } else if (i == 1 && answer.equals(activity.getString(R.string.ar_answer_task2_5))) {
+                correctness = "Correct";
+            } else if (i == 2 && answer.equals(activity.getString(R.string.ar_answer_task3_bronze))) {
+                correctness = "Correct";
+            }
+
+            answers.add(answer + "\n" + correctness);
         }
     }
 
-    private void setupRadioGroups() {
-        RadioGroup radioGroup_q3 = activity.findViewById(R.id.ar_rg_task1);
-        RadioGroup radioGroup_q4 = activity.findViewById(R.id.ar_rg_task2);
-        RadioGroup radioGroup_q5 = activity.findViewById(R.id.ar_rg_task3);
+    private String getTextFromTextView(int textViewId) {
+        TextView textView = activity.findViewById(textViewId);
+        return textView.getText().toString();
+    }
 
-        radioGroups.add(radioGroup_q3);
-        radioGroups.add(radioGroup_q4);
-        radioGroups.add(radioGroup_q5);
+    private void setupRadioGroups() {
+        radioGroups.add(activity.findViewById(R.id.ar_rg_task1));
+        radioGroups.add(activity.findViewById(R.id.ar_rg_task2));
+        radioGroups.add(activity.findViewById(R.id.ar_rg_task3));
     }
 
     private void saveAnswersToFile() {
         Date date = new Date();
         String dateString = date.toString();
-        String timeOverallSpent = activity.getString(R.string.time_spent_ar) + " " +
-                ((System.currentTimeMillis() - startTime) / 1000);
-
+        String timeOverallSpent = activity.getString(R.string.time_spent_ar) + " "
+                + ((System.currentTimeMillis() - startTime) / 1000);
         File file = createdFile();
 
         try {
@@ -155,8 +156,9 @@ public class QuizHelper {
             OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
             try {
-                osw.write(activity.getString(R.string.dq_q1) + " " + DemographicQuestionnaire.probNum +
-                        "\n\n" + dateString + "\n" + timeOverallSpent + "\n\n");
+                osw.write(activity.getString(R.string.dq_q1) + " "
+                        + DemographicQuestionnaire.probNum + "\n\n" + dateString + "\n"
+                        + timeOverallSpent + "\n\n");
 
                 for (int i = 0; i < questions.size(); i++) {
                     osw.write(questions.get(i));
@@ -180,7 +182,7 @@ public class QuizHelper {
     private File createdFile() {
         File rootDirectory = new File(activity.getApplicationContext().getFilesDir(),
                 "/Study_Data");
-        File directory = new File(rootDirectory.getPath(), "/02_AR_Quiz");
+        File directory = new File(rootDirectory.getPath(), "/02_AR_Quizzes");
 
         if (!directory.exists()) {
             boolean wasSuccessful = directory.mkdirs();
@@ -189,6 +191,6 @@ public class QuizHelper {
             }
         }
 
-        return new File(directory, "ARQUIZ_" + DemographicQuestionnaire.probNum + ".txt");
+        return new File(directory, "AR_QUIZ_" + DemographicQuestionnaire.probNum + ".txt");
     }
 }

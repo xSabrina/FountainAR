@@ -15,11 +15,11 @@
         android:layout_weight="1"/>
 
     <TextView
-        android:id="@+id/ar_title_instructions"
+        android:id="@+id/ar_quiz_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary_color_middle"
-        android:text="@string/faculty_fountain"
+        android:text="@string/ar_placing_object"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="18sp"

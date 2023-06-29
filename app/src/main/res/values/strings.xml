@@ -70,6 +70,7 @@
     <string name="stor_permission_needed">Speicher-Zugriff für Sammlung der Studiendaten erforderlich.</string>
 
     <!-- AR View quiz -->
+    <string name="ar_placing_object">Platzierung des 3D-Objektes</string>
     <string name="faculty_fountain">Fakultätenbrunnen, Heinrich Kirchner, 1968</string>
     <string name="ar_quiz_loading">Blicke ein wenig mit der Kamera umher, damit das 3D-Objekt des Brunnens platziert werden kann.</string>
     <string name="ar_quiz_instructions">Super! Hier sehen Sie nun ein Modell des Fakultätenbrunnens der Universität Regensburg. Nachfolgend werden Sie sich das Objekt genauer ansehen und einige Fragen zu diesem in einem kleinen Multiple-Choice-Quiz beantworten.</string>
