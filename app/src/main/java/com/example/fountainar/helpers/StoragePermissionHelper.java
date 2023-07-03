@@ -29,70 +29,75 @@ import androidx.core.app.ActivityCompat;
  */
 public final class StoragePermissionHelper {
 
-  private static final int READ_PERMISSION_CODE = 0;
-  private static final int WRITE_PERMISSION_CODE = 1;
-  private static final String READ_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
-  private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private static final int READ_PERMISSION_CODE = 0;
+    private static final int WRITE_PERMISSION_CODE = 1;
+    private static final String READ_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-  /**
-   * Checks, if we have the necessary reading permissions for this app.
-   */
-  public static boolean hasReadPermission(Activity activity) {
-    return ActivityCompat.checkSelfPermission(activity, READ_PERMISSION)
-            == PackageManager.PERMISSION_GRANTED;
-  }
+    /**
+     * Check, if we have the necessary reading permissions for this app.
+     */
+    public static boolean hasReadPermission(Activity activity) {
+        return ActivityCompat.checkSelfPermission(activity, READ_PERMISSION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
 
-  /**
-   * Checks, if we have the necessary writing permissions for this app.
-   */
-  public static boolean hasWritePermission(Activity activity) {
-    return ActivityCompat.checkSelfPermission(activity, WRITE_PERMISSION)
-            == PackageManager.PERMISSION_GRANTED;
-  }
+    /**
+     * Check, if we have the necessary writing permissions for this app.
+     */
+    public static boolean hasWritePermission(Activity activity) {
+        return ActivityCompat.checkSelfPermission(activity, WRITE_PERMISSION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
 
-  /**
-   * Asks for reading storage permission.
-   */
-  public static void requestReadPermission(Activity activity) {
-    ActivityCompat.requestPermissions(
-            activity, new String[]{READ_PERMISSION}, READ_PERMISSION_CODE);
-  }
+    /**
+     * Ask for reading storage permission.
+     */
+    public static void requestReadPermission(Activity activity) {
+        ActivityCompat.requestPermissions(
+                activity, new String[]{READ_PERMISSION}, READ_PERMISSION_CODE);
+    }
 
-  /**
-   * Asks for writing storage permission.
-   */
-  public static void requestWritePermission(Activity activity) {
-    ActivityCompat.requestPermissions(
-            activity, new String[]{WRITE_PERMISSION}, WRITE_PERMISSION_CODE);
-  }
+    /**
+     * Ask for writing storage permission.
+     */
+    public static void requestWritePermission(Activity activity) {
+        ActivityCompat.requestPermissions(
+                activity, new String[]{WRITE_PERMISSION}, WRITE_PERMISSION_CODE);
+    }
 
-  /**
-   * Checks, if we need to show the rationale for this permission.
-   */
-  public static boolean shouldShowRequestReadPermissionRationale(Activity activity) {
-    return ActivityCompat.shouldShowRequestPermissionRationale(activity, READ_PERMISSION);
-  }
+    /**
+     * Check, if we need to show the rationale for this permission.
+     */
+    public static boolean shouldShowRequestReadPermissionRationale(Activity activity) {
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, READ_PERMISSION);
+    }
 
-  /** Launch application settings to grant permission. */
-  public static void launchReadPermissionSettings(Activity activity) {
-    Intent intent = new Intent();
-    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-    intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-    activity.startActivity(intent);
-  }
-  /**
-   * Checks, if we need to show the rationale for this permission.
-   */
-  public static boolean shouldShowRequestWritePermissionRationale(Activity activity) {
-    return ActivityCompat.shouldShowRequestPermissionRationale(activity, WRITE_PERMISSION);
-  }
+    /**
+     * Launch application settings to grant permission.
+     */
+    public static void launchReadPermissionSettings(Activity activity) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+        activity.startActivity(intent);
+    }
 
-  /** Launch application settings to grant permission. */
-  public static void launchWritePermissionSettings(Activity activity) {
-    Intent intent = new Intent();
-    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-    intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-    activity.startActivity(intent);
-  }
+    /**
+     * Check, if we need to show the rationale for this permission.
+     */
+    public static boolean shouldShowRequestWritePermissionRationale(Activity activity) {
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, WRITE_PERMISSION);
+    }
+
+    /**
+     * Launch application settings to grant permission.
+     */
+    public static void launchWritePermissionSettings(Activity activity) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+        activity.startActivity(intent);
+    }
 
 }
