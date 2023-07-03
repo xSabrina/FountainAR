@@ -31,18 +31,18 @@ public class SoundPoolHelper {
         soundId = soundPool.load(activity, R.raw.fountain_animation_sound, 1);
     }
 
-    public void play(){
+    public void play() {
         if (!soundPoolPlaying) {
             soundPoolPlaying = true;
             soundPool.play(soundId, 0.8f, 0.8f, 1, -1, 1.0f);
         }
     }
 
-    public void pause(){
+    public void pause() {
         soundPool.pause(soundId);
     }
 
-    public void release(){
+    public void release() {
         soundPool.stop(soundId);
         soundPool.release();
         soundPool = null;
