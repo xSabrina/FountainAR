@@ -1,37 +1,39 @@
-#version 320 es
-
+#version 300 es
 precision mediump float;
 
-in vec4 o_Position;
+in vec3 v_Normal;
+in vec3 v_Position;
 
-const float refractionIndex = 1.5;
+out vec4 FragColor;
+
+const float refractionIndex = 1.33;
 const float reflectivity = 0.8;
 const float fresnelPower = 5.0;
 
-vec3 calculateRefraction(vec3 incidentRay, vec3 normal, float refractionIndex) {
-    return refract(incidentRay, normal, refractionIndex);
+float calculateFresnel(vec3 incidentRay, vec3 normal) {
+    return pow(1.0 - dot(incidentRay, normal), fresnelPower);
 }
 
-vec3 calculateReflection(vec3 incidentRay, vec3 normal) {
-    return reflect(incidentRay, normal);
+vec3 calculateAttenuation(float distance) {
+    float attenuation = 0.15 / distance;
+    return vec3(1.0, 1.0, 1.0) - vec3(attenuation);
 }
-
-out vec4 o_FragColor;
 
 void main() {
-    vec3 incidentRay = normalize(o_Position.xyz);
+    vec3 incidentRay = normalize(v_Normal);
+    vec3 refractedRay = refract(incidentRay, v_Normal, refractionIndex);
+    vec3 reflectedRay = reflect(incidentRay, v_Normal);
 
-    vec3 normal = vec3(0.0, 0.0, 1.0);
-    vec3 refractedRay = calculateRefraction(incidentRay, normal, refractionIndex);
-    vec3 reflectedRay = calculateReflection(incidentRay, normal);
+    float fresnel = calculateFresnel(-incidentRay, refractedRay);
 
-    float fresnel = reflectivity + (1.0 - reflectivity) * pow(1.0 - dot(-incidentRay, refractedRay), fresnelPower);
-
-    vec4 refractedColor = vec4(0.5, 0.5, 1.0, 1.0);
-    vec4 reflectedColor = vec4(1.0, 1.0, 1.0, 1.0);
-
+    vec4 refractedColor = vec4(0.7, 0.85, 1.0, 0.7);
+    vec4 reflectedColor = vec4(1.0, 1.0, 1.0, 0.7);
     vec4 finalColor = mix(refractedColor, reflectedColor, fresnel);
+
+    float distance = length(v_Position);
+    vec3 attenuation = calculateAttenuation(distance);
+    finalColor.rgb *= attenuation;
     finalColor.a = 1.0 - fresnel;
 
-    o_FragColor = finalColor;
+    FragColor = finalColor;
 }
