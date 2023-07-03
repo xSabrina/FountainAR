@@ -28,51 +28,53 @@ import androidx.core.app.ActivityCompat;
  * Helper to ask location permission.
  */
 public final class LocationPermissionHelper {
-  private static final int LOCATION_PERMISSION_CODE = 3;
-  private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final int LOCATION_PERMISSION_CODE = 3;
+    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
-  /**
-   * Checks, if we have the necessary permissions for this app.
-   */
-  public static boolean hasNoFineLocationPermission(Activity activity) {
-    return ActivityCompat.checkSelfPermission(activity, LOCATION_PERMISSION)
-            != PackageManager.PERMISSION_GRANTED;
-  }
-
-  /**
-   * Asks for fine location permission.
-   */
-  public static void requestFineLocationPermission(Activity activity) {
-    ActivityCompat.requestPermissions(
-            activity, new String[]{LOCATION_PERMISSION}, LOCATION_PERMISSION_CODE);
-  }
-
-  /**
-   * Checks, if the array of given permissions contains the location permission.
-   */
-  public static boolean hasFineLocationPermissionsResponseInResult(String[] permissions) {
-    for (String permission : permissions) {
-      if (LOCATION_PERMISSION.equals(permission)) {
-        return true;
-      }
+    /**
+     * Check, if we have the necessary permissions for this app.
+     */
+    public static boolean hasNoFineLocationPermission(Activity activity) {
+        return ActivityCompat.checkSelfPermission(activity, LOCATION_PERMISSION)
+                != PackageManager.PERMISSION_GRANTED;
     }
 
-    return false;
-  }
+    /**
+     * Ask for fine location permission.
+     */
+    public static void requestFineLocationPermission(Activity activity) {
+        ActivityCompat.requestPermissions(
+                activity, new String[]{LOCATION_PERMISSION}, LOCATION_PERMISSION_CODE);
+    }
 
-  /**
-   * Checks, if we need to show the rationale for this permission.
-   */
-  public static boolean shouldShowRequestPermissionRationale(Activity activity) {
-    return ActivityCompat.shouldShowRequestPermissionRationale(activity, LOCATION_PERMISSION);
-  }
+    /**
+     * Check, if the array of given permissions contains the location permission.
+     */
+    public static boolean hasFineLocationPermissionsResponseInResult(String[] permissions) {
+        for (String permission : permissions) {
+            if (LOCATION_PERMISSION.equals(permission)) {
+                return true;
+            }
+        }
 
-  /** Launch application settings to grant permission. */
-  public static void launchPermissionSettings(Activity activity) {
-    Intent intent = new Intent();
-    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-    intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-    activity.startActivity(intent);
-  }
+        return false;
+    }
+
+    /**
+     * Check, if we need to show the rationale for this permission.
+     */
+    public static boolean shouldShowRequestPermissionRationale(Activity activity) {
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, LOCATION_PERMISSION);
+    }
+
+    /**
+     * Launch application settings to grant permission.
+     */
+    public static void launchPermissionSettings(Activity activity) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+        activity.startActivity(intent);
+    }
 
 }
