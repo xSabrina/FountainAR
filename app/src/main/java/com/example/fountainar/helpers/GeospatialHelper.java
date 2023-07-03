@@ -13,8 +13,10 @@ import com.example.fountainar.activities.ARActivity;
 import com.example.fountainar.fragments.VpsAvailabilityNoticeDialogFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.ar.core.Anchor;
 import com.google.ar.core.Earth;
 import com.google.ar.core.GeospatialPose;
+import com.google.ar.core.ResolveAnchorOnTerrainFuture;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.VpsAvailability;
@@ -30,6 +32,8 @@ public class GeospatialHelper {
 
     private static final String TAG = GeospatialHelper.class.getSimpleName();
 
+    private static final double latitude = 49.00050454115168;
+    private static final double longitude = 12.093612000040514;
     private static final double LOCALIZING_HORIZONTAL_ACCURACY_THRESHOLD_METERS = 10;
     private static final double LOCALIZING_ORIENTATION_YAW_ACCURACY_THRESHOLD_DEGREES = 15;
     private static final double LOCALIZED_HORIZONTAL_ACCURACY_HYSTERESIS_METERS = 10;
@@ -219,26 +223,30 @@ public class GeospatialHelper {
      * Creates a terrain anchor at given world coordinates using earth object.
      */
     private void createTerrainAnchor(Earth earth, GeospatialPose geospatialPose) {
-        //double latitude = 48.99930870818054;
-        //double longitude = 12.095451713619283;
         double latitude = geospatialPose.getLatitude();
         double longitude = geospatialPose.getLongitude();
         float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
 
-        try {
-            ARActivity.anchor = earth.resolveAnchorOnTerrain(
-                    latitude,
-                    longitude,
-                    0.0f,
-                    quaternion[0],
-                    quaternion[1],
-                    quaternion[2],
-                    quaternion[3]);
-        } catch (ResourceExhaustedException e) {
-            ARActivity.snackbarHelper.showMessageWithDismiss(activity,
-                    activity.getString(R.string.error_create_anchor));
-            Log.e(TAG, "Exception creating terrain anchor");
-        }
+        final ResolveAnchorOnTerrainFuture future =
+                earth.resolveAnchorOnTerrainAsync(
+                        latitude,
+                        longitude,
+                        0.0f,
+                        quaternion[0],
+                        quaternion[1],
+                        quaternion[2],
+                        quaternion[3],
+                        (anchor, state) -> {
+                            if (state == Anchor.TerrainAnchorState.SUCCESS) {
+                                ARActivity.anchor = anchor;
+                            } else {
+                                ARActivity.snackbarHelper.showMessageWithDismiss(activity,
+                                        activity.getString(R.string.error_create_anchor));
+                                Log.e(TAG, "Exception creating terrain anchor");
+                            }
+                        });
+
+
     }
 
     public enum State {
