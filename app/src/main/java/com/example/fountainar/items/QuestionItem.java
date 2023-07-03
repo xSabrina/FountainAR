@@ -37,10 +37,6 @@ public class QuestionItem {
         }
     }
 
-    public RadioGroup getAnswerGroup() {
-        return answerGroup;
-    }
-
     public void setAnswerGroup(RadioGroup answerGroup) {
         this.answerGroup = answerGroup;
     }
