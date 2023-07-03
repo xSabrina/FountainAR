@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,13 +26,10 @@ import java.util.List;
 public class TAMQuestionnaire extends AppCompatActivity {
 
     private static final String TAG = DemographicQuestionnaire.class.getSimpleName();
-
-    private List<String> questions = new ArrayList<>();
     private final ArrayList<String> tamTags = new ArrayList<>();
+    private final List<RadioGroup> radioGroups = new ArrayList<>();
+    private List<String> questions = new ArrayList<>();
     private List<String> answerValues = new ArrayList<>();
-
-    private List<RadioGroup> radioGroups = new ArrayList<>();
-
     private long startTime;
 
     private TAMQuestionAdapter adapter;
@@ -138,6 +134,7 @@ public class TAMQuestionnaire extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {}
+    public void onBackPressed() {
+    }
 }
 
