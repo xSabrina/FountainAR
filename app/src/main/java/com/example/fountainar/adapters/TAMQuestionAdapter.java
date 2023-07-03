@@ -49,7 +49,6 @@ public class TAMQuestionAdapter
         holder.bind(position);
     }
 
-
     @Override
     public int getItemCount() {
         return questions.size();
@@ -58,16 +57,16 @@ public class TAMQuestionAdapter
     public boolean everyRadioGroupFinished(RecyclerView recyclerView) {
         for (int i = 0; i < questionItems.size(); i++) {
             if (questionItems.get(i).getSelectedAnswerId() == -1) {
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView
+                        .getLayoutManager();
+
                 if (layoutManager != null) {
                     int offset = -10;
                     layoutManager.scrollToPositionWithOffset(i, offset);
                 }
-
                 return false;
             }
         }
-
         return true;
     }
 
@@ -118,7 +117,6 @@ public class TAMQuestionAdapter
             String question = questionItem.getQuestion();
             questionText.setText(question);
             setScaleTextValues(question);
-
             answerGroup.setOnCheckedChangeListener(null);
             answerGroup.clearCheck();
             answerGroup.setOnCheckedChangeListener((group, checkedId) ->
@@ -126,12 +124,11 @@ public class TAMQuestionAdapter
             questionItem.setAnswerGroup(answerGroup);
 
             int selectedAnswerId = questionItem.getSelectedAnswerId();
-
             if (selectedAnswerId != -1) {
                 answerGroup.check(selectedAnswerId);
             }
-            int backgroundColor = questionItem.getBackgroundColor();
 
+            int backgroundColor = questionItem.getBackgroundColor();
             if (backgroundColor != 0) {
                 itemView.setBackgroundColor(backgroundColor);
             }
@@ -161,5 +158,4 @@ public class TAMQuestionAdapter
             rightValueText.setText(context.getString(rightValueResId));
         }
     }
-
 }
