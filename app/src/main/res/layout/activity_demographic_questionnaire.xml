@@ -66,8 +66,7 @@
                 android:maxLength="2"
                 android:textColor="@color/black"
                 android:textSize="15sp"
-                android:gravity="center"
-                tools:ignore="LabelFor" />
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/dq_q2"
@@ -91,8 +90,7 @@
                 android:maxLength="2"
                 android:textColor="@color/black"
                 android:textSize="15sp"
-                android:gravity="center"
-                tools:ignore="LabelFor" />
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/dq_q3"
@@ -149,43 +147,42 @@
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
-                <RadioGroup
-                    android:id="@+id/dq_q4_rg"
+            <RadioGroup
+                android:id="@+id/dq_q4_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="20dp">
+
+                <RadioButton
+                    android:id="@+id/dq_q4_german"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingBottom="20dp">
+                    android:text="@string/dq_q4_german"
+                    android:textColor="@color/black" />
 
-                    <RadioButton
-                        android:id="@+id/dq_q4_german"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dq_q4_german"
-                        android:textColor="@color/black" />
+                <RadioButton
+                    android:id="@+id/dq_q4_alternative_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dq_alternative_answer"
+                    android:textColor="@color/black" />
 
-                    <RadioButton
-                        android:id="@+id/dq_q4_alternative_answer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dq_alternative_answer"
-                        android:textColor="@color/black" />
+                <EditText
+                    android:id="@+id/dq_q4_alternative_answer_input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/rounded_corners"
+                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:minWidth="150dp"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
 
-                    <EditText
-                        android:id="@+id/dq_q4_alternative_answer_input"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/rounded_corners"
-                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZüäöÜÄÖ"
-                        android:importantForAutofill="no"
-                        android:inputType="text"
-                        android:minWidth="150dp"
-                        android:textColor="@color/black"
-                        android:textSize="15sp"
-                        tools:ignore="LabelFor" />
-
-                </RadioGroup>
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/dq_q5"
@@ -222,8 +219,7 @@
                     android:inputType="text"
                     android:minWidth="150dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
-                    tools:ignore="LabelFor" />
+                    android:textSize="15sp" />
 
                 <RadioButton
                     android:id="@+id/dq_q5_employee"
@@ -265,8 +261,8 @@
                     android:inputType="text"
                     android:minWidth="150dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
-                    tools:ignore="LabelFor" />
+                    android:textSize="15sp" />
+
 
             </RadioGroup>
 
@@ -355,8 +351,7 @@
                     android:inputType="text"
                     android:minWidth="150dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
-                    tools:ignore="LabelFor" />
+                    android:textSize="15sp" />
 
             </RadioGroup>
 
@@ -463,8 +458,7 @@
                     android:inputType="text"
                     android:minWidth="150dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
-                    tools:ignore="LabelFor" />
+                    android:textSize="15sp" />
 
             </RadioGroup>
 
@@ -532,8 +526,7 @@
                     android:inputType="text"
                     android:minWidth="150dp"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
-                    tools:ignore="LabelFor" />
+                    android:textSize="15sp" />
 
             </RadioGroup>
 

@@ -41,6 +41,7 @@ public class ARActivity extends AppCompatActivity implements
     public static GeospatialHelper geospatialHelper;
     public static Anchor anchor;
     public static Session session;
+
     private SharedPreferences sharedPreferences;
     private DisplayRotationHelper displayRotationHelper;
     private ARCoreHelper arCoreHelper;
@@ -52,7 +53,6 @@ public class ARActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences(ALLOW_GEOSPATIAL_ACCESS_KEY, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_ar);
-
         arCoreHelper = new ARCoreHelper(this);
         geospatialHelper = new GeospatialHelper(this);
         displayRotationHelper = new DisplayRotationHelper(this);
@@ -64,13 +64,10 @@ public class ARActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * @return OPENGL and ARCore are installed and up to date.
-     */
     private boolean systemSupportsNeededTechnology() {
-        String openGlVersion = ((ActivityManager) Objects.requireNonNull(this
-                .getSystemService(Context.ACTIVITY_SERVICE))).getDeviceConfigurationInfo().
-                getGlEsVersion();
+        String openGlVersion = ((ActivityManager)
+                Objects.requireNonNull(this.getSystemService(Context.ACTIVITY_SERVICE)))
+                .getDeviceConfigurationInfo().getGlEsVersion();
 
         if (Double.parseDouble(openGlVersion) >= 3.0 &&
                 arCoreHelper.isARCoreSupportedAndUpToDate()) {
@@ -78,7 +75,7 @@ public class ARActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, R.string.opengl_version_required, Toast.LENGTH_SHORT)
                     .show();
-            this.finish();
+            finish();
             return false;
         }
     }
@@ -105,9 +102,6 @@ public class ARActivity extends AppCompatActivity implements
         dialog.dismiss();
     }
 
-    /**
-     * Prepares the rendering objects, involving reading shaders and 3D model files.
-     */
     @Override
     public void onSurfaceCreated(CustomRender render) {
         sceneRenderer.setupScene(render);
@@ -124,11 +118,11 @@ public class ARActivity extends AppCompatActivity implements
         if (session == null) {
             return;
         }
+
         sceneRenderer.drawScene(session, render, anchor);
-
         displayRotationHelper.updateSessionIfNeeded(session);
-
         Earth earth = session.getEarth();
+
         if (earth != null) {
             geospatialHelper.updateGeospatialState(earth);
         }
@@ -149,9 +143,6 @@ public class ARActivity extends AppCompatActivity implements
         displayRotationHelper.onResume();
     }
 
-    /**
-     * Shows privacy dialog fragment.
-     */
     private void showPrivacyNoticeDialog() {
         DialogFragment dialog = PrivacyNoticeDialogFragment.createDialog();
         dialog.show(getSupportFragmentManager(), PrivacyNoticeDialogFragment.class.getName());
@@ -168,15 +159,17 @@ public class ARActivity extends AppCompatActivity implements
                         .show();
                 CameraPermissionHelper.launchPermissionSettings(this);
             }
+
             finish();
         }
 
-        if (LocationPermissionHelper.hasFineLocationPermissionsResponseInResult(permissions)
-                && LocationPermissionHelper.hasNoFineLocationPermission(this)) {
+        if (LocationPermissionHelper.hasFineLocationPermissionsResponseInResult(permissions) &&
+                LocationPermissionHelper.hasNoFineLocationPermission(this)) {
             Toast.makeText(this, R.string.fine_loc_needed, Toast.LENGTH_LONG).show();
             if (!LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
                 LocationPermissionHelper.launchPermissionSettings(this);
             }
+
             finish();
         }
     }
@@ -201,8 +194,6 @@ public class ARActivity extends AppCompatActivity implements
         }
 
         sceneRenderer.releaseSoundPool();
-
         super.onDestroy();
     }
 }
-

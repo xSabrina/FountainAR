@@ -39,6 +39,7 @@ public class GLError {
   /** Logs a message with the given logcat priority if a GL error occurred. */
   public static void maybeLogGLError(int priority, String tag, String reason, String api) {
     List<Integer> errorCodes = getGlErrors();
+
     if (errorCodes != null) {
       Log.println(priority, tag, formatErrorMessage(reason, api, errorCodes));
     }
@@ -48,9 +49,11 @@ public class GLError {
   private static String formatErrorMessage(String reason, String api, List<Integer> errorCodes) {
     StringBuilder builder = new StringBuilder(String.format("%s: %s: ", reason, api));
     Iterator<Integer> iterator = errorCodes.iterator();
+
     while (iterator.hasNext()) {
       int errorCode = iterator.next();
       builder.append(String.format("%s (%d)", GLU.gluErrorString(errorCode), errorCode));
+
       if (iterator.hasNext()) {
         builder.append(", ");
       }
