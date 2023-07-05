@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Adapter to manage the display and interaction of TAM (Technology Acceptance Model) questions in
- * a RecyclerView. Provides methods to retrieve selected answers, update background colors, and
+ * An Adapter to manage the display and interaction of TAM (Technology Acceptance Model) questions
+ * in a RecyclerView. Provides methods to retrieve selected answers, update background colors, and
  * check if all radio groups are finished.
  */
 public class TAMQuestionAdapter
