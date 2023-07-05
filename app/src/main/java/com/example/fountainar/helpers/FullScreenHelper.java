@@ -29,7 +29,7 @@ public final class FullScreenHelper {
      *
      * @param activity the Activity on which the full screen mode will be set.
      * @param hasFocus the hasFocus flag passed from the
-     * {@link Activity#onWindowFocusChanged(boolean hasFocus)} callback.
+     *                 {@link Activity#onWindowFocusChanged(boolean hasFocus)} callback.
      */
     public static void setFullScreenOnWindowFocusChanged(Activity activity, boolean hasFocus) {
         if (hasFocus) {

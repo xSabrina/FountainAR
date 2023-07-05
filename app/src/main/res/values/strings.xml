@@ -4,6 +4,8 @@
     <!-- General -->
     <string name="further">Weiter</string>
     <string name="fill_out_first">Bitte beantworten Sie erst alle Fragen.</string>
+    <string name="no_backing">Kein Zurückkehren möglich</string>
+    <string name="study_not_backable">Sie können aus studientechnischen Gründen nicht innerhalb der App zurückkehren.</string>
 
     <!-- Main Activity -->
     <string name="app_logo">App Logo</string>

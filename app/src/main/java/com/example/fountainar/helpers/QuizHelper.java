@@ -50,15 +50,12 @@ public class QuizHelper {
         RelativeLayout task2Layout = activity.findViewById(R.id.ar_layout_task2);
         RelativeLayout task3Layout = activity.findViewById(R.id.ar_layout_task3);
 
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView instructions = activity.findViewById(R.id.ar_layout_instructions_text);
-                instructions.setText(R.string.ar_quiz_instructions);
-                TextView title = activity.findViewById(R.id.ar_quiz_title);
-                title.setText(R.string.faculty_fountain);
-                startButton.setVisibility(View.VISIBLE);
-            }
+        activity.runOnUiThread(() -> {
+            TextView instructions = activity.findViewById(R.id.ar_layout_instructions_text);
+            instructions.setText(R.string.ar_quiz_instructions);
+            TextView title = activity.findViewById(R.id.ar_quiz_title);
+            title.setText(R.string.faculty_fountain);
+            startButton.setVisibility(View.VISIBLE);
         });
 
 
@@ -83,7 +80,6 @@ public class QuizHelper {
             } else {
                 getQuestionsAndAnswers();
                 saveAnswersToFile();
-
                 Intent intentMain = new Intent(activity.getApplicationContext(),
                         TAMQuestionnaire.class);
                 activity.startActivity(intentMain);

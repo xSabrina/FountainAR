@@ -15,6 +15,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.fountainar.R;
 import com.example.fountainar.fragments.PrivacyNoticeDialogFragment;
 import com.example.fountainar.fragments.VpsAvailabilityNoticeDialogFragment;
+import com.example.fountainar.handlers.BackPressedHandler;
 import com.example.fountainar.helpers.ARCoreHelper;
 import com.example.fountainar.helpers.CameraPermissionHelper;
 import com.example.fountainar.helpers.DisplayRotationHelper;
@@ -30,6 +31,11 @@ import com.google.ar.core.Session;
 
 import java.util.Objects;
 
+/**
+ * Manages the AR experience by setting up components, rendering the scene, and handling
+ * permissions. Handles the creation of the AR session, updates the geospatial state, and manages
+ * the lifecycle.
+ */
 public class ARActivity extends AppCompatActivity implements
         CustomRender.Renderer,
         VpsAvailabilityNoticeDialogFragment.NoticeDialogListener,
@@ -37,6 +43,7 @@ public class ARActivity extends AppCompatActivity implements
 
     private static final String ALLOW_GEOSPATIAL_ACCESS_KEY = "ALLOW_GEOSPATIAL_ACCESS";
     public static SnackbarHelper snackbarHelper = new SnackbarHelper();
+
     @SuppressLint("StaticFieldLeak")
     public static GeospatialHelper geospatialHelper;
     public static Anchor anchor;
@@ -62,8 +69,17 @@ public class ARActivity extends AppCompatActivity implements
             new CustomRender(surfaceView, this, getAssets());
             sceneRenderer = new SceneRenderer(this);
         }
+
+        BackPressedHandler.setupBackPressedCallback(this);
     }
 
+    /**
+     * Checks if the system supports the required technology (OpenGL ES 3.0 and ARCore).
+     * If the system meets the requirements, returns true. Otherwise, displays a toast message
+     * and finishes the activity.
+     *
+     * @return true if the system supports the required technology, false otherwise.
+     */
     private boolean systemSupportsNeededTechnology() {
         String openGlVersion = ((ActivityManager)
                 Objects.requireNonNull(this.getSystemService(Context.ACTIVITY_SERVICE)))
@@ -113,6 +129,12 @@ public class ARActivity extends AppCompatActivity implements
         sceneRenderer.resizeFramebuffer(width, height);
     }
 
+    /**
+     * Callback when a new frame needs to be drawn. Draws the scene, updates the session if needed,
+     * and updates the geospatial state if Earth is available.
+     *
+     * @param render The CustomRender instance.
+     */
     @Override
     public void onDrawFrame(CustomRender render) {
         if (session == null) {
@@ -128,6 +150,11 @@ public class ARActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Called when the activity is resumed from the paused state.
+     * Initializes the AR session if the user has granted geospatial access,
+     * otherwise shows the privacy notice dialog.
+     */
     @Override
     protected void onResume() {
         super.onResume();
