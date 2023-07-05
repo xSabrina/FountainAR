@@ -4,8 +4,12 @@ precision mediump float;
 
 in vec3 v_Normal;
 in vec3 v_Position;
+in vec2 v_TexCoord;
 
-out vec4 FragColor;
+uniform samplerCube u_ReflectionTexture;
+uniform sampler2D u_DfgTexture;
+
+out vec4 o_FragColor;
 
 const float refractionIndex = 1.33;
 const float reflectivity = 0.8;
@@ -27,8 +31,14 @@ void main() {
 
     float fresnel = calculateFresnel(-incidentRay, refractedRay);
 
-    vec4 refractedColor = vec4(0.7, 0.85, 1.0, 0.7);
-    vec4 reflectedColor = vec4(1.0, 1.0, 1.0, 0.7);
+    vec4 refractedColor = vec4(0.9, 0.95, 1.0, 0.9);
+    vec4 reflectedColor = vec4(0.9, 0.95, 1.0, 0.5);
+
+    vec3 reflectionColor = texture(u_ReflectionTexture, reflectedRay).rgb;
+    vec3 dfgColor = texture(u_DfgTexture, v_TexCoord).rgb;
+
+    reflectedColor.rgb = mix(reflectionColor, dfgColor, fresnel);
+
     vec4 finalColor = mix(refractedColor, reflectedColor, fresnel);
 
     float distance = length(v_Position);
@@ -36,5 +46,5 @@ void main() {
     finalColor.rgb *= attenuation;
     finalColor.a = 1.0 - fresnel;
 
-    FragColor = finalColor;
+    o_FragColor = finalColor;
 }

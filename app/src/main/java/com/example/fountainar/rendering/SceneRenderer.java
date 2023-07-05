@@ -33,7 +33,8 @@ public class SceneRenderer {
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 1000f;
-
+    private final static int waterJetsStart = 160;
+    private final static int waterJetsEnd = 165;
     private static boolean isSubjectGroupWithAnimation = false;
     private static BackgroundRenderer backgroundRenderer;
     private static Mesh virtualFountainMesh;
@@ -41,14 +42,11 @@ public class SceneRenderer {
     private static Shader virtualFountainShader;
     private static Shader virtualWaterShader;
     private static int meshCounter = 0;
-
     private final Activity activity;
     private final TrackingStateHelper trackingStateHelper;
     public Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
-    private final static int waterJetsStart = 160;
-    private final static int waterJetsEnd = 165;
     private SoundPoolHelper soundPoolHelper;
 
     public SceneRenderer(Activity activity) {
@@ -116,6 +114,7 @@ public class SceneRenderer {
                 virtualWaterShader = Shader.createFromAssets(
                         render, "shaders/water.vert",
                         "shaders/water.frag", null);
+                virtualWaterShader.setTexture("u_DfgTexture", dfgTexture);
 
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/Water_Surface.obj");
@@ -197,29 +196,23 @@ public class SceneRenderer {
                     virtualSceneFramebuffer);
 
             if (isSubjectGroupWithAnimation) {
-                Mesh virtualWaterJetMesh = virtualWaterJetMeshes.get(meshCounter);
-                meshCounter++;
+                meshCounter = (meshCounter + 1) % virtualWaterJetMeshes.size();
 
-                if (meshCounter == virtualWaterJetMeshes.size()) {
-                    meshCounter = 0;
-                }
-
-                float[] normalMatrix = new float[9];
-                normalMatrix[0] = modelViewMatrix[0];
-                normalMatrix[1] = modelViewMatrix[1];
-                normalMatrix[2] = modelViewMatrix[2];
-                normalMatrix[3] = modelViewMatrix[4];
-                normalMatrix[4] = modelViewMatrix[5];
-                normalMatrix[5] = modelViewMatrix[6];
-                normalMatrix[6] = modelViewMatrix[8];
-                normalMatrix[7] = modelViewMatrix[9];
-                normalMatrix[8] = modelViewMatrix[10];
+                float[] normalMatrix = new float[]{
+                        modelViewMatrix[0], modelViewMatrix[1], modelViewMatrix[2],
+                        modelViewMatrix[4], modelViewMatrix[5], modelViewMatrix[6],
+                        modelViewMatrix[8], modelViewMatrix[9], modelViewMatrix[10]
+                };
 
                 virtualWaterShader.setMat3("u_NormalView", normalMatrix);
                 virtualWaterShader.setMat4("u_ModelViewProjection",
                         modelViewProjectionMatrix);
-                render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
-                render.draw(virtualWaterJetMesh, virtualWaterShader, virtualSceneFramebuffer);
+                virtualWaterShader.setInt("u_ReflectionTexture", backgroundRenderer
+                        .getCameraColorTexture().getTextureId());
+                render.draw(virtualWaterSurfaceMesh, virtualWaterShader,
+                        virtualSceneFramebuffer);
+                render.draw(virtualWaterJetMeshes.get(meshCounter), virtualWaterShader,
+                        virtualSceneFramebuffer);
                 soundPoolHelper.play();
             }
 
@@ -231,14 +224,14 @@ public class SceneRenderer {
         virtualSceneFramebuffer.resize(width, height);
     }
 
-    public void pauseSoundPool(){
-        if(soundPoolHelper != null) {
+    public void pauseSoundPool() {
+        if (soundPoolHelper != null) {
             soundPoolHelper.pause();
         }
     }
 
-    public void releaseSoundPool(){
-        if(soundPoolHelper != null) {
+    public void releaseSoundPool() {
+        if (soundPoolHelper != null) {
             soundPoolHelper.release();
         }
     }

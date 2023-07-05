@@ -245,7 +245,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
             if (view instanceof TextView && !(view instanceof EditText) &&
                     !(view instanceof Button)) {
-                questions.add(((TextView) view).getText().toString() + " ");
+                questions.add(((TextView) view).getText().toString());
             } else if (view instanceof EditText && ((EditText) view).getText() != null) {
                 answers.add(((EditText) view).getText().toString());
             } else if (view instanceof RadioGroup) {
@@ -255,8 +255,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
                 if (radioButton.getText().equals(getString(R.string.dq_alternative_answer))) {
                     View editView = radioGroup.getChildAt(radioGroup.getChildCount() - 1);
-                    answers.add(radioButton.getText().toString() + ((EditText) editView).getText()
-                            .toString());
+                    answers.add(radioButton.getText().toString() + " " +
+                            ((EditText) editView).getText().toString());
                 } else if (radioButton.getText().equals(getString(R.string.dq_q5_student))) {
                     View editView = radioGroup.getChildAt(1);
                     answers.add(radioButton.getText().toString() + ((EditText) editView).getText()

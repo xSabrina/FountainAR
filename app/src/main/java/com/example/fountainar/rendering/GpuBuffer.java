@@ -19,6 +19,7 @@ import android.opengl.GLES30;
 import android.util.Log;
 
 import java.nio.Buffer;
+import java.nio.FloatBuffer;
 
 /**
  * A Buffer for the GPU usage.

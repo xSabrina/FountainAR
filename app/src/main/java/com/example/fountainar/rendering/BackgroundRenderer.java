@@ -74,10 +74,10 @@ public class BackgroundRenderer {
     cameraDepthTexture = new Texture(render, Texture.Target.TEXTURE_2D,
             Texture.WrapMode.CLAMP_TO_EDGE, false);
 
-    VertexBuffer screenCoordsVertexBuffer = new VertexBuffer(render, 2,
+    VertexBuffer screenCoordsVertexBuffer = new VertexBuffer(2,
             NDC_QUAD_COORDS_BUFFER);
-    cameraTexCoordsVertexBuffer = new VertexBuffer(render, 2, null);
-    VertexBuffer virtualSceneTexCoordsVertexBuffer = new VertexBuffer(render, 2,
+    cameraTexCoordsVertexBuffer = new VertexBuffer(2, null);
+    VertexBuffer virtualSceneTexCoordsVertexBuffer = new VertexBuffer(2,
             VIRTUAL_SCENE_TEX_COORDS_BUFFER);
     VertexBuffer[] vertexBuffers = {
             screenCoordsVertexBuffer,

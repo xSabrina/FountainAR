@@ -185,7 +185,7 @@ public class SpecularCubemapFilter implements Closeable {
       initializeLdCubemap();
       shaders = createShaders(render, chunks);
       frameBuffers = createFramebuffers(chunks);
-      VertexBuffer coordsBuffer = new VertexBuffer(render, COMPONENTS_PER_VERTEX, COORDS_BUFFER);
+      VertexBuffer coordsBuffer = new VertexBuffer(COMPONENTS_PER_VERTEX, COORDS_BUFFER);
 
       mesh =
           new Mesh(
