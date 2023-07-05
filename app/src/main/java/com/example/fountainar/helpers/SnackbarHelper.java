@@ -6,22 +6,47 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+/**
+ * Helper for displaying Snackbar messages with dismiss functionality.
+ * This class provides methods to show different types of Snackbars and define their dismiss
+ * behavior. Only one Snackbar can be displayed at a time.
+ */
 public final class SnackbarHelper {
-    private Snackbar snackbar;
     private static final int BACKGROUND_COLOR = 0xbf323232;
+    private final int maxLines = 2;
     public boolean isDismissed = false;
+    private Snackbar snackbar;
 
     public SnackbarHelper() {
     }
 
+    /**
+     * Displays a Snackbar message with a dismiss button.
+     *
+     * @param activity The activity where the Snackbar should be displayed.
+     * @param message  The message to be shown in the Snackbar.
+     */
     public void showMessageWithDismiss(Activity activity, String message) {
         show(activity, message, SnackbarHelper.DismissBehavior.SHOW);
     }
 
+    /**
+     * Displays a Snackbar error message and finishes the activity on dismissal.
+     *
+     * @param activity     The activity where the Snackbar should be displayed.
+     * @param errorMessage The error message to be shown in the Snackbar.
+     */
     public void showError(Activity activity, String errorMessage) {
         show(activity, errorMessage, SnackbarHelper.DismissBehavior.FINISH);
     }
 
+    /**
+     * Displays a Snackbar with the specified message and dismiss behavior.
+     *
+     * @param activity        The activity where the Snackbar should be displayed.
+     * @param message         The message to be shown in the Snackbar.
+     * @param dismissBehavior The dismiss behavior of the Snackbar.
+     */
     private void show(Activity activity, String message,
                       SnackbarHelper.DismissBehavior dismissBehavior) {
         activity.runOnUiThread(() -> {
@@ -46,11 +71,16 @@ public final class SnackbarHelper {
         });
     }
 
+
+    /**
+     * Enumerates the possible dismiss behaviors for the Snackbar.
+     * HIDE: Snackbar will be hidden without any action.
+     * SHOW: Snackbar will display a dismiss button.
+     * FINISH: Snackbar will display a dismiss button and finish the activity on dismissal.
+     */
     private enum DismissBehavior {
         HIDE,
         SHOW,
         FINISH
     }
-
-    private final int maxLines = 2;
 }

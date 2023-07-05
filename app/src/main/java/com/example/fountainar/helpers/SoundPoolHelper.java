@@ -6,6 +6,9 @@ import android.media.SoundPool;
 
 import com.example.fountainar.R;
 
+/**
+ * Helper for managing sound effects using SoundPool.
+ */
 public class SoundPoolHelper {
 
     private final Activity activity;
@@ -18,6 +21,9 @@ public class SoundPoolHelper {
         setupSoundPool();
     }
 
+    /**
+     * Sets up the SoundPool and loads the sound file.
+     */
     private void setupSoundPool() {
         AudioAttributes attributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -31,6 +37,10 @@ public class SoundPoolHelper {
         soundId = soundPool.load(activity, R.raw.fountain_animation_sound, 1);
     }
 
+    /**
+     * Plays the sound effect.
+     * If the sound is already playing, this method has no effect.
+     */
     public void play() {
         if (!soundPoolPlaying) {
             soundPoolPlaying = true;
@@ -38,10 +48,16 @@ public class SoundPoolHelper {
         }
     }
 
+    /**
+     * Pauses the currently playing sound effect.
+     */
     public void pause() {
         soundPool.pause(soundId);
     }
 
+    /**
+     * Releases the SoundPool and associated resources.
+     */
     public void release() {
         soundPool.stop(soundId);
         soundPool.release();

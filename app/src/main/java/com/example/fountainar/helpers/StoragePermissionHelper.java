@@ -35,7 +35,7 @@ public final class StoragePermissionHelper {
     private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
     /**
-     * Check, if we have the necessary reading permissions for this app.
+     * Checks, if we have the necessary reading permissions for this app.
      */
     public static boolean hasReadPermission(Activity activity) {
         return ActivityCompat.checkSelfPermission(activity, READ_PERMISSION)
@@ -43,7 +43,7 @@ public final class StoragePermissionHelper {
     }
 
     /**
-     * Check, if we have the necessary writing permissions for this app.
+     * Checks, if we have the necessary writing permissions for this app.
      */
     public static boolean hasWritePermission(Activity activity) {
         return ActivityCompat.checkSelfPermission(activity, WRITE_PERMISSION)
@@ -51,7 +51,7 @@ public final class StoragePermissionHelper {
     }
 
     /**
-     * Ask for reading storage permission.
+     * Asks for reading storage permission.
      */
     public static void requestReadPermission(Activity activity) {
         ActivityCompat.requestPermissions(
@@ -59,7 +59,7 @@ public final class StoragePermissionHelper {
     }
 
     /**
-     * Ask for writing storage permission.
+     * Asks for writing storage permission.
      */
     public static void requestWritePermission(Activity activity) {
         ActivityCompat.requestPermissions(
@@ -67,14 +67,14 @@ public final class StoragePermissionHelper {
     }
 
     /**
-     * Check, if we need to show the rationale for this permission.
+     * Checks, if we need to show the rationale for this permission.
      */
     public static boolean shouldShowRequestReadPermissionRationale(Activity activity) {
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, READ_PERMISSION);
     }
 
     /**
-     * Launch application settings to grant permission.
+     * Launches application settings to grant permission.
      */
     public static void launchReadPermissionSettings(Activity activity) {
         Intent intent = new Intent();
@@ -84,14 +84,14 @@ public final class StoragePermissionHelper {
     }
 
     /**
-     * Check, if we need to show the rationale for this permission.
+     * Checks, if we need to show the rationale for this permission.
      */
     public static boolean shouldShowRequestWritePermissionRationale(Activity activity) {
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, WRITE_PERMISSION);
     }
 
     /**
-     * Launch application settings to grant permission.
+     * Launches application settings to grant permission.
      */
     public static void launchWritePermissionSettings(Activity activity) {
         Intent intent = new Intent();
@@ -99,5 +99,4 @@ public final class StoragePermissionHelper {
         intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
         activity.startActivity(intent);
     }
-
 }
