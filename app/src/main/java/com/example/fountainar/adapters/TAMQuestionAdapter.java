@@ -141,6 +141,11 @@ public class TAMQuestionAdapter
         private final TextView rightValueText;
         private final RadioGroup answerGroup;
 
+        /**
+         * Creates a new instance of QuestionViewHolder.
+         *
+         * @param itemView The item view for the question item.
+         */
         public QuestionViewHolder(@NonNull View itemView) {
             super(itemView);
             questionText = itemView.findViewById(R.id.question_text);

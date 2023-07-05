@@ -16,18 +16,20 @@ import com.google.android.gms.location.LocationServices;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Earth;
 import com.google.ar.core.GeospatialPose;
-import com.google.ar.core.ResolveAnchorOnTerrainFuture;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.VpsAvailability;
 import com.google.ar.core.VpsAvailabilityFuture;
-import com.google.ar.core.exceptions.ResourceExhaustedException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * Helper for geospatial operations and ARCore functionality.
+ */
 public class GeospatialHelper {
 
     private static final String TAG = GeospatialHelper.class.getSimpleName();
@@ -42,6 +44,7 @@ public class GeospatialHelper {
     public static long localizingStartTimestamp;
     public static State state = State.UNINITIALIZED;
     private final FusedLocationProviderClient fusedLocationClient;
+
     private final QuizHelper quizHelper;
     private final Activity activity;
     private Session session;
@@ -56,6 +59,10 @@ public class GeospatialHelper {
         this.session = session;
     }
 
+    /**
+     * Retrieves the last known device location using the fused location provider.
+     * It then checks the availability of VPS (Visual Positioning System) based on the location.
+     */
     public void getLastLocation() {
         try {
             fusedLocationClient
@@ -77,6 +84,12 @@ public class GeospatialHelper {
         }
     }
 
+    /**
+     * Checks the availability of VPS (Visual Positioning System) based on the given latitude and longitude.
+     *
+     * @param latitude  The latitude coordinate.
+     * @param longitude The longitude coordinate.
+     */
     public void checkVpsAvailability(double latitude, double longitude) {
         ListenableFuture<VpsAvailability> availabilityFuture =
                 checkVpsAvailabilityFuture(latitude, longitude);
@@ -116,6 +129,10 @@ public class GeospatialHelper {
                 });
     }
 
+    /**
+     * Shows a dialog indicating that VPS (Visual Positioning System) is not available.
+     * This dialog is displayed when VPS availability check fails.
+     */
     private void showVpsNotAvailabilityNoticeDialog() {
         DialogFragment dialog = VpsAvailabilityNoticeDialogFragment.createDialog();
         FragmentActivity fragmentActivity = (FragmentActivity) activity;
@@ -124,7 +141,10 @@ public class GeospatialHelper {
     }
 
     /**
-     * Change behavior depending on the current {@link State} of the application.
+     * Updates the geospatial state of the application based on the current state of the Earth
+     * object. It changes the behavior of the application depending on the current state.
+     *
+     * @param earth The Earth object containing information about geospatial tracking.
      */
     public void updateGeospatialState(Earth earth) {
         if (earth.getEarthState() != Earth.EarthState.ENABLED) {
@@ -148,7 +168,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Handle the updating for {State.PRE_TRACKING}. In this state, wait for {@link Earth} to
+     * Handles the updating for {State.PRE_TRACKING}. In this state, wait for {@link Earth} to
      * have {TrackingState.TRACKING}. If it hasn't been enabled by now, then we've encountered
      * an unrecoverable {State.EARTH_STATE_ERROR}.
      */
@@ -159,7 +179,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Handle the updating for {@link State#LOCALIZING}. In this state, wait for the horizontal and
+     * Handles the updating for {@link State#LOCALIZING}. In this state, wait for the horizontal and
      * orientation threshold to improve until it reaches your threshold.
      *
      * <p> If it takes too long for the threshold to be reached, this could mean that GPS data isn't
@@ -190,7 +210,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Handle the updating for {@link State#LOCALIZED}. In this state, check the accuracy for
+     * Handles the updating for {@link State#LOCALIZED}. In this state, check the accuracy for
      * degradation and return to {@link State#LOCALIZING} if the position accuracies have dropped
      * too low.
      */
@@ -209,7 +229,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Place an anchor when geospatial accuracy is high enough.
+     * Places an anchor when geospatial accuracy is high enough.
      */
     private void placeAnchor(Earth earth) {
         if (earth.getTrackingState() != TrackingState.TRACKING) {
@@ -222,7 +242,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Create a terrain anchor at given world coordinates using earth object.
+     * Creates a terrain anchor at given world coordinates using earth object.
      */
     private void createTerrainAnchor(Earth earth, GeospatialPose geospatialPose) {
         double latitude = geospatialPose.getLatitude();
@@ -280,5 +300,4 @@ public class GeospatialHelper {
          */
         LOCALIZED
     }
-
 }

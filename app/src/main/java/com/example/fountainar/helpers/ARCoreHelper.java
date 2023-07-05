@@ -20,6 +20,10 @@ import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 import com.google.ar.core.exceptions.UnsupportedConfigurationException;
 
+/**
+ * Helper for ARCore functionality, including ARCore installation check, session setup,
+ * and session configuration.
+ */
 public class ARCoreHelper {
 
     private static final String TAG = ARCoreHelper.class.getSimpleName();
@@ -34,7 +38,9 @@ public class ARCoreHelper {
     }
 
     /**
-     * @return ARCore is installed and up to date.
+     * Checks if ARCore is supported and up to date on the device.
+     *
+     * @return true if ARCore is installed and up to date, false otherwise.
      */
     public boolean isARCoreSupportedAndUpToDate() {
         ArCoreApk.Availability availability =
@@ -77,7 +83,8 @@ public class ARCoreHelper {
     }
 
     /**
-     * Creates an ARCore session.
+     * Sets up the ARCore session by creating a new session, configuring it, and resuming it.
+     * Displays error messages if any exceptions occur during the setup process.
      */
     public void setupSession() {
         Exception exception = null;
@@ -117,6 +124,11 @@ public class ARCoreHelper {
         }
     }
 
+    /**
+     * Creates a new ARCore session if one doesn't exist. Handles different scenarios such as
+     * requesting ARCore installation, checking camera and location permissions, and handling
+     * exceptions related to ARCore installation and device compatibility.
+     */
     private void createNewSession() {
         Exception exception = null;
         String message = null;
@@ -169,7 +181,8 @@ public class ARCoreHelper {
     }
 
     /**
-     * Configures session with featured settings, if GeospatialMode is supported.
+     * Configures the ARCore session with featured settings, if GeospatialMode is supported.
+     * Sets the GeospatialHelper state and configures the session with the desired settings.
      */
     private void configureSession() {
         if (!session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED)) {

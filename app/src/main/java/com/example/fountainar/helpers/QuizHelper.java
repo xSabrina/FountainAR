@@ -24,8 +24,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Helper for managing the quiz functionality in the AR activity.
+ */
 public class QuizHelper {
     private static final String TAG = QuizHelper.class.getSimpleName();
+
     private final Activity activity;
     private final long startTime;
     private final ArrayList<String> questions = new ArrayList<>();
@@ -39,6 +43,9 @@ public class QuizHelper {
         startTime = System.currentTimeMillis();
     }
 
+    /**
+     * Sets up the quiz by initializing UI elements and event listeners.
+     */
     public void setupQuiz() {
         Button startButton = activity.findViewById(R.id.ar_button_start);
         Button task1Button = activity.findViewById(R.id.ar_button_task1);
@@ -87,6 +94,14 @@ public class QuizHelper {
         });
     }
 
+    /**
+     * Continues the quiz by validating the selected answer and transitioning to the next task or
+     * displaying an error message.
+     *
+     * @param rg            The RadioGroup containing the answer options.
+     * @param currentLayout The layout of the current task.
+     * @param nextLayout    The layout of the next task.
+     */
     private void continueQuiz(RadioGroup rg, RelativeLayout currentLayout,
                               RelativeLayout nextLayout) {
         if (rg.getCheckedRadioButtonId() == -1) {
@@ -100,17 +115,22 @@ public class QuizHelper {
         }
     }
 
+    /**
+     * Saves the time spent on the current task.
+     */
     private void saveTime() {
         long time = (System.currentTimeMillis() - startTime) / 1000 - quizStart;
         String taskDone = activity.getString(R.string.time_spent_task) + " " + time;
         timeSpent.add(taskDone);
     }
 
+    /**
+     * Retrieves the questions and answers from the quiz UI and saves them.
+     */
     private void getQuestionsAndAnswers() {
         questions.add(getTextFromTextView(R.id.ar_tv_task1) + " ");
         questions.add(getTextFromTextView(R.id.ar_tv_task2) + " ");
         questions.add(getTextFromTextView(R.id.ar_tv_task3) + " ");
-
         saveTime();
         setupRadioGroups();
 
@@ -133,17 +153,29 @@ public class QuizHelper {
         }
     }
 
+    /**
+     * Retrieves the text from a TextView based on its ID.
+     *
+     * @param textViewId The ID of the TextView.
+     * @return The text content of the TextView.
+     */
     private String getTextFromTextView(int textViewId) {
         TextView textView = activity.findViewById(textViewId);
         return textView.getText().toString();
     }
 
+    /**
+     * Sets up the list of RadioGroups used for the quiz tasks.
+     */
     private void setupRadioGroups() {
         radioGroups.add(activity.findViewById(R.id.ar_rg_task1));
         radioGroups.add(activity.findViewById(R.id.ar_rg_task2));
         radioGroups.add(activity.findViewById(R.id.ar_rg_task3));
     }
 
+    /**
+     * Saves the answers and associated information to a file.
+     */
     private void saveAnswersToFile() {
         Date date = new Date();
         String dateString = date.toString();
@@ -175,6 +207,11 @@ public class QuizHelper {
         }
     }
 
+    /**
+     * Creates the file to store the quiz answers.
+     *
+     * @return The created File object.
+     */
     private File createdFile() {
         File rootDirectory = new File(activity.getApplicationContext().getFilesDir(),
                 "/Study_Data");

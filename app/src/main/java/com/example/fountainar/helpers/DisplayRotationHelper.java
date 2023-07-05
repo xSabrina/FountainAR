@@ -36,7 +36,7 @@ public final class DisplayRotationHelper implements DisplayListener {
     private int viewportHeight;
 
     /**
-     * Construct the DisplayRotationHelper but does not register the listener yet.
+     * Constructs the DisplayRotationHelper but does not register the listener yet.
      *
      * @param context the Android {@link Context}.
      */
@@ -48,21 +48,21 @@ public final class DisplayRotationHelper implements DisplayListener {
     }
 
     /**
-     * Register the display listener. Should be called from onResume().
+     * Registers the display listener. Should be called from onResume().
      */
     public void onResume() {
         displayManager.registerDisplayListener(this, null);
     }
 
     /**
-     * Unregister the display listener. Should be called from onPause().
+     * Unregisters the display listener. Should be called from onPause().
      */
     public void onPause() {
         displayManager.unregisterDisplayListener(this);
     }
 
     /**
-     * Record a change in surface dimensions. This will be later used by {@link
+     * Records a change in surface dimensions. This will be later used by {@link
      * #updateSessionIfNeeded(Session)}. Should be called from {@link
      * android.opengl.GLSurfaceView.Renderer
      * #onSurfaceChanged(javax.microedition.khronos.opengles.GL10, int, int)}.
@@ -77,7 +77,7 @@ public final class DisplayRotationHelper implements DisplayListener {
     }
 
     /**
-     * Update the session display geometry if a change was posted either by {@link
+     * Updates the session display geometry if a change was posted either by {@link
      * #onSurfaceChanged(int, int)} call or by {@link #onDisplayChanged(int)} system callback. This
      * function should be called explicitly before each call to {@link Session#update()}. This
      * function will also clear the 'pending update' (viewportChanged) flag.

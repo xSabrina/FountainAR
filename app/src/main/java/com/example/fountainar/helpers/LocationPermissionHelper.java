@@ -32,7 +32,7 @@ public final class LocationPermissionHelper {
     private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
     /**
-     * Check, if we have the necessary permissions for this app.
+     * Checks, if we have the necessary permissions for this app.
      */
     public static boolean hasNoFineLocationPermission(Activity activity) {
         return ActivityCompat.checkSelfPermission(activity, LOCATION_PERMISSION)
@@ -40,7 +40,7 @@ public final class LocationPermissionHelper {
     }
 
     /**
-     * Ask for fine location permission.
+     * Asks for fine location permission.
      */
     public static void requestFineLocationPermission(Activity activity) {
         ActivityCompat.requestPermissions(
@@ -48,7 +48,7 @@ public final class LocationPermissionHelper {
     }
 
     /**
-     * Check, if the array of given permissions contains the location permission.
+     * Checks, if the array of given permissions contains the location permission.
      */
     public static boolean hasFineLocationPermissionsResponseInResult(String[] permissions) {
         for (String permission : permissions) {
@@ -61,14 +61,14 @@ public final class LocationPermissionHelper {
     }
 
     /**
-     * Check, if we need to show the rationale for this permission.
+     * Checks, if we need to show the rationale for this permission.
      */
     public static boolean shouldShowRequestPermissionRationale(Activity activity) {
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, LOCATION_PERMISSION);
     }
 
     /**
-     * Launch application settings to grant permission.
+     * Launches application settings to grant permission.
      */
     public static void launchPermissionSettings(Activity activity) {
         Intent intent = new Intent();
