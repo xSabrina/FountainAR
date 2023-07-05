@@ -32,7 +32,7 @@ import com.google.ar.core.Session;
 import java.util.Objects;
 
 /**
- * Manages the AR experience by setting up components, rendering the scene, and handling
+ * Activity to manage the AR experience by setting up components, rendering the scene, and handling
  * permissions. Handles the creation of the AR session, updates the geospatial state, and manages
  * the lifecycle.
  */

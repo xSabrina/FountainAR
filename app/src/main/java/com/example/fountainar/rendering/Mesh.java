@@ -63,7 +63,6 @@ public class Mesh implements Closeable {
   private final PrimitiveMode primitiveMode;
   private final IndexBuffer indexBuffer;
   private final VertexBuffer[] vertexBuffers;
-  private static FloatBuffer textureCoordinates;
 
   /**
    * Constructs a {@link Mesh}.
@@ -129,7 +128,7 @@ public class Mesh implements Closeable {
       Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
       IntBuffer vertexIndices = ObjData.getFaceVertexIndices(obj, 3);
       FloatBuffer localCoordinates = ObjData.getVertices(obj);
-      textureCoordinates = ObjData.getTexCoords(obj, 2);
+      FloatBuffer textureCoordinates = ObjData.getTexCoords(obj, 2);
       FloatBuffer normals = ObjData.getNormals(obj);
 
       VertexBuffer[] vertexBuffers = {

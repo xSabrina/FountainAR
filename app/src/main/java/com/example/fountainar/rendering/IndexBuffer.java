@@ -32,7 +32,7 @@ public class IndexBuffer implements Closeable {
     private final GpuBuffer buffer;
 
     /**
-     * Construct an {@link IndexBuffer} populated with initial data.
+     * Constructs an {@link IndexBuffer} populated with initial data.
      *
      * <p>The GPU buffer will be filled with the data in the <i>direct</i> buffer {@code entries},
      * starting from the beginning of the buffer (not the current cursor position). The cursor
@@ -46,7 +46,7 @@ public class IndexBuffer implements Closeable {
     }
 
     /**
-     * Populate with new data.
+     * Populates with new data.
      *
      * <p>The entire buffer is replaced by the contents of the <i>direct</i> buffer {@code entries}
      * starting from the beginning of the buffer, not the current cursor position. The cursor will
@@ -60,15 +60,28 @@ public class IndexBuffer implements Closeable {
         buffer.set(entries);
     }
 
+    /**
+     * Closes the GpuIntBuffer and frees the associated GPU resources.
+     */
     @Override
     public void close() {
         buffer.free();
     }
 
+    /**
+     * Retrieves the buffer object ID.
+     *
+     * @return The buffer object ID.
+     */
     int getBufferId() {
         return buffer.getBufferId();
     }
 
+    /**
+     * Retrieves the size of the buffer.
+     *
+     * @return The size of the buffer.
+     */
     int getSize() {
         return buffer.getSize();
     }

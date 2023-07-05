@@ -3,6 +3,9 @@ package com.example.fountainar.items;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+/**
+ * A question item with its associated properties and methods.
+ */
 public class QuestionItem {
     private final String question;
     private RadioGroup answerGroup;
@@ -13,19 +16,38 @@ public class QuestionItem {
         this.question = question;
     }
 
+    /**
+     * Returns the question text.
+     *
+     * @return The question text.
+     */
     public String getQuestion() {
         return question;
     }
 
-
+    /**
+     * Returns the ID of the selected answer.
+     *
+     * @return The ID of the selected answer.
+     */
     public int getSelectedAnswerId() {
         return selectedId;
     }
 
+    /**
+     * Sets the ID of the selected answer.
+     *
+     * @param selectedId The ID of the selected answer.
+     */
     public void setSelectedAnswerId(int selectedId) {
         this.selectedId = selectedId;
     }
 
+    /**
+     * Returns the selected answer as a string.
+     *
+     * @return The selected answer as a string.
+     */
     public String getSelectedAnswer() {
         if (answerGroup != null) {
             RadioButton radioButton = answerGroup.findViewById(selectedId);
@@ -37,14 +59,29 @@ public class QuestionItem {
         }
     }
 
+    /**
+     * Sets the answer RadioGroup for the question.
+     *
+     * @param answerGroup The RadioGroup containing the answer options.
+     */
     public void setAnswerGroup(RadioGroup answerGroup) {
         this.answerGroup = answerGroup;
     }
 
+    /**
+     * Returns the background color of the question item.
+     *
+     * @return The background color of the question item.
+     */
     public int getBackgroundColor() {
         return backgroundColor;
     }
 
+    /**
+     * Sets the background color of the question item.
+     *
+     * @param backgroundColor The background color of the question item.
+     */
     public void setBackgroundColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
     }

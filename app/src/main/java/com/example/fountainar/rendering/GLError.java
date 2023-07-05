@@ -34,7 +34,11 @@ public class GLError {
     }
 
     /**
-     * Throw a {@link GLException} if a GL error occurred.
+     * Throws a {@link GLException} if a GL error occurred.
+     *
+     * @param reason The reason for the GL error.
+     * @param api    The name of the GL API function.
+     * @throws GLException If a GL error occurred.
      */
     public static void maybeThrowGLException(String reason, String api) {
         List<Integer> errorCodes = getGlErrors();
@@ -45,7 +49,12 @@ public class GLError {
     }
 
     /**
-     * Log a message with the given logcat priority if a GL error occurred.
+     * Logs a message with the given logcat priority if a GL error occurred.
+     *
+     * @param priority The logcat priority level.
+     * @param tag      The tag to identify the log message.
+     * @param reason   The reason for the GL error.
+     * @param api      The name of the GL API function.
      */
     public static void maybeLogGLError(int priority, String tag, String reason, String api) {
         List<Integer> errorCodes = getGlErrors();
@@ -55,6 +64,14 @@ public class GLError {
         }
     }
 
+    /**
+     * Formats the error message with the GL error codes.
+     *
+     * @param reason     The reason for the GL error.
+     * @param api        The name of the GL API function.
+     * @param errorCodes The list of GL error codes.
+     * @return The formatted error message.
+     */
     @SuppressLint("DefaultLocale")
     private static String formatErrorMessage(String reason, String api, List<Integer> errorCodes) {
         StringBuilder builder = new StringBuilder(String.format("%s: %s: ", reason, api));
@@ -72,6 +89,11 @@ public class GLError {
         return builder.toString();
     }
 
+    /**
+     * Retrieves the GL error codes.
+     *
+     * @return The list of GL error codes, or null if no error occurred.
+     */
     private static List<Integer> getGlErrors() {
         int errorCode = GLES30.glGetError();
 

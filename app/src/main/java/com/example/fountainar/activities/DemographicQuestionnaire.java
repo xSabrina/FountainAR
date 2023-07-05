@@ -39,10 +39,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * The DemographicQuestionnaire class represents an activity for users to fill out a demographic
- * questionnaire. It manages the layout components, validates input fields, saves data to a file,
- * and provides visual feedback. The activity handles permission checks, extracts questions and
- * answers, and highlights missing fields.
+ * Activity for users to fill out a demographic questionnaire. It manages the layout components,
+ * validates input fields, saves data to a file, and provides visual feedback. The activity handles
+ * permission checks, extracts questions and answers, and highlights missing fields.
  */
 public class DemographicQuestionnaire extends AppCompatActivity {
 

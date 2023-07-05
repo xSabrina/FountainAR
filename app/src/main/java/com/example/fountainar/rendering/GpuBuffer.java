@@ -80,6 +80,11 @@ class GpuBuffer {
         }
     }
 
+    /**
+     * Sets the buffer entries.
+     *
+     * @param entries The buffer entries to set.
+     */
     public void set(Buffer entries) {
         if (entries == null || entries.limit() == 0) {
             size = 0;
@@ -113,6 +118,9 @@ class GpuBuffer {
         }
     }
 
+    /**
+     * Frees the buffer object.
+     */
     public void free() {
         if (bufferId[0] != 0) {
             GLES30.glDeleteBuffers(1, bufferId, 0);
@@ -122,10 +130,20 @@ class GpuBuffer {
         }
     }
 
+    /**
+     * Retrieves the buffer object ID.
+     *
+     * @return The buffer object ID.
+     */
     public int getBufferId() {
         return bufferId[0];
     }
 
+    /**
+     * Retrieves the size of the buffer.
+     *
+     * @return The size of the buffer.
+     */
     public int getSize() {
         return size;
     }
