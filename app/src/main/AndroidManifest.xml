@@ -72,12 +72,7 @@
             android:name="com.google.ar.core"
             android:value="required" />
 
-        <meta-data
-            android:name="com.google.android.ar.API_KEY"
-            android:value="AIzaSyDG7P_5zZ1Dz_ItvqdrKjislYs_Ho5ksII" />
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDG7P_5zZ1Dz_ItvqdrKjislYs_Ho5ksII" />
+
 
     </application>
 

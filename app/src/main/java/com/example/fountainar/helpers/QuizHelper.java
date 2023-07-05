@@ -18,7 +18,6 @@ import com.example.fountainar.activities.DemographicQuestionnaire;
 import com.example.fountainar.activities.TAMQuestionnaire;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -51,13 +50,17 @@ public class QuizHelper {
         RelativeLayout task2Layout = activity.findViewById(R.id.ar_layout_task2);
         RelativeLayout task3Layout = activity.findViewById(R.id.ar_layout_task3);
 
-        activity.runOnUiThread(() -> {
-            TextView instructions = activity.findViewById(R.id.ar_layout_instructions_text);
-            instructions.setText(R.string.ar_quiz_instructions);
-            TextView title = activity.findViewById(R.id.ar_quiz_title);
-            title.setText(R.string.faculty_fountain);
-            startButton.setVisibility(View.VISIBLE);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView instructions = activity.findViewById(R.id.ar_layout_instructions_text);
+                instructions.setText(R.string.ar_quiz_instructions);
+                TextView title = activity.findViewById(R.id.ar_quiz_title);
+                title.setText(R.string.faculty_fountain);
+                startButton.setVisibility(View.VISIBLE);
+            }
         });
+
 
         startButton.setOnClickListener(view -> {
             instructionsLayout.setVisibility(View.GONE);
@@ -125,7 +128,8 @@ public class QuizHelper {
                 correctness = "Correct";
             } else if (i == 1 && answer.equals(activity.getString(R.string.ar_answer_task2_5))) {
                 correctness = "Correct";
-            } else if (i == 2 && answer.equals(activity.getString(R.string.ar_answer_task3_bronze))) {
+            } else if (i == 2 && answer.equals(activity
+                    .getString(R.string.ar_answer_task3_bronze))) {
                 correctness = "Correct";
             }
 
@@ -155,26 +159,22 @@ public class QuizHelper {
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
-            try {
-                osw.write(activity.getString(R.string.dq_q1) + " "
-                        + DemographicQuestionnaire.probNum + "\n\n" + dateString + "\n"
-                        + timeOverallSpent + "\n\n");
+            osw.write(activity.getString(R.string.dq_q1) + " "
+                    + DemographicQuestionnaire.probNum + "\n\n" + dateString + "\n"
+                    + timeOverallSpent + "\n\n");
 
-                for (int i = 0; i < questions.size(); i++) {
-                    osw.write(questions.get(i));
-                    osw.write("\n");
-                    osw.write(answers.get(i));
-                    osw.write("\n");
-                    osw.write(timeSpent.get(i));
-                    osw.write("\n\n");
-                }
-
-                osw.flush();
-                osw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            for (int i = 0; i < questions.size(); i++) {
+                osw.write(questions.get(i));
+                osw.write("\n");
+                osw.write(answers.get(i));
+                osw.write("\n");
+                osw.write(timeSpent.get(i));
+                osw.write("\n\n");
             }
-        } catch (FileNotFoundException e) {
+
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

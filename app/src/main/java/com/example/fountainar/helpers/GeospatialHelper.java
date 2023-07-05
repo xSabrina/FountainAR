@@ -80,6 +80,7 @@ public class GeospatialHelper {
     public void checkVpsAvailability(double latitude, double longitude) {
         ListenableFuture<VpsAvailability> availabilityFuture =
                 checkVpsAvailabilityFuture(latitude, longitude);
+
         Futures.addCallback(
                 availabilityFuture,
                 new FutureCallback<VpsAvailability>() {
@@ -96,7 +97,8 @@ public class GeospatialHelper {
                         Log.e(TAG, "Error checking VPS availability", t);
                     }
                 },
-                activity.getMainExecutor());
+                activity.getMainExecutor()
+        );
     }
 
     /**
@@ -122,7 +124,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Changes behavior depending on the current {@link State} of the application.
+     * Change behavior depending on the current {@link State} of the application.
      */
     public void updateGeospatialState(Earth earth) {
         if (earth.getEarthState() != Earth.EarthState.ENABLED) {
@@ -146,7 +148,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Handles the updating for {State.PRE_TRACKING}. In this state, wait for {@link Earth} to
+     * Handle the updating for {State.PRE_TRACKING}. In this state, wait for {@link Earth} to
      * have {TrackingState.TRACKING}. If it hasn't been enabled by now, then we've encountered
      * an unrecoverable {State.EARTH_STATE_ERROR}.
      */
@@ -157,7 +159,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Handles the updating for {@link State#LOCALIZING}. In this state, wait for the horizontal and
+     * Handle the updating for {@link State#LOCALIZING}. In this state, wait for the horizontal and
      * orientation threshold to improve until it reaches your threshold.
      *
      * <p> If it takes too long for the threshold to be reached, this could mean that GPS data isn't
@@ -188,7 +190,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Handles the updating for {@link State#LOCALIZED}. In this state, check the accuracy for
+     * Handle the updating for {@link State#LOCALIZED}. In this state, check the accuracy for
      * degradation and return to {@link State#LOCALIZING} if the position accuracies have dropped
      * too low.
      */
@@ -207,7 +209,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Places an anchor when geospatial accuracy is high enough.
+     * Place an anchor when geospatial accuracy is high enough.
      */
     private void placeAnchor(Earth earth) {
         if (earth.getTrackingState() != TrackingState.TRACKING) {
@@ -220,33 +222,30 @@ public class GeospatialHelper {
     }
 
     /**
-     * Creates a terrain anchor at given world coordinates using earth object.
+     * Create a terrain anchor at given world coordinates using earth object.
      */
     private void createTerrainAnchor(Earth earth, GeospatialPose geospatialPose) {
         double latitude = geospatialPose.getLatitude();
         double longitude = geospatialPose.getLongitude();
         float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
 
-        final ResolveAnchorOnTerrainFuture future =
-                earth.resolveAnchorOnTerrainAsync(
-                        latitude,
-                        longitude,
-                        0.0f,
-                        quaternion[0],
-                        quaternion[1],
-                        quaternion[2],
-                        quaternion[3],
-                        (anchor, state) -> {
-                            if (state == Anchor.TerrainAnchorState.SUCCESS) {
-                                ARActivity.anchor = anchor;
-                            } else {
-                                ARActivity.snackbarHelper.showMessageWithDismiss(activity,
-                                        activity.getString(R.string.error_create_anchor));
-                                Log.e(TAG, "Exception creating terrain anchor");
-                            }
-                        });
-
-
+        earth.resolveAnchorOnTerrainAsync(
+                latitude,
+                longitude,
+                0.0f,
+                quaternion[0],
+                quaternion[1],
+                quaternion[2],
+                quaternion[3],
+                (anchor, state) -> {
+                    if (state == Anchor.TerrainAnchorState.SUCCESS) {
+                        ARActivity.anchor = anchor;
+                    } else {
+                        ARActivity.snackbarHelper.showMessageWithDismiss(activity,
+                                activity.getString(R.string.error_create_anchor));
+                        Log.e(TAG, "Exception creating terrain anchor");
+                    }
+                });
     }
 
     public enum State {

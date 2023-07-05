@@ -47,8 +47,8 @@ public class SceneRenderer {
     public Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
-    private final static int waterjetsStart = 160;
-    private final static int waterjetsEnd = 170;
+    private final static int waterJetsStart = 160;
+    private final static int waterJetsEnd = 165;
     private SoundPoolHelper soundPoolHelper;
 
     public SceneRenderer(Activity activity) {
@@ -114,15 +114,13 @@ public class SceneRenderer {
 
             if (isSubjectGroupWithAnimation) {
                 virtualWaterShader = Shader.createFromAssets(
-                        render,
-                        "shaders/water.vert",
-                        "shaders/water.frag",
-                        null);
+                        render, "shaders/water.vert",
+                        "shaders/water.frag", null);
 
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/Water_Surface.obj");
 
-                for (int i = waterjetsStart; i < waterjetsEnd; i++) {
+                for (int i = waterJetsStart; i < waterJetsEnd; i++) {
                     virtualWaterJetMeshes.add(Mesh.createFromAsset(render,
                             "models/animation/Fountain_Animated" + i + ".obj"));
                 }
@@ -130,7 +128,6 @@ public class SceneRenderer {
 
             backgroundRenderer.setUseDepthVisualization(render, false);
             backgroundRenderer.setUseOcclusion(render, false);
-
         } catch (IOException e) {
             Log.e(TAG, "Failed to read a required asset file", e);
             ARActivity.snackbarHelper.showError(activity,
@@ -157,10 +154,8 @@ public class SceneRenderer {
         }
 
         Camera camera = frame.getCamera();
-
         backgroundRenderer.updateDisplayGeometry(frame);
         trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
-
         backgroundRenderer.drawBackground(render);
 
         if (camera.getTrackingState() != TrackingState.TRACKING) {
@@ -175,7 +170,7 @@ public class SceneRenderer {
     }
 
     /**
-     * Gets projection and camera matrices, visualize planes and virtual object and
+     * Get projection and camera matrices, visualize planes and virtual object and
      * compose virtual scene with background.
      */
     private void drawVirtualObjects(Camera camera, CustomRender render, Anchor anchor)
@@ -196,14 +191,10 @@ public class SceneRenderer {
                     rotationModelMatrix, 0);
             Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0,
                     modelViewMatrix, 0);
-
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     modelViewProjectionMatrix);
-
             render.draw(virtualFountainMesh, virtualFountainShader,
                     virtualSceneFramebuffer);
-
-            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             if (isSubjectGroupWithAnimation) {
                 Mesh virtualWaterJetMesh = virtualWaterJetMeshes.get(meshCounter);
@@ -213,13 +204,26 @@ public class SceneRenderer {
                     meshCounter = 0;
                 }
 
-                virtualWaterShader.setMat4("uMVPMatrix", modelViewProjectionMatrix);
+                float[] normalMatrix = new float[9];
+                normalMatrix[0] = modelViewMatrix[0];
+                normalMatrix[1] = modelViewMatrix[1];
+                normalMatrix[2] = modelViewMatrix[2];
+                normalMatrix[3] = modelViewMatrix[4];
+                normalMatrix[4] = modelViewMatrix[5];
+                normalMatrix[5] = modelViewMatrix[6];
+                normalMatrix[6] = modelViewMatrix[8];
+                normalMatrix[7] = modelViewMatrix[9];
+                normalMatrix[8] = modelViewMatrix[10];
+
+                virtualWaterShader.setMat3("u_NormalView", normalMatrix);
+                virtualWaterShader.setMat4("u_ModelViewProjection",
+                        modelViewProjectionMatrix);
                 render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
                 render.draw(virtualWaterJetMesh, virtualWaterShader, virtualSceneFramebuffer);
-                backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
                 soundPoolHelper.play();
-
             }
+
+            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
         }
     }
 

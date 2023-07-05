@@ -1,7 +1,6 @@
 package com.example.fountainar.helpers;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.util.Log;
 
 import com.example.fountainar.R;
@@ -46,10 +45,12 @@ public class ARCoreHelper {
                 return true;
 
             case SUPPORTED_APK_TOO_OLD:
+
             case SUPPORTED_NOT_INSTALLED:
                 try {
-                    ArCoreApk.InstallStatus installStatus = ArCoreApk.getInstance().
-                            requestInstall(activity, true);
+                    ArCoreApk.InstallStatus installStatus =
+                            ArCoreApk.getInstance().
+                                    requestInstall(activity, true);
                     switch (installStatus) {
                         case INSTALL_REQUESTED:
                             Log.i(TAG, "ARCore installation requested");
@@ -63,12 +64,15 @@ public class ARCoreHelper {
                 return false;
 
             case UNSUPPORTED_DEVICE_NOT_CAPABLE:
-            case UNKNOWN_CHECKING:
-            case UNKNOWN_ERROR:
-            case UNKNOWN_TIMED_OUT:
                 return false;
-        }
 
+            case UNKNOWN_CHECKING:
+
+            case UNKNOWN_ERROR:
+
+            case UNKNOWN_TIMED_OUT:
+
+        }
         return false;
     }
 
@@ -76,76 +80,91 @@ public class ARCoreHelper {
      * Creates an ARCore session.
      */
     public void setupSession() {
-        try {
-            if (session == null) {
-                createNewSession();
-                ARActivity.geospatialHelper.setSession(session);
-            } else {
-                ARActivity.geospatialHelper.getLastLocation();
-            }
+        Exception exception = null;
+        String message = null;
 
+        if (session == null) {
+            createNewSession();
+            ARActivity.geospatialHelper.setSession(session);
+        } else {
+            ARActivity.geospatialHelper.getLastLocation();
+        }
+
+        try {
             configureSession();
             session.resume();
-        } catch (Exception e) {
-            String message;
+        } catch (CameraNotAvailableException e) {
+            message = String.valueOf(R.string.cam_not_available);
+            exception = e;
+        } catch (GooglePlayServicesLocationLibraryNotLinkedException e) {
+            message = String.valueOf(R.string.proguard_error);
+            exception = e;
+        } catch (FineLocationPermissionNotGrantedException e) {
+            message = String.valueOf(R.string.no_permission_fine_location);
+            exception = e;
+        } catch (UnsupportedConfigurationException e) {
+            message = String.valueOf(R.string.geospatial_not_supported);
+            exception = e;
+        } catch (SecurityException e) {
+            message = String.valueOf(R.string.cam_or_network_error);
+            exception = e;
+        }
 
-            if (e instanceof CameraNotAvailableException) {
-                message = String.valueOf(R.string.cam_not_available);
-            } else if (e instanceof GooglePlayServicesLocationLibraryNotLinkedException) {
-                message = String.valueOf(R.string.proguard_error);
-            } else if (e instanceof FineLocationPermissionNotGrantedException) {
-                message = String.valueOf(R.string.no_permission_fine_location);
-            } else if (e instanceof UnsupportedConfigurationException) {
-                message = String.valueOf(R.string.geospatial_not_supported);
-            } else if (e instanceof SecurityException) {
-                message = String.valueOf(R.string.cam_or_network_error);
-            } else {
-                message = String.valueOf(R.string.session_create_or_config_error);
-            }
-
+        if (message != null) {
             session = null;
             ARActivity.snackbarHelper.showError(activity, message);
-            Log.e(TAG, message, e);
+            Log.e(TAG, String.valueOf(R.string.session_create_or_config_error), exception);
         }
     }
 
     private void createNewSession() {
+        Exception exception = null;
+        String message = null;
+
         try {
-            if (ArCoreApk.getInstance().requestInstall(activity, !installRequested)
-                    == ArCoreApk.InstallStatus.INSTALL_REQUESTED) {
-                installRequested = true;
-                return;
+            switch (ArCoreApk.getInstance().requestInstall(activity,
+                    !installRequested)) {
+                case INSTALL_REQUESTED:
+                    installRequested = true;
+                    return;
+                case INSTALLED:
+                    break;
             }
 
             if (CameraPermissionHelper.hasNoCameraPermission(activity)) {
                 CameraPermissionHelper.requestCameraPermission(activity);
+
                 return;
             }
 
             if (LocationPermissionHelper.hasNoFineLocationPermission(activity)) {
                 LocationPermissionHelper.requestFineLocationPermission(activity);
+
                 return;
             }
 
             session = new Session(activity);
+        } catch (UnavailableArcoreNotInstalledException
+                 | UnavailableUserDeclinedInstallationException e) {
+            message = String.valueOf(R.string.install_arcore);
+            exception = e;
+        } catch (UnavailableApkTooOldException e) {
+            message = String.valueOf(R.string.update_arcore);
+            exception = e;
+        } catch (UnavailableSdkTooOldException e) {
+            message = String.valueOf(R.string.update_app);
+            exception = e;
+        } catch (UnavailableDeviceNotCompatibleException e) {
+            message = String.valueOf(R.string.ar_not_supported);
+            exception = e;
         } catch (Exception e) {
-            String message;
+            message = String.valueOf(R.string.ar_session_failed);
+            exception = e;
+        }
 
-            if (e instanceof UnavailableArcoreNotInstalledException
-                    || e instanceof UnavailableUserDeclinedInstallationException) {
-                message = String.valueOf(R.string.install_arcore);
-            } else if (e instanceof UnavailableApkTooOldException) {
-                message = String.valueOf(R.string.update_arcore);
-            } else if (e instanceof UnavailableSdkTooOldException) {
-                message = String.valueOf(R.string.update_app);
-            } else if (e instanceof UnavailableDeviceNotCompatibleException) {
-                message = String.valueOf(R.string.ar_not_supported);
-            } else {
-                message = String.valueOf(R.string.ar_session_failed);
-            }
-
+        if (message != null) {
             ARActivity.snackbarHelper.showError(activity, message);
-            Log.e(TAG, "Error creating session", e);
+            Log.e(TAG, "Error creating session", exception);
         }
     }
 
@@ -163,9 +182,9 @@ public class ARCoreHelper {
 
         Config config = session.getConfig();
         config.setGeospatialMode(Config.GeospatialMode.ENABLED);
-        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
+        config.setDepthMode(Config.DepthMode.DISABLED);
         depthSettings.setUseDepthForOcclusion(false);
-        depthSettings.setDepthColorVisualizationEnabled(false);
+        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
         session.configure(config);
     }
 

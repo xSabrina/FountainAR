@@ -44,28 +44,28 @@ public class CustomRender {
             0);
 
     glSurfaceView.setRenderer(
-        new GLSurfaceView.Renderer() {
+            new GLSurfaceView.Renderer() {
 
-          @Override
-          public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-            GLES30.glEnable(GLES30.GL_BLEND);
-            GLError.maybeThrowGLException("Failed to enable blending", "glEnable");
-            renderer.onSurfaceCreated(CustomRender.this);
-          }
+              @Override
+              public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+                GLES30.glEnable(GLES30.GL_BLEND);
+                GLError.maybeThrowGLException("Failed to enable blending", "glEnable");
+                renderer.onSurfaceCreated(CustomRender.this);
+              }
 
-          @Override
-          public void onSurfaceChanged(GL10 gl, int w, int h) {
-            viewportWidth = w;
-            viewportHeight = h;
-            renderer.onSurfaceChanged(CustomRender.this, w, h);
-          }
+              @Override
+              public void onSurfaceChanged(GL10 gl, int w, int h) {
+                viewportWidth = w;
+                viewportHeight = h;
+                renderer.onSurfaceChanged(CustomRender.this, w, h);
+              }
 
-          @Override
-          public void onDrawFrame(GL10 gl) {
-            clear(null, 0f, 0f, 0f, 1f);
-            renderer.onDrawFrame(CustomRender.this);
-          }
-        });
+              @Override
+              public void onDrawFrame(GL10 gl) {
+                clear(null, 0f, 0f, 0f, 1f);
+                renderer.onDrawFrame(CustomRender.this);
+              }
+            });
 
     glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     glSurfaceView.setWillNotDraw(false);
