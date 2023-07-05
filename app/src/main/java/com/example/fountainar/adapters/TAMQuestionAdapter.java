@@ -19,6 +19,11 @@ import com.example.fountainar.items.QuestionItem;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Adapter to manage the display and interaction of TAM (Technology Acceptance Model) questions in
+ * a RecyclerView. Provides methods to retrieve selected answers, update background colors, and
+ * check if all radio groups are finished.
+ */
 public class TAMQuestionAdapter
         extends RecyclerView.Adapter<TAMQuestionAdapter.QuestionViewHolder> {
 
@@ -36,11 +41,19 @@ public class TAMQuestionAdapter
         }
     }
 
+    /**
+     * Inflates the layout for a question item and creates a new QuestionViewHolder.
+     *
+     * @param parent   The parent ViewGroup.
+     * @param viewType The view type.
+     * @return The created QuestionViewHolder.
+     */
     @NonNull
     @Override
     public QuestionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.tam_item, parent,
                 false);
+
         return new QuestionViewHolder(view);
     }
 
@@ -49,11 +62,22 @@ public class TAMQuestionAdapter
         holder.bind(position);
     }
 
+    /**
+     * Returns the number of questions in the data set.
+     *
+     * @return The number of questions.
+     */
     @Override
     public int getItemCount() {
         return questions.size();
     }
 
+    /**
+     * Checks if all radio groups have a selected answer.
+     *
+     * @param recyclerView The RecyclerView containing the radio groups.
+     * @return true if all radio groups have a selected answer, false otherwise.
+     */
     public boolean everyRadioGroupFinished(RecyclerView recyclerView) {
         for (int i = 0; i < questionItems.size(); i++) {
             if (questionItems.get(i).getSelectedAnswerId() == -1) {
@@ -70,10 +94,20 @@ public class TAMQuestionAdapter
         return true;
     }
 
+    /**
+     * Returns the list of questions.
+     *
+     * @return The list of questions.
+     */
     public List<String> getQuestions() {
         return questions;
     }
 
+    /**
+     * Returns a list of selected answer values.
+     *
+     * @return The list of selected answer values.
+     */
     public List<String> getAnswerValues() {
         List<String> checkedValues = new ArrayList<>();
 
@@ -85,6 +119,9 @@ public class TAMQuestionAdapter
         return checkedValues;
     }
 
+    /**
+     * Updates the background colors of the question items based on selected answers.
+     */
     @SuppressLint("NotifyDataSetChanged")
     public void updateBackgroundColors() {
         for (QuestionItem questionItem : questionItems) {
@@ -134,6 +171,11 @@ public class TAMQuestionAdapter
             }
         }
 
+        /**
+         * Sets the text values for the left and right scale of a question.
+         *
+         * @param question The question text.
+         */
         private void setScaleTextValues(String question) {
             int leftValueResId, rightValueResId;
 
