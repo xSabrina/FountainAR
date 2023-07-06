@@ -229,9 +229,8 @@ public class SceneRenderer {
                 virtualWaterShader.setMat4("u_ModelViewProjection",
                         MODEL_VIEW_PROJECTION_MATRIX);
 
-                float[] lightDirection = {0.0f, 1.0f, 0.0f}; // Example: light coming from above
+                float[] lightDirection = {0.0f, 1.0f, 0.0f};
                 virtualWaterShader.setVec3("u_LightDirection", lightDirection);
-                // Set the camera position uniform
                 float[] cameraPosition = camera.getPose().getTranslation();
                 virtualWaterShader.setVec3("u_CameraPosition", cameraPosition);
 
