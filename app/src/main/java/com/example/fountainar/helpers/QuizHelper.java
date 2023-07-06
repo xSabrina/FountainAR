@@ -94,71 +94,85 @@ public class QuizHelper {
         });
     }
 
+    /**
+     * Checks the radio group for a selected answer and updates the UI elements, saves the answers,
+     * and navigates to the next question or the next activity depending on questionNum.
+     *
+     * @param nextTask    The text for the next task/question.
+     * @param questionNum The current question number.
+     */
     @SuppressLint("DiscouragedApi")
     private void checkRadioGroup(String nextTask, int questionNum) {
-        int color;
+        int color = radioGroup.getCheckedRadioButtonId() == -1 ?
+                ContextCompat.getColor(ACTIVITY, R.color.red_light) :
+                ContextCompat.getColor(ACTIVITY, R.color.white);
+        questionStarted = radioGroup.getCheckedRadioButtonId() != -1;
+        radioGroup.setBackgroundColor(color);
+
         if (radioGroup.getCheckedRadioButtonId() == -1) {
-            questionStarted = false;
-            color = ContextCompat.getColor(ACTIVITY, R.color.red_light);
-            radioGroup.setBackgroundColor(color);
             Toast.makeText(ACTIVITY.getApplicationContext(), R.string.ar_missing_answer,
                     Toast.LENGTH_SHORT).show();
-        } else {
-            questionStarted = true;
-            color = ContextCompat.getColor(ACTIVITY, R.color.white);
-            getQuestionsAndAnswers(questionNum);
-            if (questionNum < 3) {
-                radioGroup.clearCheck();
-                task.setText(nextTask);
-
-                String[] answerTaskIds = {
-                        "ar_answer_task" + (questionNum + 1) + "_1",
-                        "ar_answer_task" + (questionNum + 1) + "_2",
-                        "ar_answer_task" + (questionNum + 1) + "_3",
-                        "ar_answer_task" + (questionNum + 1) + "_4"
-                };
-
-                for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                    RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
-                    String answerTaskId = answerTaskIds[i];
-                    int resourceId = ACTIVITY.getResources().getIdentifier(answerTaskId,
-                            "string", ACTIVITY.getPackageName());
-                    String answerText = ACTIVITY.getString(resourceId);
-                    radioButton.setText(answerText);
-                }
-            } else {
-                saveAnswersToFile();
-                Intent intent = new Intent(ACTIVITY.getApplicationContext(),
-                        TAMQuestionnaire.class);
-                ACTIVITY.startActivity(intent);
-            }
+            return;
         }
-        radioGroup.setBackgroundColor(color);
+
+        getQuestionsAndAnswers(questionNum);
+
+        if (questionNum < 3) {
+            radioGroup.clearCheck();
+            task.setText(nextTask);
+
+            String[] answerTaskIds = {
+                    "ar_answer_task" + (questionNum + 1) + "_1",
+                    "ar_answer_task" + (questionNum + 1) + "_2",
+                    "ar_answer_task" + (questionNum + 1) + "_3",
+                    "ar_answer_task" + (questionNum + 1) + "_4"
+            };
+
+            for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
+                String answerTaskId = answerTaskIds[i];
+                int resourceId = ACTIVITY.getResources().getIdentifier(answerTaskId,
+                        "string", ACTIVITY.getPackageName());
+                String answerText = ACTIVITY.getString(resourceId);
+                radioButton.setText(answerText);
+            }
+        } else {
+            saveAnswersToFile();
+            Intent intent = new Intent(ACTIVITY.getApplicationContext(), TAMQuestionnaire.class);
+            ACTIVITY.startActivity(intent);
+        }
     }
 
     /**
      * Retrieves the questions and answers from the quiz UI and saves them.
      */
     private void getQuestionsAndAnswers(int questionNum) {
-        QUESTIONS.add(getTextFromTextView(R.id.ar_tv_task) + " ");
+        String question = getTextFromTextView(R.id.ar_tv_task) + " ";
+        QUESTIONS.add(question);
         saveTime();
+
         int checkedId = radioGroup.getCheckedRadioButtonId();
         RadioButton radioButton = ACTIVITY.findViewById(checkedId);
         String answer = radioButton.getText().toString();
-        String correctness = "False";
+        String correctness = isAnswerCorrect(questionNum, answer) ? "Correct" : "False";
 
-        if (questionNum == 1 && answer.equals(ACTIVITY.getString(R.string.ar_answer_task1_4))) {
-            correctness = "Correct";
-        } else if (questionNum == 2 && answer.equals(ACTIVITY.getString(
-                R.string.ar_answer_task2_1))) {
-            correctness = "Correct";
-        } else if (questionNum == 3 && answer.equals(ACTIVITY.getString(
-                R.string.ar_answer_task3_3))) {
-            correctness = "Correct";
-        }
-
-        ANSWERS.add(answer + "\n" + correctness);
+        String answerWithCorrectness = answer + "\n" + correctness;
+        ANSWERS.add(answerWithCorrectness);
     }
+
+    private boolean isAnswerCorrect(int questionNum, String answer) {
+        switch (questionNum) {
+            case 1:
+                return answer.equals(ACTIVITY.getString(R.string.ar_answer_task1_4));
+            case 2:
+                return answer.equals(ACTIVITY.getString(R.string.ar_answer_task2_1));
+            case 3:
+                return answer.equals(ACTIVITY.getString(R.string.ar_answer_task3_3));
+            default:
+                return false;
+        }
+    }
+
 
     /**
      * Calculates and saves the time spent on the current task/question and stores it in the
@@ -189,22 +203,19 @@ public class QuizHelper {
     }
 
     /**
-     * Saves the answers and associated information to a file.
+     * Saves the answers and associated questions and time spent for each to a file.
      */
     private void saveAnswersToFile() {
         Date date = new Date();
         String dateString = date.toString();
-        String timeOverallSpent = ACTIVITY.getString(R.string.time_spent_ar) + " "
-                + ((System.currentTimeMillis() - AR_START_TIME) / 1000);
+        long timeOverallSpent = (System.currentTimeMillis() - AR_START_TIME) / 1000;
         File file = createdFile();
 
-        try {
-            FileOutputStream fOut = new FileOutputStream(file);
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-
+        try (FileOutputStream fOut = new FileOutputStream(file);
+             OutputStreamWriter osw = new OutputStreamWriter(fOut)) {
             osw.write(ACTIVITY.getString(R.string.dq_q1) + " "
                     + DemographicQuestionnaire.probNum + "\n\n" + dateString + "\n"
-                    + timeOverallSpent + "\n\n");
+                    + ACTIVITY.getString(R.string.time_spent_ar) + " " + timeOverallSpent + "\n\n");
 
             for (int i = 0; i < QUESTIONS.size(); i++) {
                 osw.write(QUESTIONS.get(i));
@@ -216,7 +227,6 @@ public class QuizHelper {
             }
 
             osw.flush();
-            osw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
