@@ -1,6 +1,7 @@
 package com.example.fountainar.rendering;
 
 import android.app.Activity;
+import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -124,7 +125,6 @@ public class SceneRenderer {
                 virtualWaterShader = Shader.createFromAssets(
                         render, "shaders/water.vert",
                         "shaders/water.frag", null);
-                virtualWaterShader.setTexture("u_DfgTexture", dfgTexture);
 
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/Water_Surface.obj");
@@ -136,7 +136,7 @@ public class SceneRenderer {
             }
 
             backgroundRenderer.setUseDepthVisualization(render, false);
-            backgroundRenderer.setUseOcclusion(render, false);
+            backgroundRenderer.setUseOcclusion(render, true);
         } catch (IOException e) {
             Log.e(TAG, "Failed to read a required asset file", e);
             ARActivity.snackbarHelper.showError(activity,
@@ -216,6 +216,7 @@ public class SceneRenderer {
                     MODEL_VIEW_PROJECTION_MATRIX);
             render.draw(virtualFountainMesh, virtualFountainShader,
                     virtualSceneFramebuffer);
+            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             if (isSubjectGroupWithAnimation) {
                 meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
@@ -224,23 +225,25 @@ public class SceneRenderer {
                         MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
                         MODEL_VIEW_MATRIX[8], MODEL_VIEW_MATRIX[9], MODEL_VIEW_MATRIX[10]
                 };
-
                 virtualWaterShader.setMat3("u_NormalView", normalMatrix);
                 virtualWaterShader.setMat4("u_ModelViewProjection",
                         MODEL_VIEW_PROJECTION_MATRIX);
-                virtualWaterShader.setInt("u_ReflectionTexture", backgroundRenderer
-                        .getCameraColorTexture().getTextureId());
+
+                float[] lightDirection = {0.0f, 1.0f, 0.0f}; // Example: light coming from above
+                virtualWaterShader.setVec3("u_LightDirection", lightDirection);
+                // Set the camera position uniform
+                float[] cameraPosition = camera.getPose().getTranslation();
+                virtualWaterShader.setVec3("u_CameraPosition", cameraPosition);
+
                 render.draw(virtualWaterSurfaceMesh, virtualWaterShader,
                         virtualSceneFramebuffer);
                 render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
                         virtualSceneFramebuffer);
                 soundPoolHelper.play();
             }
-
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
         }
     }
-
 
     /**
      * Resizes the framebuffer to the specified width and height.

@@ -247,11 +247,36 @@ public class GeospatialHelper {
     private void createTerrainAnchor(Earth earth, GeospatialPose geospatialPose) {
         double latitude = geospatialPose.getLatitude();
         double longitude = geospatialPose.getLongitude();
+
+// Constants for the offset (in meters)
+        double offsetDistance = 3.0;
+        double offsetAngle = 0.0;  // Assuming 0 degrees for straight ahead
+
+// Earth's radius in meters
+        double earthRadius = 6371000.0;
+
+// Convert offset distance from meters to radians
+        double offsetDistanceRadians = offsetDistance / earthRadius;
+
+// Convert offset angle from degrees to radians
+        double offsetAngleRadians = Math.toRadians(offsetAngle);
+
+// Calculate the new latitude and longitude using the offset
+        double newLatitude = Math.toDegrees(Math.asin(Math.sin(Math.toRadians(latitude)) * Math.cos(offsetDistanceRadians)
+                + Math.cos(Math.toRadians(latitude)) * Math.sin(offsetDistanceRadians) * Math.cos(offsetAngleRadians)));
+
+        double newLongitude = Math.toDegrees(Math.toRadians(longitude)
+                + Math.atan2(Math.sin(offsetAngleRadians) * Math.sin(offsetDistanceRadians) * Math.cos(Math.toRadians(latitude)),
+                Math.cos(offsetDistanceRadians) - Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(newLatitude))));
+
+// Use the new latitude and longitude for spawning the object
+// ...
+
         float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
 
         earth.resolveAnchorOnTerrainAsync(
-                latitude,
-                longitude,
+                newLatitude,
+                newLongitude,
                 0.0f,
                 quaternion[0],
                 quaternion[1],

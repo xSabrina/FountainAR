@@ -12,10 +12,14 @@ in vec2 a_TexCoord;
 out vec3 v_Position;
 out vec3 v_Normal;
 out vec2 v_TexCoord;
+out vec3 v_ViewDirection;
 
 void main() {
   gl_Position = u_ModelViewProjection * a_Position;
   v_Position = a_Position.xyz;
   v_Normal = normalize(u_NormalView * a_Normal);
   v_TexCoord = a_TexCoord;
+
+  vec3 cameraPosition = vec3(0.0, 0.0, 0.0);
+  v_ViewDirection = normalize(cameraPosition - v_Position);
 }

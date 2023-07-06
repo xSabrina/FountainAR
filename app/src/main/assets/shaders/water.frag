@@ -6,45 +6,36 @@ in vec3 v_Normal;
 in vec3 v_Position;
 in vec2 v_TexCoord;
 
-uniform samplerCube u_ReflectionTexture;
-uniform sampler2D u_DfgTexture;
-
 out vec4 o_FragColor;
 
-const float refractionIndex = 1.33;
-const float reflectivity = 0.8;
-const float fresnelPower = 5.0;
+uniform vec3 u_LightDirection;
+uniform vec3 u_CameraPosition;
 
-float calculateFresnel(vec3 incidentRay, vec3 normal) {
-    return pow(1.0 - dot(incidentRay, normal), fresnelPower);
-}
-
-vec3 calculateAttenuation(float distance) {
-    float attenuation = 0.15 / distance;
-    return vec3(1.0, 1.0, 1.0) - vec3(attenuation);
-}
+const float shininess = 32.0;
+const vec3 waterColor = vec3(1.0, 1.0, 1.0);
+const float waterTransparency = 0.8;
 
 void main() {
-    vec3 incidentRay = normalize(v_Normal);
-    vec3 refractedRay = refract(incidentRay, v_Normal, refractionIndex);
-    vec3 reflectedRay = reflect(incidentRay, v_Normal);
+    vec3 normal = normalize(v_Normal);
 
-    float fresnel = calculateFresnel(-incidentRay, refractedRay);
+    vec3 lightDirection = normalize(u_LightDirection);
 
-    vec4 refractedColor = vec4(0.9, 0.95, 1.0, 0.9);
-    vec4 reflectedColor = vec4(0.9, 0.95, 1.0, 0.5);
+    vec3 viewDirection = normalize(u_CameraPosition - v_Position);
 
-    vec3 reflectionColor = texture(u_ReflectionTexture, reflectedRay).rgb;
-    vec3 dfgColor = texture(u_DfgTexture, v_TexCoord).rgb;
+    vec3 halfVector = normalize(lightDirection + viewDirection);
 
-    reflectedColor.rgb = mix(reflectionColor, dfgColor, fresnel);
+    vec3 ambientColor = vec3(0.3, 0.3, 0.3);
+    vec3 ambient = ambientColor * waterColor;
 
-    vec4 finalColor = mix(refractedColor, reflectedColor, fresnel);
+    float diffuse = max(dot(normal, lightDirection), 0.0);
+    vec3 diffuseColor = vec3(1.0, 1.0, 1.0);
+    vec3 diffuseLight = diffuseColor * waterColor * diffuse;
 
-    float distance = length(v_Position);
-    vec3 attenuation = calculateAttenuation(distance);
-    finalColor.rgb *= attenuation;
-    finalColor.a = 1.0 - fresnel;
+    float specular = pow(max(dot(normal, halfVector), 0.0), shininess);
+    vec3 specularColor = vec3(1.0, 1.0, 1.0);
+    vec3 specularLight = specularColor * specular;
 
-    o_FragColor = finalColor;
+    vec3 finalColor = ambient + diffuseLight + specularLight;
+
+    o_FragColor = vec4(finalColor, waterTransparency);
 }
