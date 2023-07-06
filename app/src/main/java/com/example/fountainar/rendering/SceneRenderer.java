@@ -72,15 +72,14 @@ public class SceneRenderer {
      */
     public void setupScene(CustomRender render) {
         try {
-            backgroundRenderer = new BackgroundRenderer(render);
-            virtualSceneFramebuffer = new Framebuffer(render, 1, 1);
+            backgroundRenderer = new BackgroundRenderer();
+            virtualSceneFramebuffer = new Framebuffer(1, 1);
 
             cubemapFilter =
                     new SpecularCubemapFilter(
                             render, CUBEMAP_RESOLUTION, CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES);
 
             Texture dfgTexture = new Texture(
-                    render,
                     Texture.Target.TEXTURE_2D,
                     Texture.WrapMode.CLAMP_TO_EDGE,
                     false);
@@ -241,6 +240,7 @@ public class SceneRenderer {
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
         }
     }
+
 
     /**
      * Resizes the framebuffer to the specified width and height.

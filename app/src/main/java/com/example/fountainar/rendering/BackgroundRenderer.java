@@ -64,10 +64,10 @@ public class BackgroundRenderer {
      * during a {@link CustomRender.Renderer} callback, typically in {link
      * CustomRender.Renderer#onSurfaceCreated()}.
      */
-    public BackgroundRenderer(CustomRender render) {
-        cameraColorTexture = new Texture(render, Texture.Target.TEXTURE_EXTERNAL_OES,
+    public BackgroundRenderer() {
+        cameraColorTexture = new Texture(Texture.Target.TEXTURE_EXTERNAL_OES,
                 Texture.WrapMode.CLAMP_TO_EDGE, false);
-        cameraDepthTexture = new Texture(render, Texture.Target.TEXTURE_2D,
+        cameraDepthTexture = new Texture(Texture.Target.TEXTURE_2D,
                 Texture.WrapMode.CLAMP_TO_EDGE, false);
 
         VertexBuffer screenCoordsVertexBuffer = new VertexBuffer(2,

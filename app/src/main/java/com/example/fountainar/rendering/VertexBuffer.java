@@ -31,7 +31,6 @@ import java.nio.FloatBuffer;
  */
 public class VertexBuffer implements Closeable {
     private final GpuBuffer buffer;
-    private final FloatBuffer entries;
     private final int numberOfEntriesPerVertex;
 
     /**
@@ -56,7 +55,6 @@ public class VertexBuffer implements Closeable {
         }
 
         this.numberOfEntriesPerVertex = numberOfEntriesPerVertex;
-        this.entries = entries;
         buffer = new GpuBuffer(GLES30.GL_ARRAY_BUFFER, GpuBuffer.FLOAT_SIZE, entries);
     }
 
@@ -75,10 +73,10 @@ public class VertexBuffer implements Closeable {
      */
     public void set(FloatBuffer entries) {
         if (entries != null && entries.limit() % numberOfEntriesPerVertex != 0) {
-            throw new IllegalArgumentException(
-                    "If non-null, vertex buffer data must be divisible by the number of data points " +
-                            "per vertex");
+            throw new IllegalArgumentException("If non-null, vertex buffer data must be divisible "
+                    + "by the number of data points per vertex");
         }
+
         buffer.set(entries);
     }
 

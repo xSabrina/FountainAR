@@ -81,22 +81,22 @@
     <string name="start">Los geht\'s</string>
 
     <string name="ar_question_task1">Wie viele Einzeldarstellungen, die jeweils rechteckig umrahmt sind, sind auf dem Brunnen abgebildet?</string>
-    <string name="ar_answer_task1_6">6</string>
-    <string name="ar_answer_task1_8">8</string>
-    <string name="ar_answer_task1_10">10</string>
-    <string name="ar_answer_task1_12">12</string>
+    <string name="ar_answer_task1_1">6</string>
+    <string name="ar_answer_task1_2">8</string>
+    <string name="ar_answer_task1_3">10</string>
+    <string name="ar_answer_task1_4">12</string>
 
     <string name="ar_question_task2">Wieviele Standfüße hat der Brunnen?</string>
-    <string name="ar_answer_task2_5">5</string>
-    <string name="ar_answer_task2_6">6</string>
-    <string name="ar_answer_task2_7">7</string>
-    <string name="ar_answer_task2_8">8</string>
+    <string name="ar_answer_task2_1">5</string>
+    <string name="ar_answer_task2_2">6</string>
+    <string name="ar_answer_task2_3">7</string>
+    <string name="ar_answer_task2_4">8</string>
 
     <string name="ar_question_task3">Aus welchem Material besteht der Brunnen?</string>
-    <string name="ar_answer_task3_holz">Holz</string>
-    <string name="ar_answer_task3_plastik">Plastik</string>
-    <string name="ar_answer_task3_glas">Bronze</string>
-    <string name="ar_answer_task3_bronze">Glas</string>
+    <string name="ar_answer_task3_1">Holz</string>
+    <string name="ar_answer_task3_2">Plastik</string>
+    <string name="ar_answer_task3_3">Bronze</string>
+    <string name="ar_answer_task3_4">Glas</string>
 
     <!-- TAM Questionnaire -->
     <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>

@@ -28,8 +28,8 @@ import java.nio.ByteBuffer;
 /** A GPU-side texture. */
 public class Texture implements Closeable {
   private static final String TAG = Texture.class.getSimpleName();
-  private final int[] textureId = {0};
-  private final Target target;
+  private final int[] TEXTURE_ID = {0};
+  private final Target TARGET;
 
   /**
    * Describes the way the texture's edges are rendered.
@@ -42,7 +42,6 @@ public class Texture implements Closeable {
     REPEAT(GLES30.GL_REPEAT);
 
     final int glesEnum;
-
     WrapMode(int glesEnum) {
       this.glesEnum = glesEnum;
     }
@@ -82,26 +81,24 @@ public class Texture implements Closeable {
   }
 
   /**
-   * Construct an empty {@link Texture}.
+   * Constructs an empty {@link Texture}.
    *
    * <p>Since {@link Texture}s created in this way are not populated with data, this method is
-   * mostly only useful for creating {@link Target.TEXTURE_EXTERNAL_OES} textures. See {@link
+   * mostly only useful for creating {@link Target#TEXTURE_EXTERNAL_OES} textures. See {@link
    * #createFromAsset} if you want a texture with data.
    */
-  public Texture(CustomRender render, Target target, WrapMode wrapMode) {
-    this(render, target, wrapMode, true);
+  public Texture(Target target, WrapMode wrapMode) {
+    this(target, wrapMode, true);
   }
 
-  public Texture(CustomRender render, Target target, WrapMode wrapMode, boolean useMipmaps) {
-    this.target = target;
-
-    GLES30.glGenTextures(1, textureId, 0);
+  public Texture(Target target, WrapMode wrapMode, boolean useMipmaps) {
+    this.TARGET = target;
+    GLES30.glGenTextures(1, TEXTURE_ID, 0);
     GLError.maybeThrowGLException("Texture creation failed", "glGenTextures");
-
     int minFilter = useMipmaps ? GLES30.GL_LINEAR_MIPMAP_LINEAR : GLES30.GL_LINEAR;
 
     try {
-      GLES30.glBindTexture(target.glesEnum, textureId[0]);
+      GLES30.glBindTexture(target.glesEnum, TEXTURE_ID[0]);
       GLError.maybeThrowGLException("Failed to bind texture", "glBindTexture");
       GLES30.glTexParameteri(target.glesEnum, GLES30.GL_TEXTURE_MIN_FILTER, minFilter);
       GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
@@ -118,11 +115,11 @@ public class Texture implements Closeable {
     }
   }
 
-  /** Create a texture from the given asset file name. */
+  /** Creates a texture from the given asset file name. */
   public static Texture createFromAsset(
           CustomRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
       throws IOException {
-    Texture texture = new Texture(render, Target.TEXTURE_2D, wrapMode);
+    Texture texture = new Texture(Target.TEXTURE_2D, wrapMode);
     Bitmap bitmap = null;
 
     try {
@@ -163,21 +160,21 @@ public class Texture implements Closeable {
 
   @Override
   public void close() {
-    if (textureId[0] != 0) {
-      GLES30.glDeleteTextures(1, textureId, 0);
+    if (TEXTURE_ID[0] != 0) {
+      GLES30.glDeleteTextures(1, TEXTURE_ID, 0);
       GLError.maybeLogGLError(Log.WARN, TAG, "Failed to free texture",
               "glDeleteTextures");
-      textureId[0] = 0;
+      TEXTURE_ID[0] = 0;
     }
   }
 
-  /** Retrieve the native texture ID. */
+  /** Retrieves the native texture ID. */
   public int getTextureId() {
-    return textureId[0];
+    return TEXTURE_ID[0];
   }
 
   public Target getTarget() {
-    return target;
+    return TARGET;
   }
 
   private static Bitmap convertBitmapToConfig(Bitmap bitmap) {

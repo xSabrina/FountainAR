@@ -36,17 +36,15 @@ public class Framebuffer implements Closeable {
      * <p>In order to render to the {@link Framebuffer}, use {@link CustomRender#draw(Mesh, Shader,
      * Framebuffer)}.
      */
-    public Framebuffer(CustomRender render, int width, int height) {
+    public Framebuffer(int width, int height) {
         try {
             colorTexture =
                     new Texture(
-                            render,
                             Texture.Target.TEXTURE_2D,
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             false);
             depthTexture =
                     new Texture(
-                            render,
                             Texture.Target.TEXTURE_2D,
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             false);
