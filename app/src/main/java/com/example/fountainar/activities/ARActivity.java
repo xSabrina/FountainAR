@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -29,6 +30,8 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.Earth;
 import com.google.ar.core.Session;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.Objects;
 
 /**
@@ -42,8 +45,8 @@ public class ARActivity extends AppCompatActivity implements
         PrivacyNoticeDialogFragment.NoticeDialogListener {
 
     private static final String ALLOW_GEOSPATIAL_ACCESS_KEY = "ALLOW_GEOSPATIAL_ACCESS";
-    public static SnackbarHelper snackbarHelper = new SnackbarHelper();
 
+    public static SnackbarHelper snackbarHelper = new SnackbarHelper();
     @SuppressLint("StaticFieldLeak")
     public static GeospatialHelper geospatialHelper;
     public static Anchor anchor;
@@ -64,12 +67,6 @@ public class ARActivity extends AppCompatActivity implements
         geospatialHelper = new GeospatialHelper(this);
         displayRotationHelper = new DisplayRotationHelper(this);
 
-        if (systemSupportsNeededTechnology()) {
-            surfaceView = findViewById(R.id.surface_view);
-            new CustomRender(surfaceView, this, getAssets());
-            sceneRenderer = new SceneRenderer(this);
-        }
-
         BackPressedHandler.setupBackPressedCallback(this);
     }
 
@@ -89,9 +86,9 @@ public class ARActivity extends AppCompatActivity implements
                 arCoreHelper.isARCoreSupportedAndUpToDate()) {
             return true;
         } else {
-            Toast.makeText(this, R.string.opengl_version_required, Toast.LENGTH_SHORT)
+            Toast.makeText(this, R.string.opengl_version_required,
+                            Toast.LENGTH_SHORT)
                     .show();
-            finish();
             return false;
         }
     }
@@ -160,14 +157,33 @@ public class ARActivity extends AppCompatActivity implements
         super.onResume();
 
         if (sharedPreferences.getBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, false)) {
-            arCoreHelper.setupSession();
-            session = arCoreHelper.updatedSession();
+            if (CameraPermissionHelper.hasNoCameraPermission(this)) {
+                CameraPermissionHelper.requestCameraPermission(this);
+            } else {
+                if (systemSupportsNeededTechnology()) {
+                    setupARSession();
+                }
+            }
         } else {
             showPrivacyNoticeDialog();
+
+            if (systemSupportsNeededTechnology()) {
+                setupARSession();
+            }
+
+            surfaceView.onResume();
+            displayRotationHelper.onResume();
         }
 
-        surfaceView.onResume();
-        displayRotationHelper.onResume();
+
+    }
+
+    private void setupARSession() {
+        surfaceView = findViewById(R.id.surface_view);
+        new CustomRender(surfaceView, this, getAssets());
+        sceneRenderer = new SceneRenderer(this);
+        arCoreHelper.setupSession();
+        session = arCoreHelper.updatedSession();
     }
 
     private void showPrivacyNoticeDialog() {
@@ -177,29 +193,20 @@ public class ARActivity extends AppCompatActivity implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] results) {
-        super.onRequestPermissionsResult(requestCode, permissions, results);
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (CameraPermissionHelper.hasNoCameraPermission(this)) {
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
-                        .show();
+        if (requestCode == CameraPermissionHelper.CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupARSession();
+            } else {
+                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG).show();
                 CameraPermissionHelper.launchPermissionSettings(this);
             }
-
-            finish();
-        }
-
-        if (LocationPermissionHelper.hasFineLocationPermissionsResponseInResult(permissions) &&
-                LocationPermissionHelper.hasNoFineLocationPermission(this)) {
-            Toast.makeText(this, R.string.fine_loc_needed, Toast.LENGTH_LONG).show();
-            if (!LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                LocationPermissionHelper.launchPermissionSettings(this);
-            }
-
-            finish();
         }
     }
+
+
 
     @Override
     public void onPause() {
