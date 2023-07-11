@@ -25,7 +25,7 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 /**
- * Renderer for the AR camera background and composing the a scene foreground. The camera
+ * Renderer for the AR camera background and composing the scene foreground. The camera
  * background can be rendered as either camera image data or camera depth data. The virtual scene
  * can be composited with or without depth occlusion.
  */
@@ -48,12 +48,13 @@ public class BackgroundRenderer {
                 });
     }
 
-    private final FloatBuffer cameraTexCoords = ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE)
+    private final FloatBuffer CAMERA_TEX_COORDS = ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE)
             .order(ByteOrder.nativeOrder()).asFloatBuffer();
-    private final Mesh mesh;
-    private final VertexBuffer cameraTexCoordsVertexBuffer;
-    private final Texture cameraDepthTexture;
-    private final Texture cameraColorTexture;
+    private final Mesh MESH;
+    private final VertexBuffer CAMERA_TEX_COORDS_VERT_BUFFER;
+    private final Texture CAMERA_DEPTH_TEXTURE;
+    private final Texture CAMERA_COLOR_TEXTURE;
+
     private Shader backgroundShader;
     private Shader occlusionShader;
     private boolean useDepthVisualization;
@@ -65,23 +66,23 @@ public class BackgroundRenderer {
      * CustomRender.Renderer#onSurfaceCreated()}.
      */
     public BackgroundRenderer() {
-        cameraColorTexture = new Texture(Texture.Target.TEXTURE_EXTERNAL_OES,
+        CAMERA_COLOR_TEXTURE = new Texture(Texture.Target.TEXTURE_EXTERNAL_OES,
                 Texture.WrapMode.CLAMP_TO_EDGE, false);
-        cameraDepthTexture = new Texture(Texture.Target.TEXTURE_2D,
+        CAMERA_DEPTH_TEXTURE = new Texture(Texture.Target.TEXTURE_2D,
                 Texture.WrapMode.CLAMP_TO_EDGE, false);
-
         VertexBuffer screenCoordsVertexBuffer = new VertexBuffer(2,
                 NDC_QUAD_COORDS_BUFFER);
-        cameraTexCoordsVertexBuffer = new VertexBuffer(2, null);
+        CAMERA_TEX_COORDS_VERT_BUFFER = new VertexBuffer(2, null);
         VertexBuffer virtualSceneTexCoordsVertexBuffer = new VertexBuffer(2,
                 VIRTUAL_SCENE_TEX_COORDS_BUFFER);
         VertexBuffer[] vertexBuffers = {
                 screenCoordsVertexBuffer,
-                cameraTexCoordsVertexBuffer,
+                CAMERA_TEX_COORDS_VERT_BUFFER,
                 virtualSceneTexCoordsVertexBuffer};
-
-        mesh = new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
+        MESH = new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
     }
+
+
 
     /**
      * Sets whether the background camera image should be replaced with a depth visualization
@@ -108,18 +109,18 @@ public class BackgroundRenderer {
                             "shaders/background_show_depth_color_visualization.vert",
                             "shaders/background_show_depth_color_visualization.frag",
                             null)
-                    .setTexture("u_CameraDepthTexture", cameraDepthTexture)
+                    .setTexture("u_CameraDepthTexture", CAMERA_DEPTH_TEXTURE)
                     .setTexture("u_ColorMap", depthColorPaletteTexture)
                     .setDepthTest(false)
                     .setDepthWrite(false);
         } else {
             backgroundShader = Shader.createFromAssets(render,
                             "shaders/background_show_camera.vert",
-                          "shaders/background_show_camera.frag",
-                          null)
-                  .setTexture("u_CameraColorTexture", cameraColorTexture)
-                  .setDepthTest(false)
-                  .setDepthWrite(false);
+                            "shaders/background_show_camera.frag",
+                            null)
+                    .setTexture("u_CameraColorTexture", CAMERA_COLOR_TEXTURE)
+                    .setDepthTest(false)
+                    .setDepthWrite(false);
         }
     }
 
@@ -150,7 +151,7 @@ public class BackgroundRenderer {
         if (useOcclusion) {
             float aspectRatio = 0;
             occlusionShader
-                    .setTexture("u_CameraDepthTexture", cameraDepthTexture)
+                    .setTexture("u_CameraDepthTexture", CAMERA_DEPTH_TEXTURE)
                     .setFloat("u_DepthAspectRatio", aspectRatio);
         }
     }
@@ -167,8 +168,8 @@ public class BackgroundRenderer {
                     Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
                     NDC_QUAD_COORDS_BUFFER,
                     Coordinates2d.TEXTURE_NORMALIZED,
-                    cameraTexCoords);
-            cameraTexCoordsVertexBuffer.set(cameraTexCoords);
+                    CAMERA_TEX_COORDS);
+            CAMERA_TEX_COORDS_VERT_BUFFER.set(CAMERA_TEX_COORDS);
         }
     }
 
@@ -176,10 +177,10 @@ public class BackgroundRenderer {
      * Draws the AR background image. The image will be drawn such that virtual content rendered
      * with the matrices provided by {@link com.google.ar.core.Camera#getViewMatrix(float[], int)}
      * and {@link com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)} will
-     * accurately follow static physical objects.
+     * accurately followstatic physical objects.
      */
     public void drawBackground(CustomRender render) {
-        render.draw(mesh, backgroundShader);
+        render.draw(MESH, backgroundShader);
     }
 
     /**
@@ -203,13 +204,17 @@ public class BackgroundRenderer {
                     .setFloat("u_ZFar", zFar);
         }
 
-        render.draw(mesh, occlusionShader);
+        render.draw(MESH, occlusionShader);
     }
 
     /**
      * Returns the camera color texture generated by this object.
      */
     public Texture getCameraColorTexture() {
-        return cameraColorTexture;
+        return CAMERA_COLOR_TEXTURE;
+    }
+
+    public void enableDepthTesting(boolean testing){
+        occlusionShader.setDepthTest(testing);
     }
 }

@@ -51,7 +51,6 @@ public class ARActivity extends AppCompatActivity implements
     public static GeospatialHelper geospatialHelper;
     public static Anchor anchor;
     public static Session session;
-
     private SharedPreferences sharedPreferences;
     private DisplayRotationHelper displayRotationHelper;
     private ARCoreHelper arCoreHelper;
@@ -66,7 +65,6 @@ public class ARActivity extends AppCompatActivity implements
         arCoreHelper = new ARCoreHelper(this);
         geospatialHelper = new GeospatialHelper(this);
         displayRotationHelper = new DisplayRotationHelper(this);
-
         BackPressedHandler.setupBackPressedCallback(this);
     }
 
@@ -200,13 +198,12 @@ public class ARActivity extends AppCompatActivity implements
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setupARSession();
             } else {
-                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
+                        .show();
                 CameraPermissionHelper.launchPermissionSettings(this);
             }
         }
     }
-
-
 
     @Override
     public void onPause() {

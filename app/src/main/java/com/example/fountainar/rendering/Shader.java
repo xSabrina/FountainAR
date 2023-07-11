@@ -37,15 +37,17 @@ import java.util.regex.Matcher;
 public class Shader implements Closeable {
 
     private static final String TAG = Shader.class.getSimpleName();
-    private final Map<Integer, Uniform> uniforms = new HashMap<>();
-    private final Map<String, Integer> uniformLocations = new HashMap<>();
-    private final Map<Integer, String> uniformNames = new HashMap<>();
+    private final Map<Integer, Uniform> UNIFORMS = new HashMap<>();
+    private final Map<String, Integer> UNIFORM_LOCATIONS = new HashMap<>();
+    private final Map<Integer, String> UNIFORM_NAMES = new HashMap<>();
+
     int vertexShaderId = 0;
     int fragmentShaderId = 0;
     private int programId;
     private int maxTextureUnit = 0;
     private boolean depthTest = true;
     private boolean depthWrite = true;
+    private boolean blendingEnabled = false;
     private BlendFactor sourceRgbBlend = BlendFactor.ONE;
     private BlendFactor destRgbBlend = BlendFactor.ZERO;
     private BlendFactor sourceAlphaBlend = BlendFactor.ONE;
@@ -286,7 +288,7 @@ public class Shader implements Closeable {
      */
     public Shader setTexture(String name, Texture texture) {
         int location = getUniformLocation(name);
-        Uniform uniform = uniforms.get(location);
+        Uniform uniform = UNIFORMS.get(location);
         int textureUnit;
 
         if (!(uniform instanceof UniformTexture)) {
@@ -296,7 +298,7 @@ public class Shader implements Closeable {
             textureUnit = uniformTexture.getTextureUnit();
         }
 
-        uniforms.put(location, new UniformTexture(textureUnit, texture));
+        UNIFORMS.put(location, new UniformTexture(textureUnit, texture));
         return this;
     }
 
@@ -305,7 +307,7 @@ public class Shader implements Closeable {
      */
     public Shader setBool(String name, boolean v0) {
         int[] values = {v0 ? 1 : 0};
-        uniforms.put(getUniformLocation(name), new UniformInt(values));
+        UNIFORMS.put(getUniformLocation(name), new UniformInt(values));
 
         return this;
     }
@@ -315,7 +317,7 @@ public class Shader implements Closeable {
      */
     public void setInt(String name, int v0) {
         int[] values = {v0};
-        uniforms.put(getUniformLocation(name), new UniformInt(values));
+        UNIFORMS.put(getUniformLocation(name), new UniformInt(values));
 
     }
 
@@ -324,7 +326,7 @@ public class Shader implements Closeable {
      */
     public Shader setFloat(String name, float v0) {
         float[] values = {v0};
-        uniforms.put(getUniformLocation(name), new Uniform1f(values));
+        UNIFORMS.put(getUniformLocation(name), new Uniform1f(values));
 
         return this;
     }
@@ -337,7 +339,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be 2");
         }
 
-        uniforms.put(getUniformLocation(name), new Uniform2f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform2f(values.clone()));
 
         return this;
     }
@@ -350,7 +352,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be 3");
         }
 
-        uniforms.put(getUniformLocation(name), new Uniform3f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform3f(values.clone()));
 
         return this;
     }
@@ -363,7 +365,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be 4");
         }
 
-        uniforms.put(getUniformLocation(name), new Uniform4f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform4f(values.clone()));
 
         return this;
     }
@@ -376,7 +378,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be 4 (2x2)");
         }
 
-        uniforms.put(getUniformLocation(name), new UniformMatrix2f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformMatrix2f(values.clone()));
 
         return this;
     }
@@ -389,7 +391,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be 9 (3x3)");
         }
 
-        uniforms.put(getUniformLocation(name), new UniformMatrix3f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformMatrix3f(values.clone()));
 
     }
 
@@ -401,7 +403,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be 16 (4x4)");
         }
 
-        uniforms.put(getUniformLocation(name), new UniformMatrix4f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformMatrix4f(values.clone()));
 
     }
 
@@ -415,7 +417,7 @@ public class Shader implements Closeable {
             intValues[i] = values[i] ? 1 : 0;
         }
 
-        uniforms.put(getUniformLocation(name), new UniformInt(intValues));
+        UNIFORMS.put(getUniformLocation(name), new UniformInt(intValues));
 
         return this;
     }
@@ -424,7 +426,7 @@ public class Shader implements Closeable {
      * Sets an {@code int} array uniform.
      */
     public Shader setIntArray(String name, int[] values) {
-        uniforms.put(getUniformLocation(name), new UniformInt(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformInt(values.clone()));
 
         return this;
     }
@@ -433,7 +435,7 @@ public class Shader implements Closeable {
      * Sets a {@code float} array uniform.
      */
     public Shader setFloatArray(String name, float[] values) {
-        uniforms.put(getUniformLocation(name), new Uniform1f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform1f(values.clone()));
 
         return this;
     }
@@ -446,7 +448,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be divisible by 2");
         }
 
-        uniforms.put(getUniformLocation(name), new Uniform2f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform2f(values.clone()));
 
         return this;
     }
@@ -459,7 +461,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be divisible by 3");
         }
 
-        uniforms.put(getUniformLocation(name), new Uniform3f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform3f(values.clone()));
 
         return this;
     }
@@ -472,7 +474,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be divisible by 4");
         }
 
-        uniforms.put(getUniformLocation(name), new Uniform4f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new Uniform4f(values.clone()));
 
         return this;
     }
@@ -485,7 +487,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be divisible by 4 (2x2)");
         }
 
-        uniforms.put(getUniformLocation(name), new UniformMatrix2f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformMatrix2f(values.clone()));
 
         return this;
     }
@@ -498,7 +500,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Values array length must be divisible by 9 (3x3)");
         }
 
-        uniforms.put(getUniformLocation(name), new UniformMatrix3f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformMatrix3f(values.clone()));
 
         return this;
     }
@@ -511,7 +513,7 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Value array length must be divisible by 16 (4x4)");
         }
 
-        uniforms.put(getUniformLocation(name), new UniformMatrix4f(values.clone()));
+        UNIFORMS.put(getUniformLocation(name), new UniformMatrix4f(values.clone()));
 
         return this;
     }
@@ -527,12 +529,14 @@ public class Shader implements Closeable {
 
         GLES30.glUseProgram(programId);
         GLError.maybeThrowGLException("Failed to use shader program", "glUseProgram");
+
         GLES30.glBlendFuncSeparate(
                 sourceRgbBlend.glesEnum,
                 destRgbBlend.glesEnum,
                 sourceAlphaBlend.glesEnum,
                 destAlphaBlend.glesEnum);
         GLError.maybeThrowGLException("Failed to set blend mode", "glBlendFuncSeparate");
+
         GLES30.glDepthMask(depthWrite);
         GLError.maybeThrowGLException("Failed to set depth write mask", "glDepthMask");
 
@@ -545,9 +549,9 @@ public class Shader implements Closeable {
         }
 
         try {
-            ArrayList<Integer> obsoleteEntries = new ArrayList<>(uniforms.size());
+            ArrayList<Integer> obsoleteEntries = new ArrayList<>(UNIFORMS.size());
 
-            for (Map.Entry<Integer, Uniform> entry : uniforms.entrySet()) {
+            for (Map.Entry<Integer, Uniform> entry : UNIFORMS.entrySet()) {
                 try {
                     entry.getValue().use(entry.getKey());
 
@@ -555,11 +559,11 @@ public class Shader implements Closeable {
                         obsoleteEntries.add(entry.getKey());
                     }
                 } catch (GLException e) {
-                    String name = uniformNames.get(entry.getKey());
+                    String name = UNIFORM_NAMES.get(entry.getKey());
                     throw new IllegalArgumentException("Error setting uniform `" + name + "'", e);
                 }
             }
-            obsoleteEntries.forEach(uniforms.keySet()::remove);
+            obsoleteEntries.forEach(UNIFORMS.keySet()::remove);
         } finally {
             GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
             GLError.maybeLogGLError(Log.WARN, TAG, "Failed to set active texture",
@@ -568,7 +572,7 @@ public class Shader implements Closeable {
     }
 
     private int getUniformLocation(String name) {
-        Integer locationObject = uniformLocations.get(name);
+        Integer locationObject = UNIFORM_LOCATIONS.get(name);
 
         if (locationObject != null) {
             return locationObject;
@@ -581,8 +585,8 @@ public class Shader implements Closeable {
             throw new IllegalArgumentException("Shader uniform does not exist: " + name);
         }
 
-        uniformLocations.put(name, location);
-        uniformNames.put(location, name);
+        UNIFORM_LOCATIONS.put(name, location);
+        UNIFORM_NAMES.put(location, name);
 
         return location;
     }

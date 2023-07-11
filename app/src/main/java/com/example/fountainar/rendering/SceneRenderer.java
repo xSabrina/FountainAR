@@ -1,7 +1,6 @@
 package com.example.fountainar.rendering;
 
 import android.app.Activity;
-import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -29,7 +28,8 @@ import java.util.HashMap;
 public class SceneRenderer {
 
     private static final String TAG = SceneRenderer.class.getSimpleName();
-    private static final ArrayList<Mesh> VIRTUAL_WATER_JET_MESHES = new ArrayList<>(30);
+
+    private static final ArrayList<Mesh> VIRTUAL_WATER_JET_MESHES = new ArrayList<>(5);
     private static final float[] MODEL_MATRIX = new float[16];
     private static final float[] VIEW_MATRIX = new float[16];
     private static final float[] PROJECTION_MATRIX = new float[16];
@@ -38,9 +38,10 @@ public class SceneRenderer {
     private static final int CUBEMAP_RESOLUTION = 16;
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 1000f;
-    private final static int waterJetsStart = 160;
-    private final static int waterJetsEnd = 165;
+    private static final float Z_FAR = 500f;
+    private final static int WATER_JETS_START = 160;
+    private final static int WATER_JETS_END = 165;
+
     private static boolean isSubjectGroupWithAnimation = false;
     private static BackgroundRenderer backgroundRenderer;
     private static Mesh virtualFountainMesh;
@@ -51,6 +52,7 @@ public class SceneRenderer {
     private final Activity activity;
     private final TrackingStateHelper trackingStateHelper;
     public Framebuffer virtualSceneFramebuffer;
+    private Frame frame;
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
     private SoundPoolHelper soundPoolHelper;
@@ -125,13 +127,12 @@ public class SceneRenderer {
                 virtualWaterShader = Shader.createFromAssets(
                         render, "shaders/water.vert",
                         "shaders/water.frag", null);
-
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/Water_Surface.obj");
 
-                for (int i = waterJetsStart; i < waterJetsEnd; i++) {
+                for (int i = WATER_JETS_START; i < WATER_JETS_END; i++) {
                     VIRTUAL_WATER_JET_MESHES.add(Mesh.createFromAsset(render,
-                            "models/animation/Fountain_Animated" + i + ".obj"));
+                            "models/animation/Water_Jets" + i + ".obj"));
                 }
             }
 
@@ -158,8 +159,6 @@ public class SceneRenderer {
                     new int[]{backgroundRenderer.getCameraColorTexture().getTextureId()});
             hasSetTextureNames = true;
         }
-
-        Frame frame;
 
         try {
             frame = session.update();
@@ -210,38 +209,48 @@ public class SceneRenderer {
                     rotationMatrix, 0);
             Matrix.multiplyMM(MODEL_VIEW_MATRIX, 0, VIEW_MATRIX, 0,
                     rotationModelMatrix, 0);
-            Matrix.multiplyMM(MODEL_VIEW_PROJECTION_MATRIX, 0, PROJECTION_MATRIX, 0,
-                    MODEL_VIEW_MATRIX, 0);
+            Matrix.multiplyMM(MODEL_VIEW_PROJECTION_MATRIX, 0, PROJECTION_MATRIX,
+                    0, MODEL_VIEW_MATRIX, 0);
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     MODEL_VIEW_PROJECTION_MATRIX);
-            render.draw(virtualFountainMesh, virtualFountainShader,
-                    virtualSceneFramebuffer);
+
+            render.draw(virtualFountainMesh, virtualFountainShader, virtualSceneFramebuffer);
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             if (isSubjectGroupWithAnimation) {
-                meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
-                float[] normalMatrix = new float[]{
-                        MODEL_VIEW_MATRIX[0], MODEL_VIEW_MATRIX[1], MODEL_VIEW_MATRIX[2],
-                        MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
-                        MODEL_VIEW_MATRIX[8], MODEL_VIEW_MATRIX[9], MODEL_VIEW_MATRIX[10]
-                };
-                virtualWaterShader.setMat3("u_NormalView", normalMatrix);
-                virtualWaterShader.setMat4("u_ModelViewProjection",
-                        MODEL_VIEW_PROJECTION_MATRIX);
-
-                float[] lightDirection = {0.0f, 1.0f, 0.0f};
-                virtualWaterShader.setVec3("u_LightDirection", lightDirection);
-                float[] cameraPosition = camera.getPose().getTranslation();
-                virtualWaterShader.setVec3("u_CameraPosition", cameraPosition);
-
-                render.draw(virtualWaterSurfaceMesh, virtualWaterShader,
-                        virtualSceneFramebuffer);
-                render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
-                        virtualSceneFramebuffer);
-                soundPoolHelper.play();
+                setupWater(camera, render);
             }
-            backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
         }
+    }
+
+    /**
+     * Sets up the rendering for the water related objects.
+     *
+     * @param camera The AR camera.
+     * @param render The custom render object.
+     */
+    private void setupWater(Camera camera, CustomRender render) {
+        meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
+
+        float[] normalMatrix = {
+                MODEL_VIEW_MATRIX[0], MODEL_VIEW_MATRIX[1], MODEL_VIEW_MATRIX[2],
+                MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
+                MODEL_VIEW_MATRIX[8], MODEL_VIEW_MATRIX[9], MODEL_VIEW_MATRIX[10]
+        };
+        virtualWaterShader.setMat3("u_NormalView", normalMatrix);
+        virtualWaterShader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
+
+        float[] lightEstimate = frame.getLightEstimate().getEnvironmentalHdrMainLightDirection();
+        float[] cameraPosition = camera.getPose().getTranslation();
+        virtualWaterShader.setVec3("u_LightDirection", lightEstimate);
+        virtualWaterShader.setVec3("u_CameraPosition", cameraPosition);
+
+        render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
+        render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
+                virtualSceneFramebuffer);
+        backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
+        soundPoolHelper.play();
     }
 
     /**
@@ -255,7 +264,7 @@ public class SceneRenderer {
     }
 
     /**
-     * Pauses the sound pool if it is initialized.
+     * Pauses the soundPool if it is initialized.
      */
     public void pauseSoundPool() {
         if (soundPoolHelper != null) {
@@ -264,7 +273,7 @@ public class SceneRenderer {
     }
 
     /**
-     * Releases the sound pool if it is initialized.
+     * Releases the soundPool if it is initialized.
      */
     public void releaseSoundPool() {
         if (soundPoolHelper != null) {
