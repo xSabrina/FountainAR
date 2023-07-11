@@ -29,7 +29,6 @@ import java.util.Date;
  */
 public class QuizHelper {
     private static final String TAG = QuizHelper.class.getSimpleName();
-
     private final Activity ACTIVITY;
     private final ArrayList<String> QUESTIONS = new ArrayList<>();
     private final ArrayList<String> ANSWERS = new ArrayList<>();

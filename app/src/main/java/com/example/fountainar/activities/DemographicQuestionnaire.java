@@ -43,14 +43,14 @@ import java.util.Date;
 public class DemographicQuestionnaire extends AppCompatActivity {
 
     private static final String TAG = DemographicQuestionnaire.class.getSimpleName();
-    public static int probNum;
+    private final ArrayList<String> QUESTIONS = new ArrayList<>();
+    private final ArrayList<String> ANSWERS = new ArrayList<>();
+    private final ArrayList<RadioGroup> RADIO_GROUPS = new ArrayList<>();
+    private final ArrayList<EditText> EDIT_TEXTS = new ArrayList<>();
+    private final ArrayList<EditText> MISSING_INPUT_FIELDS = new ArrayList<>();
+    private final ArrayList<RadioGroup> MISSING_RADIO_GROUPS = new ArrayList<>();
 
-    private final ArrayList<String> questions = new ArrayList<>();
-    private final ArrayList<String> answers = new ArrayList<>();
-    private final ArrayList<RadioGroup> radioGroups = new ArrayList<>();
-    private final ArrayList<EditText> editTexts = new ArrayList<>();
-    private final ArrayList<EditText> missingInputFields = new ArrayList<>();
-    private final ArrayList<RadioGroup> missingRadioGroups = new ArrayList<>();
+    public static int probNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +101,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                 R.id.dq_q7_rg, R.id.dq_q8_rg, R.id.dq_q9_rg};
         for (int id : radioGroupIds) {
             RadioGroup radioGroup = findViewById(id);
-            radioGroups.add(radioGroup);
+            RADIO_GROUPS.add(radioGroup);
         }
     }
 
@@ -117,7 +117,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
         for (int id : editTextIds) {
             EditText editText = findViewById(id);
-            editTexts.add(editText);
+            EDIT_TEXTS.add(editText);
 
             editText.setOnTouchListener((v, event) -> {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
@@ -143,7 +143,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
             return false;
         });
 
-        for (RadioGroup rg : radioGroups) {
+        for (RadioGroup rg : RADIO_GROUPS) {
             for (int j = 0; j < rg.getChildCount(); j++) {
                 View childView = rg.getChildAt(j);
                 if (childView instanceof RadioButton) {
@@ -176,8 +176,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
      */
     @SuppressLint("ClickableViewAccessibility")
     private void setupEditTextListeners() {
-        for (int i = 2; i < editTexts.size(); i++) {
-            EditText eT = editTexts.get(i);
+        for (int i = 2; i < EDIT_TEXTS.size(); i++) {
+            EditText eT = EDIT_TEXTS.get(i);
 
             eT.setOnTouchListener((v, event) -> {
                 RadioGroup rg = (RadioGroup) v.getParent();
@@ -217,15 +217,15 @@ public class DemographicQuestionnaire extends AppCompatActivity {
      * Verifies if all the radio groups have been answered and validates the input.
      */
     private boolean everyRadioGroupFinished() {
-        missingRadioGroups.clear();
-        missingInputFields.clear();
+        MISSING_RADIO_GROUPS.clear();
+        MISSING_INPUT_FIELDS.clear();
         checkProvidedInputs();
 
-        for (RadioGroup radioGroup : radioGroups) {
+        for (RadioGroup radioGroup : RADIO_GROUPS) {
             int selectedId = radioGroup.getCheckedRadioButtonId();
 
             if (selectedId == -1) {
-                missingRadioGroups.add(radioGroup);
+                MISSING_RADIO_GROUPS.add(radioGroup);
             } else {
                 for (int j = 0; j < radioGroup.getChildCount(); j++) {
                     View view = radioGroup.getChildAt(j);
@@ -236,14 +236,14 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                         EditText editText = (EditText) nextView;
 
                         if (editText.getText().toString().trim().isEmpty()) {
-                            missingInputFields.add(editText);
+                            MISSING_INPUT_FIELDS.add(editText);
                         }
                     }
                 }
             }
         }
 
-        return missingRadioGroups.isEmpty() && missingInputFields.isEmpty();
+        return MISSING_RADIO_GROUPS.isEmpty() && MISSING_INPUT_FIELDS.isEmpty();
     }
 
 
@@ -252,8 +252,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
      */
     private void checkProvidedInputs() {
         for (int i = 0; i < 2; i++) {
-            if (editTexts.get(i).getText().length() == 0) {
-                missingInputFields.add(editTexts.get(i));
+            if (EDIT_TEXTS.get(i).getText().length() == 0) {
+                MISSING_INPUT_FIELDS.add(EDIT_TEXTS.get(i));
             }
         }
     }
@@ -270,9 +270,9 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
             if (view instanceof TextView && !(view instanceof EditText) &&
                     !(view instanceof Button)) {
-                questions.add(((TextView) view).getText().toString());
+                QUESTIONS.add(((TextView) view).getText().toString());
             } else if (view instanceof EditText && ((EditText) view).getText() != null) {
-                answers.add(((EditText) view).getText().toString());
+                ANSWERS.add(((EditText) view).getText().toString());
             } else if (view instanceof RadioGroup) {
                 RadioGroup radioGroup = (RadioGroup) view;
                 int checkedId = radioGroup.getCheckedRadioButtonId();
@@ -280,14 +280,14 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
                 if (radioButton.getText().equals(getString(R.string.dq_alternative_answer))) {
                     View editView = radioGroup.getChildAt(radioGroup.getChildCount() - 1);
-                    answers.add(radioButton.getText().toString() + " " +
+                    ANSWERS.add(radioButton.getText().toString() + " " +
                             ((EditText) editView).getText().toString());
                 } else if (radioButton.getText().equals(getString(R.string.dq_q5_student))) {
                     View editView = radioGroup.getChildAt(1);
-                    answers.add(radioButton.getText().toString() + ((EditText) editView).getText()
+                    ANSWERS.add(radioButton.getText().toString() + ((EditText) editView).getText()
                             .toString());
                 } else {
-                    answers.add(radioButton.getText().toString());
+                    ANSWERS.add(radioButton.getText().toString());
                 }
             }
         }
@@ -308,9 +308,9 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
             osw.write(getString(R.string.dq_q1) + " " + probNum + "\n\n" + dateString + "\n\n");
 
-            for (int i = 0; i < questions.size(); i++) {
-                osw.write(questions.get(i) + "\n");
-                osw.write(answers.get(i) + "\n\n");
+            for (int i = 0; i < QUESTIONS.size(); i++) {
+                osw.write(QUESTIONS.get(i) + "\n");
+                osw.write(ANSWERS.get(i) + "\n\n");
             }
 
             osw.flush();
@@ -355,11 +355,11 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     private void highlightMissingFields() {
         resetBackgrounds();
 
-        for (EditText inputField : missingInputFields) {
+        for (EditText inputField : MISSING_INPUT_FIELDS) {
             inputField.setBackground(getDrawable(R.drawable.rounded_corners_highlighted));
         }
 
-        for (RadioGroup radioGroup : missingRadioGroups) {
+        for (RadioGroup radioGroup : MISSING_RADIO_GROUPS) {
             radioGroup.setBackgroundColor(getColor(R.color.red_light));
 
             for (int i = 0; i < radioGroup.getChildCount(); i++) {
@@ -381,12 +381,12 @@ public class DemographicQuestionnaire extends AppCompatActivity {
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     private void resetBackgrounds() {
-        for (int i = 0; i < radioGroups.size(); i++) {
-            RadioGroup radioGroup = radioGroups.get(i);
+        for (int i = 0; i < RADIO_GROUPS.size(); i++) {
+            RadioGroup radioGroup = RADIO_GROUPS.get(i);
             radioGroup.setBackgroundColor(getColor(R.color.white));
 
             if (i < 2) {
-                editTexts.get(i).setBackground(getDrawable(R.drawable.rounded_corners));
+                EDIT_TEXTS.get(i).setBackground(getDrawable(R.drawable.rounded_corners));
             }
 
             for (int j = 0; j < radioGroup.getChildCount(); j++) {
@@ -404,8 +404,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         final ScrollView scrollView = findViewById(R.id.dq_scroll_view);
         final int scrollViewHeight = scrollView.getHeight();
 
-        View view = !missingInputFields.isEmpty() ? (View) missingInputFields.get(0).getParent()
-                : missingRadioGroups.get(0);
+        View view = !MISSING_INPUT_FIELDS.isEmpty() ? (View) MISSING_INPUT_FIELDS.get(0).getParent()
+                : MISSING_RADIO_GROUPS.get(0);
         assert view != null;
 
         int viewTop = view.getTop();

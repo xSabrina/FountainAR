@@ -30,8 +30,8 @@ import java.nio.FloatBuffer;
  * href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glVertexAttribPointer.xhtml">glVertexAttribPointer</a>
  */
 public class VertexBuffer implements Closeable {
-    private final GpuBuffer buffer;
-    private final int numberOfEntriesPerVertex;
+    private final GPUBuffer GPU_BUFFER;
+    private final int NUM_OF_ENTRIES_PER_VERTEX;
 
     /**
      * Constructs a {@link VertexBuffer} populated with initial data.
@@ -54,8 +54,8 @@ public class VertexBuffer implements Closeable {
                             "points per vertex");
         }
 
-        this.numberOfEntriesPerVertex = numberOfEntriesPerVertex;
-        buffer = new GpuBuffer(GLES30.GL_ARRAY_BUFFER, GpuBuffer.FLOAT_SIZE, entries);
+        this.NUM_OF_ENTRIES_PER_VERTEX = numberOfEntriesPerVertex;
+        GPU_BUFFER = new GPUBuffer(GLES30.GL_ARRAY_BUFFER, GPUBuffer.FLOAT_SIZE, entries);
     }
 
     /**
@@ -72,31 +72,31 @@ public class VertexBuffer implements Closeable {
      * specified during construction.
      */
     public void set(FloatBuffer entries) {
-        if (entries != null && entries.limit() % numberOfEntriesPerVertex != 0) {
+        if (entries != null && entries.limit() % NUM_OF_ENTRIES_PER_VERTEX != 0) {
             throw new IllegalArgumentException("If non-null, vertex buffer data must be divisible "
                     + "by the number of data points per vertex");
         }
 
-        buffer.set(entries);
+        GPU_BUFFER.set(entries);
     }
 
     @Override
     public void close() {
-        buffer.free();
+        GPU_BUFFER.free();
     }
 
     /* package-private */
     int getBufferId() {
-        return buffer.getBufferId();
+        return GPU_BUFFER.getBufferId();
     }
 
     /* package-private */
     int getNumberOfEntriesPerVertex() {
-        return numberOfEntriesPerVertex;
+        return NUM_OF_ENTRIES_PER_VERTEX;
     }
 
     /* package-private */
     int getNumberOfVertices() {
-        return buffer.getSize() / numberOfEntriesPerVertex;
+        return GPU_BUFFER.getSize() / NUM_OF_ENTRIES_PER_VERTEX;
     }
 }

@@ -7,13 +7,14 @@ import android.widget.RadioGroup;
  * A question item with its associated properties and methods.
  */
 public class QuestionItem {
-    private final String question;
+    private final String QUESTION;
+    
     private RadioGroup answerGroup;
     private int backgroundColor;
     private int selectedId = -1;
 
     public QuestionItem(String question) {
-        this.question = question;
+        this.QUESTION = question;
     }
 
     /**
@@ -22,7 +23,7 @@ public class QuestionItem {
      * @return The question text.
      */
     public String getQuestion() {
-        return question;
+        return QUESTION;
     }
 
     /**

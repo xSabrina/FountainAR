@@ -29,8 +29,10 @@ import com.google.ar.core.Session;
  * events.
  */
 public final class DisplayRotationHelper implements DisplayListener {
-    private final Display display;
-    private final DisplayManager displayManager;
+
+    private final Display DISPLAY;
+    private final DisplayManager DISPLAY_MANAGER;
+
     private boolean viewportChanged;
     private int viewportWidth;
     private int viewportHeight;
@@ -41,24 +43,24 @@ public final class DisplayRotationHelper implements DisplayListener {
      * @param context the Android {@link Context}.
      */
     public DisplayRotationHelper(Context context) {
-        displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
-
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        display = windowManager.getDefaultDisplay();
+        DISPLAY_MANAGER = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+        WindowManager windowManager =
+                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DISPLAY = windowManager.getDefaultDisplay();
     }
 
     /**
      * Registers the display listener. Should be called from onResume().
      */
     public void onResume() {
-        displayManager.registerDisplayListener(this, null);
+        DISPLAY_MANAGER.registerDisplayListener(this, null);
     }
 
     /**
      * Unregisters the display listener. Should be called from onPause().
      */
     public void onPause() {
-        displayManager.unregisterDisplayListener(this);
+        DISPLAY_MANAGER.unregisterDisplayListener(this);
     }
 
     /**
@@ -86,7 +88,7 @@ public final class DisplayRotationHelper implements DisplayListener {
      */
     public void updateSessionIfNeeded(Session session) {
         if (viewportChanged) {
-            int displayRotation = display.getRotation();
+            int displayRotation = DISPLAY.getRotation();
             session.setDisplayGeometry(displayRotation, viewportWidth, viewportHeight);
             viewportChanged = false;
         }

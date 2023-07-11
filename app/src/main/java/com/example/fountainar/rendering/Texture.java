@@ -41,9 +41,9 @@ public class Texture implements Closeable {
     MIRRORED_REPEAT(GLES30.GL_MIRRORED_REPEAT),
     REPEAT(GLES30.GL_REPEAT);
 
-    final int glesEnum;
-    WrapMode(int glesEnum) {
-      this.glesEnum = glesEnum;
+    final int GL_ES_ENUM;
+    WrapMode(int gl_es_enum) {
+      this.GL_ES_ENUM = gl_es_enum;
     }
   }
 
@@ -105,9 +105,9 @@ public class Texture implements Closeable {
       GLES30.glTexParameteri(target.glesEnum, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
       GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
 
-      GLES30.glTexParameteri(target.glesEnum, GLES30.GL_TEXTURE_WRAP_S, wrapMode.glesEnum);
+      GLES30.glTexParameteri(target.glesEnum, GLES30.GL_TEXTURE_WRAP_S, wrapMode.GL_ES_ENUM);
       GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
-      GLES30.glTexParameteri(target.glesEnum, GLES30.GL_TEXTURE_WRAP_T, wrapMode.glesEnum);
+      GLES30.glTexParameteri(target.glesEnum, GLES30.GL_TEXTURE_WRAP_T, wrapMode.GL_ES_ENUM);
       GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
     } catch (Throwable t) {
       close();

@@ -27,17 +27,17 @@ import java.util.List;
 public class TAMQuestionAdapter
         extends RecyclerView.Adapter<TAMQuestionAdapter.QuestionViewHolder> {
 
-    private final Context context;
-    private final List<String> questions;
-    private final List<QuestionItem> questionItems = new ArrayList<>();
+    private final Context CONTEXT;
+    private final List<String> QUESTIONS;
+    private final List<QuestionItem> QUESTION_ITEMS = new ArrayList<>();
 
     public TAMQuestionAdapter(Context context, List<String> questions) {
-        this.context = context;
-        this.questions = questions;
+        this.CONTEXT = context;
+        this.QUESTIONS = questions;
 
         for (String question : questions) {
             QuestionItem questionItem = new QuestionItem(question);
-            questionItems.add(questionItem);
+            QUESTION_ITEMS.add(questionItem);
         }
     }
 
@@ -69,7 +69,7 @@ public class TAMQuestionAdapter
      */
     @Override
     public int getItemCount() {
-        return questions.size();
+        return QUESTIONS.size();
     }
 
     /**
@@ -79,8 +79,8 @@ public class TAMQuestionAdapter
      * @return true if all radio groups have a selected answer, false otherwise.
      */
     public boolean everyRadioGroupFinished(RecyclerView recyclerView) {
-        for (int i = 0; i < questionItems.size(); i++) {
-            if (questionItems.get(i).getSelectedAnswerId() == -1) {
+        for (int i = 0; i < QUESTION_ITEMS.size(); i++) {
+            if (QUESTION_ITEMS.get(i).getSelectedAnswerId() == -1) {
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView
                         .getLayoutManager();
 
@@ -100,7 +100,7 @@ public class TAMQuestionAdapter
      * @return The list of questions.
      */
     public List<String> getQuestions() {
-        return questions;
+        return QUESTIONS;
     }
 
     /**
@@ -111,7 +111,7 @@ public class TAMQuestionAdapter
     public List<String> getAnswerValues() {
         List<String> checkedValues = new ArrayList<>();
 
-        for (QuestionItem questionItem : questionItems) {
+        for (QuestionItem questionItem : QUESTION_ITEMS) {
             String answerValue = questionItem.getSelectedAnswer();
             checkedValues.add(answerValue);
         }
@@ -124,10 +124,10 @@ public class TAMQuestionAdapter
      */
     @SuppressLint("NotifyDataSetChanged")
     public void updateBackgroundColors() {
-        for (QuestionItem questionItem : questionItems) {
+        for (QuestionItem questionItem : QUESTION_ITEMS) {
             int color = questionItem.getSelectedAnswerId() == -1
-                    ? ContextCompat.getColor(context, R.color.red_light)
-                    : ContextCompat.getColor(context, R.color.white);
+                    ? ContextCompat.getColor(CONTEXT, R.color.red_light)
+                    : ContextCompat.getColor(CONTEXT, R.color.white);
             questionItem.setBackgroundColor(color);
         }
 
@@ -136,10 +136,10 @@ public class TAMQuestionAdapter
 
     public class QuestionViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView questionText;
-        private final TextView leftValueText;
-        private final TextView rightValueText;
-        private final RadioGroup answerGroup;
+        private final TextView QUESTION_TEXT;
+        private final TextView LEFT_VALUE_TEXT;
+        private final TextView RIGHT_VALUE_TEXT;
+        private final RadioGroup ANSWER_GROUP;
 
         /**
          * Creates a new instance of QuestionViewHolder.
@@ -148,26 +148,26 @@ public class TAMQuestionAdapter
          */
         public QuestionViewHolder(@NonNull View itemView) {
             super(itemView);
-            questionText = itemView.findViewById(R.id.question_text);
-            leftValueText = itemView.findViewById(R.id.tam_verbal_scale_left);
-            rightValueText = itemView.findViewById(R.id.tam_verbal_scale_right);
-            answerGroup = itemView.findViewById(R.id.answer_group);
+            QUESTION_TEXT = itemView.findViewById(R.id.question_text);
+            LEFT_VALUE_TEXT = itemView.findViewById(R.id.tam_verbal_scale_left);
+            RIGHT_VALUE_TEXT = itemView.findViewById(R.id.tam_verbal_scale_right);
+            ANSWER_GROUP = itemView.findViewById(R.id.answer_group);
         }
 
         public void bind(int position) {
-            QuestionItem questionItem = questionItems.get(position);
+            QuestionItem questionItem = QUESTION_ITEMS.get(position);
             String question = questionItem.getQuestion();
-            questionText.setText(question);
+            QUESTION_TEXT.setText(question);
             setScaleTextValues(question);
-            answerGroup.setOnCheckedChangeListener(null);
-            answerGroup.clearCheck();
-            answerGroup.setOnCheckedChangeListener((group, checkedId) ->
+            ANSWER_GROUP.setOnCheckedChangeListener(null);
+            ANSWER_GROUP.clearCheck();
+            ANSWER_GROUP.setOnCheckedChangeListener((group, checkedId) ->
                     questionItem.setSelectedAnswerId(checkedId));
-            questionItem.setAnswerGroup(answerGroup);
+            questionItem.setAnswerGroup(ANSWER_GROUP);
 
             int selectedAnswerId = questionItem.getSelectedAnswerId();
             if (selectedAnswerId != -1) {
-                answerGroup.check(selectedAnswerId);
+                ANSWER_GROUP.check(selectedAnswerId);
             }
 
             int backgroundColor = questionItem.getBackgroundColor();
@@ -184,16 +184,16 @@ public class TAMQuestionAdapter
         private void setScaleTextValues(String question) {
             int leftValueResId, rightValueResId;
 
-            if (question.equals(context.getString(R.string.tam_pe1))) {
+            if (question.equals(CONTEXT.getString(R.string.tam_pe1))) {
                 leftValueResId = R.string.tam_disgusting;
                 rightValueResId = R.string.tam_enjoyable;
-            } else if (question.equals(context.getString(R.string.tam_pe2))) {
+            } else if (question.equals(CONTEXT.getString(R.string.tam_pe2))) {
                 leftValueResId = R.string.tam_dull;
                 rightValueResId = R.string.tam_exciting;
-            } else if (question.equals(context.getString(R.string.tam_pe3))) {
+            } else if (question.equals(CONTEXT.getString(R.string.tam_pe3))) {
                 leftValueResId = R.string.tam_unpleasant;
                 rightValueResId = R.string.tam_pleasant;
-            } else if (question.equals(context.getString(R.string.tam_pe4))) {
+            } else if (question.equals(CONTEXT.getString(R.string.tam_pe4))) {
                 leftValueResId = R.string.tam_boring;
                 rightValueResId = R.string.tam_interesting;
             } else {
@@ -201,8 +201,8 @@ public class TAMQuestionAdapter
                 rightValueResId = R.string.tam_strongly_agree;
             }
 
-            leftValueText.setText(context.getString(leftValueResId));
-            rightValueText.setText(context.getString(rightValueResId));
+            LEFT_VALUE_TEXT.setText(CONTEXT.getString(leftValueResId));
+            RIGHT_VALUE_TEXT.setText(CONTEXT.getString(rightValueResId));
         }
     }
 }

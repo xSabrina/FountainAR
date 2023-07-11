@@ -31,12 +31,13 @@ import java.util.List;
 public class TAMQuestionnaire extends AppCompatActivity {
 
     private static final String TAG = DemographicQuestionnaire.class.getSimpleName();
-    private final ArrayList<String> tamTags = new ArrayList<>();
+    private final ArrayList<String> TAM_TAGS = new ArrayList<>();
+
+    private TAMQuestionAdapter adapter;
+    private RecyclerView recyclerView;
     private List<String> questions = new ArrayList<>();
     private List<String> answerValues = new ArrayList<>();
     private long startTime;
-    private TAMQuestionAdapter adapter;
-    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class TAMQuestionnaire extends AppCompatActivity {
                 int lastDotIndex = questionWithoutPrefix.lastIndexOf('.');
                 String substringAfterDot = questionWithoutPrefix
                         .substring(lastDotIndex + 1);
-                tamTags.add(substringAfterDot.substring(4));
+                TAM_TAGS.add(substringAfterDot.substring(4));
             }
 
             adapter = new TAMQuestionAdapter(this, questions);
@@ -125,7 +126,7 @@ public class TAMQuestionnaire extends AppCompatActivity {
 
             for (int i = 0; i < questions.size(); i++) {
                 osw.write(questions.get(i) + "\n");
-                osw.write(tamTags.get(i) + "\n");
+                osw.write(TAM_TAGS.get(i) + "\n");
                 osw.write(answerValues.get(i) + "\n\n");
             }
 

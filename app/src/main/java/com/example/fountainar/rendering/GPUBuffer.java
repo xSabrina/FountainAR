@@ -19,22 +19,22 @@ import android.opengl.GLES30;
 import android.util.Log;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 
 /**
  * A Buffer for the GPU usage.
  */
-class GpuBuffer {
+class GPUBuffer {
+    private static final String TAG = GPUBuffer.class.getSimpleName();
     public static final int INT_SIZE = 4;
     public static final int FLOAT_SIZE = 4;
-    private static final String TAG = GpuBuffer.class.getSimpleName();
-    private final int target;
-    private final int numberOfBytesPerEntry;
-    private final int[] bufferId = {0};
+    private final int TARGET;
+    private final int NUMBER_OF_BYTES_ARRAY;
+    private final int[] BUFFER_ID = {0};
+
     private int size;
     private int capacity;
 
-    public GpuBuffer(int target, int numberOfBytesPerEntry, Buffer entries) {
+    public GPUBuffer(int target, int numberOfBytesPerEntry, Buffer entries) {
         if (entries != null) {
             if (!entries.isDirect()) {
                 throw new IllegalArgumentException(
@@ -45,8 +45,8 @@ class GpuBuffer {
             }
         }
 
-        this.target = target;
-        this.numberOfBytesPerEntry = numberOfBytesPerEntry;
+        this.TARGET = target;
+        this.NUMBER_OF_BYTES_ARRAY = numberOfBytesPerEntry;
 
         if (entries == null) {
             this.size = 0;
@@ -60,10 +60,10 @@ class GpuBuffer {
             GLES30.glBindVertexArray(0);
             GLError.maybeThrowGLException("Failed to unbind vertex array", "glBindVertexArray");
 
-            GLES30.glGenBuffers(1, bufferId, 0);
+            GLES30.glGenBuffers(1, BUFFER_ID, 0);
             GLError.maybeThrowGLException("Failed to generate buffers", "glGenBuffers");
 
-            GLES30.glBindBuffer(target, bufferId[0]);
+            GLES30.glBindBuffer(target, BUFFER_ID[0]);
             GLError.maybeThrowGLException("Failed to bind buffer object", "glBindBuffer");
 
             if (entries != null) {
@@ -96,20 +96,20 @@ class GpuBuffer {
                     "If non-null, entries buffer must be a direct buffer");
         }
 
-        GLES30.glBindBuffer(target, bufferId[0]);
+        GLES30.glBindBuffer(TARGET, BUFFER_ID[0]);
         GLError.maybeThrowGLException("Failed to bind vertex buffer object", "glBindBuffer");
 
         entries.rewind();
 
         if (entries.limit() <= capacity) {
-            GLES30.glBufferSubData(target, 0, entries.limit() * numberOfBytesPerEntry,
+            GLES30.glBufferSubData(TARGET, 0, entries.limit() * NUMBER_OF_BYTES_ARRAY,
                     entries);
             GLError.maybeThrowGLException("Failed to populate vertex buffer object",
                     "glBufferSubData");
             size = entries.limit();
         } else {
             GLES30.glBufferData(
-                    target, entries.limit() * numberOfBytesPerEntry, entries,
+                    TARGET, entries.limit() * NUMBER_OF_BYTES_ARRAY, entries,
                     GLES30.GL_DYNAMIC_DRAW);
             GLError.maybeThrowGLException("Failed to populate vertex buffer object",
                     "glBufferData");
@@ -122,11 +122,11 @@ class GpuBuffer {
      * Frees the buffer object.
      */
     public void free() {
-        if (bufferId[0] != 0) {
-            GLES30.glDeleteBuffers(1, bufferId, 0);
+        if (BUFFER_ID[0] != 0) {
+            GLES30.glDeleteBuffers(1, BUFFER_ID, 0);
             GLError.maybeLogGLError(Log.WARN, TAG, "Failed to free buffer object",
                     "glDeleteBuffers");
-            bufferId[0] = 0;
+            BUFFER_ID[0] = 0;
         }
     }
 
@@ -136,7 +136,7 @@ class GpuBuffer {
      * @return The buffer object ID.
      */
     public int getBufferId() {
-        return bufferId[0];
+        return BUFFER_ID[0];
     }
 
     /**

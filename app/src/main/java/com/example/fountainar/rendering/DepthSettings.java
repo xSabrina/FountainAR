@@ -25,8 +25,9 @@ public class DepthSettings {
     public static final String SHARED_PREFERENCES_ID = "SHARED_PREFERENCES_OCCLUSION_OPTIONS";
     public static final String SHARED_PREFERENCES_USE_DEPTH_FOR_OCCLUSION =
             "use_depth_for_occlusion";
-    private boolean useDepthForOcclusion = false;
+
     private SharedPreferences sharedPreferences;
+    private boolean useDepthForOcclusion = false;
 
     /**
      * Initializes the current settings based on when the app was last used.

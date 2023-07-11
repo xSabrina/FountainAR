@@ -33,26 +33,27 @@ import java.util.concurrent.TimeUnit;
 public class GeospatialHelper {
 
     private static final String TAG = GeospatialHelper.class.getSimpleName();
+    private final Activity ACTIVITY;
+    private final QuizHelper QUIZHELPER;
 
-    private static final double latitude = 49.00050454115168;
-    private static final double longitude = 12.093612000040514;
+    private static final double LATITUDE = 49.00050454115168;
+    private static final double LONGITUDE = 12.093612000040514;
     private static final double LOCALIZING_HORIZONTAL_ACCURACY_THRESHOLD_METERS = 10;
     private static final double LOCALIZING_ORIENTATION_YAW_ACCURACY_THRESHOLD_DEGREES = 15;
     private static final double LOCALIZED_HORIZONTAL_ACCURACY_HYSTERESIS_METERS = 10;
     private static final double LOCALIZED_ORIENTATION_YAW_ACCURACY_HYSTERESIS_DEGREES = 10;
     private static final int LOCALIZING_TIMEOUT_SECONDS = 180;
+    private final FusedLocationProviderClient FUSED_LOCATION_CLIENT;
+
+    private Session session;
     public static long localizingStartTimestamp;
     public static State state = State.UNINITIALIZED;
-    private final FusedLocationProviderClient fusedLocationClient;
 
-    private final QuizHelper quizHelper;
-    private final Activity activity;
-    private Session session;
 
     public GeospatialHelper(Activity activity) {
-        this.activity = activity;
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
-        quizHelper = new QuizHelper(activity);
+        this.ACTIVITY = activity;
+        FUSED_LOCATION_CLIENT = LocationServices.getFusedLocationProviderClient(activity);
+        QUIZHELPER = new QuizHelper(activity);
     }
 
     public void setSession(Session session) {
@@ -65,7 +66,7 @@ public class GeospatialHelper {
      */
     public void getLastLocation() {
         try {
-            fusedLocationClient
+            FUSED_LOCATION_CLIENT
                     .getLastLocation()
                     .addOnSuccessListener(
                             location -> {
@@ -110,7 +111,7 @@ public class GeospatialHelper {
                         Log.e(TAG, "Error checking VPS availability", t);
                     }
                 },
-                activity.getMainExecutor()
+                ACTIVITY.getMainExecutor()
         );
     }
 
@@ -135,7 +136,7 @@ public class GeospatialHelper {
      */
     private void showVpsNotAvailabilityNoticeDialog() {
         DialogFragment dialog = VpsAvailabilityNoticeDialogFragment.createDialog();
-        FragmentActivity fragmentActivity = (FragmentActivity) activity;
+        FragmentActivity fragmentActivity = (FragmentActivity) ACTIVITY;
         dialog.show(fragmentActivity.getSupportFragmentManager(),
                 VpsAvailabilityNoticeDialogFragment.class.getName());
     }
@@ -196,7 +197,7 @@ public class GeospatialHelper {
 
             if (ARActivity.anchor == null) {
                 placeAnchor(earth);
-                quizHelper.setupQuiz();
+                QUIZHELPER.setupQuiz();
             }
 
             return;
@@ -286,8 +287,8 @@ public class GeospatialHelper {
                     if (state == Anchor.TerrainAnchorState.SUCCESS) {
                         ARActivity.anchor = anchor;
                     } else {
-                        ARActivity.snackbarHelper.showMessageWithDismiss(activity,
-                                activity.getString(R.string.error_create_anchor));
+                        ARActivity.snackbarHelper.showMessageWithDismiss(ACTIVITY,
+                                ACTIVITY.getString(R.string.error_create_anchor));
                         Log.e(TAG, "Exception creating terrain anchor");
                     }
                 });

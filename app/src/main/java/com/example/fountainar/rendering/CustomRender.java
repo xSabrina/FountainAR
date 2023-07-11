@@ -26,8 +26,8 @@ import javax.microedition.khronos.opengles.GL10;
  * A CustomRender context.
  */
 public class CustomRender {
+    private final AssetManager ASSET_MANAGER;
 
-    private final AssetManager assetManager;
     private int viewportWidth = 1;
     private int viewportHeight = 1;
 
@@ -39,7 +39,7 @@ public class CustomRender {
      * @param assetManager  AssetManager for loading Android resources
      */
     public CustomRender(GLSurfaceView glSurfaceView, Renderer renderer, AssetManager assetManager) {
-        this.assetManager = assetManager;
+        this.ASSET_MANAGER = assetManager;
         glSurfaceView.setPreserveEGLContextOnPause(true);
         glSurfaceView.setEGLContextClientVersion(3);
         glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16,
@@ -112,7 +112,7 @@ public class CustomRender {
      * @return The AssetManager instance.
      */
     AssetManager getAssets() {
-        return assetManager;
+        return ASSET_MANAGER;
     }
 
     /**

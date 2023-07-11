@@ -53,9 +53,9 @@ public class Mesh implements Closeable {
     TRIANGLE_FAN(GLES30.GL_TRIANGLE_FAN),
     TRIANGLES(GLES30.GL_TRIANGLES);
 
-    final int glesEnum;
-    PrimitiveMode(int glesEnum) {
-      this.glesEnum = glesEnum;
+    final int GL_ES_ENUM;
+    PrimitiveMode(int gl_es_enum) {
+      this.GL_ES_ENUM = gl_es_enum;
     }
   }
 
@@ -173,11 +173,11 @@ public class Mesh implements Closeable {
         }
       }
 
-      GLES30.glDrawArrays(primitiveMode.glesEnum, 0, numberOfVertices);
+      GLES30.glDrawArrays(primitiveMode.GL_ES_ENUM, 0, numberOfVertices);
       GLError.maybeThrowGLException("Failed to draw vertex array object", "glDrawArrays");
     } else {
       GLES30.glDrawElements(
-          primitiveMode.glesEnum, indexBuffer.getSize(), GLES30.GL_UNSIGNED_INT, 0);
+          primitiveMode.GL_ES_ENUM, indexBuffer.getSize(), GLES30.GL_UNSIGNED_INT, 0);
       GLError.maybeThrowGLException(
           "Failed to draw vertex array object with indices", "glDrawElements");
     }

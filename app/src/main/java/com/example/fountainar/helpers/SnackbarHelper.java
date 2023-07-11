@@ -13,9 +13,10 @@ import com.google.android.material.snackbar.Snackbar;
  */
 public final class SnackbarHelper {
     private static final int BACKGROUND_COLOR = 0xbf323232;
-    private final int maxLines = 2;
-    public boolean isDismissed = false;
+    private final int MAX_LINES = 2;
+
     private Snackbar snackbar;
+    public boolean isDismissed = false;
 
     public SnackbarHelper() {
     }
@@ -66,7 +67,7 @@ public final class SnackbarHelper {
                 }
             }
             ((TextView) snackbar.getView().findViewById(
-                    com.google.android.material.R.id.snackbar_text)).setMaxLines(maxLines);
+                    com.google.android.material.R.id.snackbar_text)).setMaxLines(MAX_LINES);
             snackbar.show();
         });
     }

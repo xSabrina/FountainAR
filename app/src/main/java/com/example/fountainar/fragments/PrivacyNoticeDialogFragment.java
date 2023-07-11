@@ -17,7 +17,7 @@ import com.example.fountainar.R;
  */
 public class PrivacyNoticeDialogFragment extends DialogFragment {
 
-    NoticeDialogListener noticeDialogListener;
+    private NoticeDialogListener noticeDialogListener;
 
     public static PrivacyNoticeDialogFragment createDialog() {
         return new PrivacyNoticeDialogFragment();

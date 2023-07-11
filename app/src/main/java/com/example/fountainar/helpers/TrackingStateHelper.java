@@ -24,15 +24,15 @@ import com.google.ar.core.TrackingState;
  * Helper to get human readable tracking failure reasons and suggested actions.
  */
 public final class TrackingStateHelper {
+    private final Activity ACTIVITY;
 
-    private final Activity activity;
     private TrackingState previousTrackingState;
 
     /**
      * Helper to provide human-readable tracking failure reasons and suggested actions.
      */
     public TrackingStateHelper(Activity activity) {
-        this.activity = activity;
+        this.ACTIVITY = activity;
     }
 
     /**
@@ -49,13 +49,13 @@ public final class TrackingStateHelper {
         switch (trackingState) {
             case PAUSED:
             case STOPPED:
-                activity.runOnUiThread(
-                        () -> activity.getWindow()
+                ACTIVITY.runOnUiThread(
+                        () -> ACTIVITY.getWindow()
                                 .clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
                 break;
             case TRACKING:
-                activity.runOnUiThread(
-                        () -> activity.getWindow()
+                ACTIVITY.runOnUiThread(
+                        () -> ACTIVITY.getWindow()
                                 .addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
                 break;
         }

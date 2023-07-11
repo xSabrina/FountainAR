@@ -29,7 +29,7 @@ import java.nio.IntBuffer;
  * @see <a href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glDrawElements.xhtml">glDrawElements</a>
  */
 public class IndexBuffer implements Closeable {
-    private final GpuBuffer buffer;
+    private final GPUBuffer GPU_BUFFER;
 
     /**
      * Constructs an {@link IndexBuffer} populated with initial data.
@@ -42,7 +42,7 @@ public class IndexBuffer implements Closeable {
      * instead.
      */
     public IndexBuffer(IntBuffer entries) {
-        buffer = new GpuBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, GpuBuffer.INT_SIZE, entries);
+        GPU_BUFFER = new GPUBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, GPUBuffer.INT_SIZE, entries);
     }
 
     /**
@@ -57,7 +57,7 @@ public class IndexBuffer implements Closeable {
      * <p>The {@code entries} buffer may be null, in which case the buffer will become empty.
      */
     public void set(IntBuffer entries) {
-        buffer.set(entries);
+        GPU_BUFFER.set(entries);
     }
 
     /**
@@ -65,7 +65,7 @@ public class IndexBuffer implements Closeable {
      */
     @Override
     public void close() {
-        buffer.free();
+        GPU_BUFFER.free();
     }
 
     /**
@@ -74,7 +74,7 @@ public class IndexBuffer implements Closeable {
      * @return The buffer object ID.
      */
     int getBufferId() {
-        return buffer.getBufferId();
+        return GPU_BUFFER.getBufferId();
     }
 
     /**
@@ -83,6 +83,6 @@ public class IndexBuffer implements Closeable {
      * @return The size of the buffer.
      */
     int getSize() {
-        return buffer.getSize();
+        return GPU_BUFFER.getSize();
     }
 }

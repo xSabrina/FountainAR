@@ -11,13 +11,14 @@ import com.example.fountainar.R;
  */
 public class SoundPoolHelper {
 
-    private final Activity activity;
+    private final Activity ACTIVITY;
+
     private SoundPool soundPool;
     private int soundId;
     private boolean soundPoolPlaying = false;
 
     public SoundPoolHelper(Activity activity) {
-        this.activity = activity;
+        this.ACTIVITY = activity;
         setupSoundPool();
     }
 
@@ -34,7 +35,7 @@ public class SoundPoolHelper {
                 .setAudioAttributes(attributes)
                 .build();
 
-        soundId = soundPool.load(activity, R.raw.fountain_animation_sound, 1);
+        soundId = soundPool.load(ACTIVITY, R.raw.fountain_animation_sound, 1);
     }
 
     /**

@@ -15,7 +15,7 @@ import com.example.fountainar.R;
  */
 public class VpsAvailabilityNoticeDialogFragment extends DialogFragment {
 
-    NoticeDialogListener noticeDialogListener;
+    private NoticeDialogListener noticeDialogListener;
 
     public static VpsAvailabilityNoticeDialogFragment createDialog() {
         return new VpsAvailabilityNoticeDialogFragment();

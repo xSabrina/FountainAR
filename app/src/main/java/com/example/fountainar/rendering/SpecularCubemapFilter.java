@@ -44,7 +44,6 @@ import java.util.Iterator;
  * for a more detailed explanation.
  */
 public class SpecularCubemapFilter implements Closeable {
-
     private static final String TAG = SpecularCubemapFilter.class.getSimpleName();
     private static final int COMPONENTS_PER_VERTEX = 2;
     private static final int NUMBER_OF_VERTICES = 4;
@@ -55,10 +54,12 @@ public class SpecularCubemapFilter implements Closeable {
             ByteBuffer.allocateDirect(COORDINATES_BUFFER_SIZE).order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
     private static final int NUMBER_OF_CUBE_FACES = 6;
+
     private static final String[] ATTACHMENT_LOCATION_DEFINES = {
             "PX_LOCATION", "NX_LOCATION", "PY_LOCATION", "NY_LOCATION", "PZ_LOCATION",
             "NZ_LOCATION",
     };
+
     private static final int[] ATTACHMENT_ENUMS = {
             GLES30.GL_COLOR_ATTACHMENT0,
             GLES30.GL_COLOR_ATTACHMENT1,
@@ -67,6 +68,7 @@ public class SpecularCubemapFilter implements Closeable {
             GLES30.GL_COLOR_ATTACHMENT4,
             GLES30.GL_COLOR_ATTACHMENT5,
     };
+
     private static final float PI_F = (float) Math.PI;
 
     static {
@@ -134,19 +136,19 @@ public class SpecularCubemapFilter implements Closeable {
 
 
     private static float log4(float value) {
-        return (float) (Math.log((double) value) / Math.log(4.0));
+        return (float) (Math.log(value) / Math.log(4.0));
     }
 
     private static float sqrt(float value) {
-        return (float) Math.sqrt((double) value);
+        return (float) Math.sqrt(value);
     }
 
     private static float sin(float value) {
-        return (float) Math.sin((double) value);
+        return (float) Math.sin(value);
     }
 
     private static float cos(float value) {
-        return (float) Math.cos((double) value);
+        return (float) Math.cos(value);
     }
 
     private static float[] hammersley(int i, float iN) {
