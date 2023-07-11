@@ -246,9 +246,9 @@ public class GeospatialHelper {
      * Creates a terrain anchor at given world coordinates using earth object.
      */
     private void createTerrainAnchor(Earth earth, GeospatialPose geospatialPose) {
-        double latitude = geospatialPose.getLatitude();
-        double longitude = geospatialPose.getLongitude();
 
+
+        /*
 // Constants for the offset (in meters)
         double offsetDistance = 3.0;
         double offsetAngle = 0.0;  // Assuming 0 degrees for straight ahead
@@ -273,11 +273,13 @@ public class GeospatialHelper {
 // Use the new latitude and longitude for spawning the object
 // ...
 
+         */
+
         float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
 
         earth.resolveAnchorOnTerrainAsync(
-                newLatitude,
-                newLongitude,
+                LATITUDE,
+                LONGITUDE,
                 0.0f,
                 quaternion[0],
                 quaternion[1],

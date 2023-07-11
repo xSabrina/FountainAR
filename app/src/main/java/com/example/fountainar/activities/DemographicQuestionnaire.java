@@ -29,9 +29,9 @@ import com.example.fountainar.R;
 import com.example.fountainar.handlers.BackPressedHandler;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -41,16 +41,14 @@ import java.util.Date;
  * permission checks, extracts questions and answers, and highlights missing fields.
  */
 public class DemographicQuestionnaire extends AppCompatActivity {
-
     private static final String TAG = DemographicQuestionnaire.class.getSimpleName();
+    public static int probNum;
     private final ArrayList<String> QUESTIONS = new ArrayList<>();
     private final ArrayList<String> ANSWERS = new ArrayList<>();
     private final ArrayList<RadioGroup> RADIO_GROUPS = new ArrayList<>();
     private final ArrayList<EditText> EDIT_TEXTS = new ArrayList<>();
     private final ArrayList<EditText> MISSING_INPUT_FIELDS = new ArrayList<>();
     private final ArrayList<RadioGroup> MISSING_RADIO_GROUPS = new ArrayList<>();
-
-    public static int probNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +134,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void setupLayoutListeners() {
         LinearLayout parentLayout = findViewById(R.id.dq_layout);
+
         parentLayout.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 clearEditTextFocus(getCurrentFocus());
@@ -147,8 +146,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
             for (int j = 0; j < rg.getChildCount(); j++) {
                 View childView = rg.getChildAt(j);
                 if (childView instanceof RadioButton) {
-                    RadioButton rb = (RadioButton) childView;
-                    rb.setOnTouchListener((view, motionEvent) -> {
+                    childView.setOnTouchListener((view, motionEvent) -> {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             clearEditTextFocus(getCurrentFocus());
                         }
@@ -181,12 +179,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
             eT.setOnTouchListener((v, event) -> {
                 RadioGroup rg = (RadioGroup) v.getParent();
-                int childNumber = 0;
-                for (int j = 0; j < rg.getChildCount(); j++) {
-                    if (rg.getChildAt(j).equals(eT)) {
-                        childNumber = j - 1;
-                    }
-                }
+                int childNumber = rg.indexOfChild(v) - 1;
                 RadioButton rb = (RadioButton) rg.getChildAt(childNumber);
                 rb.setChecked(true);
                 return false;
@@ -231,8 +224,8 @@ public class DemographicQuestionnaire extends AppCompatActivity {
                     View view = radioGroup.getChildAt(j);
                     View nextView = radioGroup.getChildAt(j + 1);
 
-                    if (selectedId == view.getId() && view instanceof RadioButton && nextView
-                            instanceof EditText) {
+                    if (selectedId == view.getId() && view instanceof RadioButton
+                            && nextView instanceof EditText) {
                         EditText editText = (EditText) nextView;
 
                         if (editText.getText().toString().trim().isEmpty()) {
@@ -268,26 +261,28 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         for (int i = 1; i < linearLayout.getChildCount(); i++) {
             View view = linearLayout.getChildAt(i);
 
-            if (view instanceof TextView && !(view instanceof EditText) &&
-                    !(view instanceof Button)) {
+            if (view instanceof TextView && !(view instanceof EditText)
+                    && !(view instanceof Button)) {
                 QUESTIONS.add(((TextView) view).getText().toString());
-            } else if (view instanceof EditText && ((EditText) view).getText() != null) {
+            } else if (view instanceof EditText) {
                 ANSWERS.add(((EditText) view).getText().toString());
             } else if (view instanceof RadioGroup) {
                 RadioGroup radioGroup = (RadioGroup) view;
                 int checkedId = radioGroup.getCheckedRadioButtonId();
                 RadioButton radioButton = findViewById(checkedId);
 
-                if (radioButton.getText().equals(getString(R.string.dq_alternative_answer))) {
-                    View editView = radioGroup.getChildAt(radioGroup.getChildCount() - 1);
-                    ANSWERS.add(radioButton.getText().toString() + " " +
-                            ((EditText) editView).getText().toString());
-                } else if (radioButton.getText().equals(getString(R.string.dq_q5_student))) {
-                    View editView = radioGroup.getChildAt(1);
-                    ANSWERS.add(radioButton.getText().toString() + ((EditText) editView).getText()
-                            .toString());
-                } else {
-                    ANSWERS.add(radioButton.getText().toString());
+                if (radioButton != null) {
+                    String answerText = radioButton.getText().toString();
+
+                    if (answerText.equals(getString(R.string.dq_alternative_answer))) {
+                        View editView = radioGroup.getChildAt(radioGroup.getChildCount() - 1);
+                        ANSWERS.add(answerText + " " + ((EditText) editView).getText().toString());
+                    } else if (answerText.equals(getString(R.string.dq_q5_student))) {
+                        View editView = radioGroup.getChildAt(1);
+                        ANSWERS.add(answerText + ((EditText) editView).getText().toString());
+                    } else {
+                        ANSWERS.add(answerText);
+                    }
                 }
             }
         }
@@ -299,13 +294,11 @@ public class DemographicQuestionnaire extends AppCompatActivity {
     private void saveDataToFile() {
         probNum = Integer.parseInt(((EditText) findViewById(R.id.dq_q1_input)).getText()
                 .toString());
-        Date date = new Date();
-        String dateString = date.toString();
+        String dateString = new Date().toString();
         File file = createdFile();
 
-        try (FileOutputStream fOut = new FileOutputStream(file);
-             OutputStreamWriter osw = new OutputStreamWriter(fOut)) {
-
+        try (OutputStreamWriter osw = new OutputStreamWriter(
+                Files.newOutputStream(file.toPath()))) {
             osw.write(getString(R.string.dq_q1) + " " + probNum + "\n\n" + dateString + "\n\n");
 
             for (int i = 0; i < QUESTIONS.size(); i++) {
@@ -364,7 +357,6 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
             for (int i = 0; i < radioGroup.getChildCount(); i++) {
                 View childView = radioGroup.getChildAt(i);
-
                 if (childView instanceof EditText) {
                     childView.setBackground(getDrawable(R.drawable.rounded_corners_highlighted));
                 } else {
@@ -376,17 +368,18 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         scrollToFirstMissingField();
     }
 
+
     /**
      * Resets the backgrounds of the input fields and radio groups.
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     private void resetBackgrounds() {
-        for (int i = 0; i < RADIO_GROUPS.size(); i++) {
-            RadioGroup radioGroup = RADIO_GROUPS.get(i);
+        for (RadioGroup radioGroup : RADIO_GROUPS) {
             radioGroup.setBackgroundColor(getColor(R.color.white));
 
-            if (i < 2) {
-                EDIT_TEXTS.get(i).setBackground(getDrawable(R.drawable.rounded_corners));
+            if (RADIO_GROUPS.indexOf(radioGroup) < 2) {
+                EDIT_TEXTS.get(RADIO_GROUPS.indexOf(radioGroup))
+                        .setBackground(getDrawable(R.drawable.rounded_corners));
             }
 
             for (int j = 0; j < radioGroup.getChildCount(); j++) {
@@ -397,16 +390,16 @@ public class DemographicQuestionnaire extends AppCompatActivity {
         }
     }
 
+
     /**
      * Scrolls the view to the first missing field.
      */
     private void scrollToFirstMissingField() {
-        final ScrollView scrollView = findViewById(R.id.dq_scroll_view);
-        final int scrollViewHeight = scrollView.getHeight();
+        ScrollView scrollView = findViewById(R.id.dq_scroll_view);
+        int scrollViewHeight = scrollView.getHeight();
 
         View view = !MISSING_INPUT_FIELDS.isEmpty() ? (View) MISSING_INPUT_FIELDS.get(0).getParent()
                 : MISSING_RADIO_GROUPS.get(0);
-        assert view != null;
 
         int viewTop = view.getTop();
         int viewHeight = view.getHeight();
@@ -416,6 +409,7 @@ public class DemographicQuestionnaire extends AppCompatActivity {
 
         scrollView.smoothScrollTo(0, missingFieldY);
     }
+
 
     @Override
     protected void onResume() {
