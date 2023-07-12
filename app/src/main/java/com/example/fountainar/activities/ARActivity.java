@@ -41,7 +41,6 @@ public class ARActivity extends AppCompatActivity implements
         CustomRender.Renderer,
         VpsAvailabilityNoticeDialogFragment.NoticeDialogListener,
         PrivacyNoticeDialogFragment.NoticeDialogListener {
-
     private static final String ALLOW_GEOSPATIAL_ACCESS_KEY = "ALLOW_GEOSPATIAL_ACCESS";
 
     public static SnackbarHelper snackbarHelper = new SnackbarHelper();
@@ -67,6 +66,37 @@ public class ARActivity extends AppCompatActivity implements
         geospatialHelper = new GeospatialHelper(this);
         displayRotationHelper = new DisplayRotationHelper(this);
         BackPressedHandler.setupBackPressedCallback(this);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus);
+    }
+
+    @Override
+    public void onDrawFrame(CustomRender render) {
+        if (session == null) {
+            return;
+        }
+
+        sceneRenderer.drawScene(session, render, anchor);
+        displayRotationHelper.updateSessionIfNeeded(session);
+        Earth earth = session.getEarth();
+
+        if (earth != null) {
+            geospatialHelper.updateGeospatialState(earth);
+        }
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        if (!sharedPreferences.edit().putBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, true).commit()) {
+            throw new AssertionError(
+                    "The user preference could not be saved in SharedPreferences");
+        }
+
+        setupSession();
     }
 
     /**
@@ -127,51 +157,6 @@ public class ARActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus);
-    }
-
-    /**
-     * Callback when a new frame needs to be drawn. Draws the scene, updates the session if needed,
-     * and updates the geospatial state if Earth is available.
-     *
-     * @param render The CustomRender instance.
-     */
-    @Override
-    public void onDrawFrame(CustomRender render) {
-        if (session == null) {
-            return;
-        }
-
-        sceneRenderer.drawScene(session, render, anchor);
-        displayRotationHelper.updateSessionIfNeeded(session);
-        Earth earth = session.getEarth();
-
-        if (earth != null) {
-            geospatialHelper.updateGeospatialState(earth);
-        }
-    }
-
-    /**
-     * Shows the privacy notice dialog that visual data needs to be used.
-     */
-    private void showPrivacyNoticeDialog() {
-        DialogFragment dialog = PrivacyNoticeDialogFragment.createDialog();
-        dialog.show(getSupportFragmentManager(), PrivacyNoticeDialogFragment.class.getName());
-    }
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        if (!sharedPreferences.edit().putBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, true).commit()) {
-            throw new AssertionError(
-                    "The user preference could not be saved in SharedPreferences");
-        }
-
-        setupSession();
-    }
-
-    @Override
     public void onDialogContinueClick(DialogFragment dialog) {
         dialog.dismiss();
     }
@@ -198,44 +183,53 @@ public class ARActivity extends AppCompatActivity implements
 
         if (requestCode == CameraPermissionHelper.CAMERA_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                if (CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                    Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
-                            .show();
-                    CameraPermissionHelper.requestCameraPermission(this);
-                } else {
-                    if (!cameraPermissionDenied) {
-                        cameraPermissionDenied = true;
-                        Toast.makeText(this, R.string.cam_permission_needed,
-                                Toast.LENGTH_LONG).show();
-                        CameraPermissionHelper.launchPermissionSettings(this);
-                    }
-                }
+                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
+                        .show();
+                handleCameraPermissionResult();
             }
         }
 
         if (requestCode == LocationPermissionHelper.LOCATION_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                if (LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                    Toast.makeText(this, R.string.loc_permission_needed, Toast.LENGTH_LONG)
-                            .show();
-                    LocationPermissionHelper.requestFineLocationPermission(this);
-                } else {
-                    if (!locationPermissionDenied) {
-                        locationPermissionDenied = true;
-                        Toast.makeText(this, R.string.loc_permission_needed,
-                                Toast.LENGTH_LONG).show();
-                        LocationPermissionHelper.launchPermissionSettings(this);
-                    }
-                }
+                Toast.makeText(this, R.string.loc_permission_needed, Toast.LENGTH_LONG)
+                        .show();
+                handleLocationPermissionResult();
             }
         }
     }
 
     /**
-     * Called when the activity is resumed from the paused state.
-     * Initializes the AR session if the user has granted geospatial access,
-     * otherwise shows the privacy notice dialog.
+     * Handles the result of the camera permission request. If the permission rationale should be
+     * shown, the camera permission is requested again. If the permission is denied and not already
+     * marked as denied, the camera permission settings are launched.
      */
+    private void handleCameraPermissionResult() {
+        if (CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+            CameraPermissionHelper.requestCameraPermission(this);
+        } else {
+            if (!cameraPermissionDenied) {
+                cameraPermissionDenied = true;
+                CameraPermissionHelper.launchPermissionSettings(this);
+            }
+        }
+    }
+
+    /**
+     * Handles the result of the location permission request. If the permission rationale should be
+     * shown, the fine location permission is requested again. If the permission is denied and not
+     * already marked as denied, the location permission settings are launched.
+     */
+    private void handleLocationPermissionResult() {
+        if (LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+            LocationPermissionHelper.requestFineLocationPermission(this);
+        } else {
+            if (!locationPermissionDenied) {
+                locationPermissionDenied = true;
+                LocationPermissionHelper.launchPermissionSettings(this);
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -247,6 +241,15 @@ public class ARActivity extends AppCompatActivity implements
             surfaceView.onResume();
             displayRotationHelper.onResume();
         }
+    }
+
+    /**
+     * Displays the privacy notice dialog, which prompts the user to acknowledge the need for
+     * using visual data.
+     */
+    private void showPrivacyNoticeDialog() {
+        DialogFragment dialog = PrivacyNoticeDialogFragment.createDialog();
+        dialog.show(getSupportFragmentManager(), PrivacyNoticeDialogFragment.class.getName());
     }
 
     @Override
