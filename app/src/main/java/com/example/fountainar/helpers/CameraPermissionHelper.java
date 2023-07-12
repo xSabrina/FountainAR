@@ -32,7 +32,7 @@ public final class CameraPermissionHelper {
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
 
     /**
-     * Checks, if we have the necessary permissions for this app.
+     * Checks, if the necessary camera permission for this app is given.
      */
     public static boolean hasNoCameraPermission(Activity activity) {
         return ActivityCompat.checkSelfPermission(activity, CAMERA_PERMISSION)
@@ -48,7 +48,7 @@ public final class CameraPermissionHelper {
     }
 
     /**
-     * Checks, if we need to show the rationale for this permission.
+     * Checks, if showing the rationale for this permission is needed.
      */
     public static boolean shouldShowRequestPermissionRationale(Activity activity) {
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, CAMERA_PERMISSION);

@@ -6,6 +6,8 @@
     android:background="@color/white"
     android:gravity="bottom"
     android:orientation="vertical"
+    android:configChanges="screenSize|orientation|screenLayout|smallestScreenSize|uiMode"
+    android:launchMode="singleTask"
     tools:context= "com.example.fountainar.activities.ARActivity">
 
     <android.opengl.GLSurfaceView

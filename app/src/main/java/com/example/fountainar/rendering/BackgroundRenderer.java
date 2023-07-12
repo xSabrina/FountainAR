@@ -214,7 +214,4 @@ public class BackgroundRenderer {
         return CAMERA_COLOR_TEXTURE;
     }
 
-    public void enableDepthTesting(boolean testing){
-        occlusionShader.setDepthTest(testing);
-    }
 }

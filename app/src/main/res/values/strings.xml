@@ -174,7 +174,7 @@
     <string name="cam_permission_needed">Kameraberechtigung erforderlich.</string>
     <string name="read_asset_failed">Fehler beim Lesen eines erforderlichen Assets: </string>
     <string name="opengl_version_required">Die App benötigt OpenGl Version 3.0 oder neuer.</string>
-    <string name="fine_loc_needed">Genaue Standortberechtigung erforderlich</string>
+    <string name="loc_permission_needed">Genaue Standortberechtigung erforderlich</string>
     <string name="read_stor_needed">Lesen im externen Speicher erforderlich</string>
     <string name="write_stor_needed">Schreiben im externen Speicher erforderlich.</string>
     <string name="cam_and_loc_needed">Diese App benötigt Kamera-und Standortberechtigung.</string>

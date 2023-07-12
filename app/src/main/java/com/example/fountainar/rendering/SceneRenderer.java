@@ -260,6 +260,10 @@ public class SceneRenderer {
      * @param height The new height of the framebuffer.
      */
     public void resizeFramebuffer(int width, int height) {
+        if (virtualSceneFramebuffer == null) {
+            return;
+        }
+
         virtualSceneFramebuffer.resize(width, height);
     }
 

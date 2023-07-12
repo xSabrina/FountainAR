@@ -30,8 +30,6 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.Earth;
 import com.google.ar.core.Session;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.Objects;
 
 /**
@@ -56,6 +54,9 @@ public class ARActivity extends AppCompatActivity implements
     private ARCoreHelper arCoreHelper;
     private GLSurfaceView surfaceView;
     private SceneRenderer sceneRenderer;
+    private boolean rendererSet = false;
+    private boolean cameraPermissionDenied = false;
+    private boolean locationPermissionDenied = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +70,30 @@ public class ARActivity extends AppCompatActivity implements
     }
 
     /**
+     * Sets up the AR session by checking and requesting camera and location permissions.
+     * If both permissions are granted and the system supports the required technology
+     * (OpenGL ES 3.0 and ARCore), it sets up the session elements.
+     */
+    private void setupSession() {
+        if (CameraPermissionHelper.hasNoCameraPermission(this)
+                && !CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+            CameraPermissionHelper.requestCameraPermission(this);
+        } else if (LocationPermissionHelper.hasNoFineLocationPermission(this)
+                && !LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+            LocationPermissionHelper.requestFineLocationPermission(this);
+        } else {
+            if (systemSupportsNeededTechnology()) {
+                setupSessionElements();
+            }
+        }
+    }
+
+    /**
      * Checks if the system supports the required technology (OpenGL ES 3.0 and ARCore).
      * If the system meets the requirements, returns true. Otherwise, displays a toast message
      * and finishes the activity.
      *
-     * @return true if the system supports the required technology, false otherwise.
+     * @return true if the system supports the required technology.
      */
     private boolean systemSupportsNeededTechnology() {
         String openGlVersion = ((ActivityManager)
@@ -84,10 +104,25 @@ public class ARActivity extends AppCompatActivity implements
                 arCoreHelper.isARCoreSupportedAndUpToDate()) {
             return true;
         } else {
-            Toast.makeText(this, R.string.opengl_version_required,
-                            Toast.LENGTH_SHORT)
+            Toast.makeText(this, R.string.opengl_version_required, Toast.LENGTH_SHORT)
                     .show();
             return false;
+        }
+    }
+
+    /**
+     * Sets up the necessary elements for the AR session by also
+     * using {@link ARCoreHelper#setupSession()}.
+     */
+    private void setupSessionElements() {
+        arCoreHelper.setupSession();
+        session = arCoreHelper.updatedSession();
+        surfaceView = findViewById(R.id.surface_view);
+
+        if (!rendererSet) {
+            sceneRenderer = new SceneRenderer(this);
+            new CustomRender(surfaceView, this, getAssets());
+            rendererSet = true;
         }
     }
 
@@ -95,33 +130,6 @@ public class ARActivity extends AppCompatActivity implements
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus);
-    }
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        if (!sharedPreferences.edit().putBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, true).commit()) {
-            throw new AssertionError(
-                    "The user preference could not be saved in SharedPreferences");
-        }
-
-        arCoreHelper.setupSession();
-        session = arCoreHelper.updatedSession();
-    }
-
-    @Override
-    public void onDialogContinueClick(DialogFragment dialog) {
-        dialog.dismiss();
-    }
-
-    @Override
-    public void onSurfaceCreated(CustomRender render) {
-        sceneRenderer.setupScene(render);
-    }
-
-    @Override
-    public void onSurfaceChanged(CustomRender render, int width, int height) {
-        displayRotationHelper.onSurfaceChanged(width, height);
-        sceneRenderer.resizeFramebuffer(width, height);
     }
 
     /**
@@ -146,47 +154,41 @@ public class ARActivity extends AppCompatActivity implements
     }
 
     /**
-     * Called when the activity is resumed from the paused state.
-     * Initializes the AR session if the user has granted geospatial access,
-     * otherwise shows the privacy notice dialog.
+     * Shows the privacy notice dialog that visual data needs to be used.
      */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (sharedPreferences.getBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, false)) {
-            if (CameraPermissionHelper.hasNoCameraPermission(this)) {
-                CameraPermissionHelper.requestCameraPermission(this);
-            } else {
-                if (systemSupportsNeededTechnology()) {
-                    setupARSession();
-                }
-            }
-        } else {
-            showPrivacyNoticeDialog();
-
-            if (systemSupportsNeededTechnology()) {
-                setupARSession();
-            }
-
-            surfaceView.onResume();
-            displayRotationHelper.onResume();
-        }
-
-
-    }
-
-    private void setupARSession() {
-        surfaceView = findViewById(R.id.surface_view);
-        new CustomRender(surfaceView, this, getAssets());
-        sceneRenderer = new SceneRenderer(this);
-        arCoreHelper.setupSession();
-        session = arCoreHelper.updatedSession();
-    }
-
     private void showPrivacyNoticeDialog() {
         DialogFragment dialog = PrivacyNoticeDialogFragment.createDialog();
         dialog.show(getSupportFragmentManager(), PrivacyNoticeDialogFragment.class.getName());
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        if (!sharedPreferences.edit().putBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, true).commit()) {
+            throw new AssertionError(
+                    "The user preference could not be saved in SharedPreferences");
+        }
+
+        setupSession();
+    }
+
+    @Override
+    public void onDialogContinueClick(DialogFragment dialog) {
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onSurfaceCreated(CustomRender render) {
+        if (render != null) {
+            sceneRenderer.setupScene(render);
+        }
+    }
+
+    @Override
+    public void onSurfaceChanged(CustomRender render, int width, int height) {
+        if (render != null) {
+            displayRotationHelper.onSurfaceChanged(width, height);
+            sceneRenderer.resizeFramebuffer(width, height);
+        }
     }
 
     @Override
@@ -195,13 +197,55 @@ public class ARActivity extends AppCompatActivity implements
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CameraPermissionHelper.CAMERA_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupARSession();
-            } else {
-                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
-                        .show();
-                CameraPermissionHelper.launchPermissionSettings(this);
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                if (CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+                    Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
+                            .show();
+                    CameraPermissionHelper.requestCameraPermission(this);
+                } else {
+                    if (!cameraPermissionDenied) {
+                        cameraPermissionDenied = true;
+                        Toast.makeText(this, R.string.cam_permission_needed,
+                                Toast.LENGTH_LONG).show();
+                        CameraPermissionHelper.launchPermissionSettings(this);
+                    }
+                }
             }
+        }
+
+        if (requestCode == LocationPermissionHelper.LOCATION_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                if (LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+                    Toast.makeText(this, R.string.loc_permission_needed, Toast.LENGTH_LONG)
+                            .show();
+                    LocationPermissionHelper.requestFineLocationPermission(this);
+                } else {
+                    if (!locationPermissionDenied) {
+                        locationPermissionDenied = true;
+                        Toast.makeText(this, R.string.loc_permission_needed,
+                                Toast.LENGTH_LONG).show();
+                        LocationPermissionHelper.launchPermissionSettings(this);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Called when the activity is resumed from the paused state.
+     * Initializes the AR session if the user has granted geospatial access,
+     * otherwise shows the privacy notice dialog.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!sharedPreferences.getBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, false)) {
+            showPrivacyNoticeDialog();
+        } else {
+            setupSessionElements();
+            surfaceView.onResume();
+            displayRotationHelper.onResume();
         }
     }
 

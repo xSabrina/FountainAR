@@ -98,8 +98,17 @@ public class ARCoreHelper {
         }
 
         try {
-            configureSession();
-            session.resume();
+            if (session != null) {
+                configureSession();
+                session.resume();
+            } else {
+                if (CameraPermissionHelper.hasNoCameraPermission(activity)
+                        || LocationPermissionHelper.hasNoFineLocationPermission(activity)) {
+                    return;
+                }
+
+                message = "ARCore session is null";
+            }
         } catch (CameraNotAvailableException e) {
             message = String.valueOf(R.string.cam_not_available);
             exception = e;
@@ -145,13 +154,11 @@ public class ARCoreHelper {
 
             if (CameraPermissionHelper.hasNoCameraPermission(activity)) {
                 CameraPermissionHelper.requestCameraPermission(activity);
-
                 return;
             }
 
             if (LocationPermissionHelper.hasNoFineLocationPermission(activity)) {
                 LocationPermissionHelper.requestFineLocationPermission(activity);
-
                 return;
             }
 
@@ -204,5 +211,4 @@ public class ARCoreHelper {
     public Session updatedSession() {
         return session;
     }
-
 }
