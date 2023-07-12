@@ -1,7 +1,5 @@
 #version 300 es
 
-precision mediump float;
-
 in vec3 v_Normal;
 in vec3 v_Position;
 in vec2 v_TexCoord;
