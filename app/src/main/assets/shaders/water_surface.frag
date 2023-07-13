@@ -12,8 +12,8 @@ uniform vec3 u_LightDirection;
 uniform vec3 u_CameraPosition;
 
 const float shininess = 64.0;
-const vec3 waterColor = vec3(1.0, 1.0, 1.0);
-const float waterTransparency = 0.8;
+const vec3 waterColor = vec3(0.8, 0.898, 1.0);
+const float waterTransparency = 0.5;
 
 void main() {
     vec3 normal = normalize(v_Normal);

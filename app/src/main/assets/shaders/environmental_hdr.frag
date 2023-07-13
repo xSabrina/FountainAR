@@ -56,7 +56,7 @@ uniform sampler2D u_RoughnessMetallicAmbientOcclusionTexture;
 uniform vec3 u_LightIntensity;
 
 // The direction of the main directional light in view space.
-uniform vec4 u_ViewLightDirection;
+uniform vec3 u_ViewLightDirection;
 
 // The coefficients for the spherical harmonic function which models the diffuse
 // irradiance of a distant environmental light for a given surface normal in
@@ -274,9 +274,10 @@ void main() {
     return;
   }
 
-  ShadingParameters shading;
-  Pbr_CreateShadingParameters(v_ViewNormal, v_ViewPosition,
-                              u_ViewLightDirection, u_ViewInverse, shading);
+    ShadingParameters shading;
+    vec4 mainLightDirectionWithAlpha = vec4(u_ViewLightDirection, 1.0);
+    Pbr_CreateShadingParameters(v_ViewNormal, v_ViewPosition,
+                              mainLightDirectionWithAlpha, u_ViewInverse, shading);
 
   MaterialParameters material;
   Pbr_CreateMaterialParameters(texCoord, u_AlbedoTexture,

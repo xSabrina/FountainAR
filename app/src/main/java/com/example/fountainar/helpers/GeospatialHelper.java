@@ -8,23 +8,29 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.fountainar.R;
 import com.example.fountainar.activities.ARActivity;
 import com.example.fountainar.fragments.VpsAvailabilityNoticeDialogFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Earth;
+import com.google.ar.core.Frame;
 import com.google.ar.core.GeospatialPose;
+import com.google.ar.core.Plane;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.VpsAvailability;
 import com.google.ar.core.VpsAvailabilityFuture;
+import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -33,22 +39,19 @@ import java.util.concurrent.TimeUnit;
 public class GeospatialHelper {
 
     private static final String TAG = GeospatialHelper.class.getSimpleName();
-    private final Activity ACTIVITY;
-    private final QuizHelper QUIZHELPER;
-
-    private static final double LATITUDE = 49.00050454115168;
-    private static final double LONGITUDE = 12.093612000040514;
+    private static final double LATITUDE = 49.000457247612424;
+    private static final double LONGITUDE = 12.092906819740683;
     private static final double LOCALIZING_HORIZONTAL_ACCURACY_THRESHOLD_METERS = 10;
     private static final double LOCALIZING_ORIENTATION_YAW_ACCURACY_THRESHOLD_DEGREES = 15;
     private static final double LOCALIZED_HORIZONTAL_ACCURACY_HYSTERESIS_METERS = 10;
     private static final double LOCALIZED_ORIENTATION_YAW_ACCURACY_HYSTERESIS_DEGREES = 10;
     private static final int LOCALIZING_TIMEOUT_SECONDS = 180;
-    private final FusedLocationProviderClient FUSED_LOCATION_CLIENT;
-
-    private Session session;
     public static long localizingStartTimestamp;
     public static State state = State.UNINITIALIZED;
-
+    private final Activity ACTIVITY;
+    private final QuizHelper QUIZHELPER;
+    private final FusedLocationProviderClient FUSED_LOCATION_CLIENT;
+    private Session session;
 
     public GeospatialHelper(Activity activity) {
         this.ACTIVITY = activity;
@@ -197,7 +200,6 @@ public class GeospatialHelper {
 
             if (ARActivity.anchor == null) {
                 placeAnchor(earth);
-                QUIZHELPER.setupQuiz();
             }
 
             return;
@@ -230,7 +232,7 @@ public class GeospatialHelper {
     }
 
     /**
-     * Places an anchor when geospatial accuracy is high enough.
+     * Creates a terrain anchor at given world coordinates using earth object.
      */
     private void placeAnchor(Earth earth) {
         if (earth.getTrackingState() != TrackingState.TRACKING) {
@@ -238,63 +240,74 @@ public class GeospatialHelper {
         }
 
         GeospatialPose geospatialPose = earth.getCameraGeospatialPose();
-        createTerrainAnchor(earth, geospatialPose);
-        Log.i(TAG, "Anchor was placed");
+        Frame frame;
+
+        try {
+            frame = session.update();
+        } catch (CameraNotAvailableException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<Plane> detectedPlanes = frame.getUpdatedTrackables(Plane.class)
+                .stream()
+                .filter(plane -> plane.getTrackingState() == TrackingState.TRACKING)
+                .collect(Collectors.toList());
+
+        if (!detectedPlanes.isEmpty()) {
+            Plane plane = detectedPlanes.get(0);
+            Pose planePose = plane.getCenterPose();
+            Anchor planeAnchor = plane.createAnchor(planePose);
+
+            double latitude = geospatialPose.getLatitude();
+            double longitude = geospatialPose.getLongitude();
+
+            float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
+            earth.resolveAnchorOnTerrainAsync(
+                    latitude,
+                    longitude,
+                    0.0f,
+                    quaternion[0],
+                    quaternion[1],
+                    quaternion[2],
+                    quaternion[3],
+                    (earthAnchor, state) -> {
+                        if (state == Anchor.TerrainAnchorState.SUCCESS) {
+                            Pose combinedPose = combinePoses(planeAnchor.getPose(), earthAnchor.getPose());
+                            ARActivity.anchor = session.createAnchor(combinedPose);
+                        }
+                    });
+
+            QUIZHELPER.setupQuiz();
+        } else {
+            placeAnchor(earth);
+        }
     }
 
     /**
-     * Creates a terrain anchor at given world coordinates using earth object.
+     * Combines two poses by applying the transformation of the second pose to the first pose.
      */
-    private void createTerrainAnchor(Earth earth, GeospatialPose geospatialPose) {
+    private Pose combinePoses(Pose pose1, Pose pose2) {
+        float[] combinedTranslation = new float[3];
+        float[] combinedRotationQuaternion = new float[4];
 
+        // Combine translations
+        float[] translation1 = pose1.getTranslation();
+        float[] translation2 = pose2.getTranslation();
+        for (int i = 0; i < 3; i++) {
+            combinedTranslation[i] = translation1[i] + translation2[i];
+        }
 
-        /*
-// Constants for the offset (in meters)
-        double offsetDistance = 3.0;
-        double offsetAngle = 0.0;  // Assuming 0 degrees for straight ahead
+        // Combine rotations
+        float[] rotationQuaternion1 = pose1.getRotationQuaternion();
+        float[] rotationQuaternion2 = pose2.getRotationQuaternion();
+        combinedRotationQuaternion[0] = rotationQuaternion1[0] + rotationQuaternion2[0];
+        combinedRotationQuaternion[1] = rotationQuaternion1[1] + rotationQuaternion2[1];
+        combinedRotationQuaternion[2] = rotationQuaternion1[2] + rotationQuaternion2[2];
+        combinedRotationQuaternion[3] = rotationQuaternion1[3] + rotationQuaternion2[3];
 
-// Earth's radius in meters
-        double earthRadius = 6371000.0;
-
-// Convert offset distance from meters to radians
-        double offsetDistanceRadians = offsetDistance / earthRadius;
-
-// Convert offset angle from degrees to radians
-        double offsetAngleRadians = Math.toRadians(offsetAngle);
-
-// Calculate the new latitude and longitude using the offset
-        double newLatitude = Math.toDegrees(Math.asin(Math.sin(Math.toRadians(latitude)) * Math.cos(offsetDistanceRadians)
-                + Math.cos(Math.toRadians(latitude)) * Math.sin(offsetDistanceRadians) * Math.cos(offsetAngleRadians)));
-
-        double newLongitude = Math.toDegrees(Math.toRadians(longitude)
-                + Math.atan2(Math.sin(offsetAngleRadians) * Math.sin(offsetDistanceRadians) * Math.cos(Math.toRadians(latitude)),
-                Math.cos(offsetDistanceRadians) - Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(newLatitude))));
-
-// Use the new latitude and longitude for spawning the object
-// ...
-
-         */
-
-        float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
-
-        earth.resolveAnchorOnTerrainAsync(
-                LATITUDE,
-                LONGITUDE,
-                0.0f,
-                quaternion[0],
-                quaternion[1],
-                quaternion[2],
-                quaternion[3],
-                (anchor, state) -> {
-                    if (state == Anchor.TerrainAnchorState.SUCCESS) {
-                        ARActivity.anchor = anchor;
-                    } else {
-                        ARActivity.snackbarHelper.showMessageWithDismiss(ACTIVITY,
-                                ACTIVITY.getString(R.string.error_create_anchor));
-                        Log.e(TAG, "Exception creating terrain anchor");
-                    }
-                });
+        return new Pose(combinedTranslation, combinedRotationQuaternion);
     }
+
 
     public enum State {
         /**

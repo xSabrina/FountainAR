@@ -15,8 +15,10 @@
  */
 package com.example.fountainar.rendering;
 
+import android.app.Activity;
 import android.opengl.GLES30;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -123,7 +125,7 @@ public class Mesh implements Closeable {
    * coordinates (location 0, vec3), texture coordinates (location 1, vec2), and vertex normals
    * (location 2, vec3).
    */
-  public static Mesh createFromAsset(CustomRender render, String assetFileName) throws IOException {
+  public static Mesh createFromAsset(Activity activity, CustomRender render, String assetFileName) throws IOException {
     try (InputStream inputStream = render.getAssets().open(assetFileName)) {
       Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
       IntBuffer vertexIndices = ObjData.getFaceVertexIndices(obj, 3);

@@ -3,6 +3,7 @@ package com.example.fountainar.rendering;
 import android.app.Activity;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.fountainar.R;
 import com.example.fountainar.activities.ARActivity;
@@ -37,7 +38,7 @@ public class SceneRenderer {
     private static final float[] MODEL_VIEW_PROJECTION_MATRIX = new float[16];
     private static final int CUBEMAP_RESOLUTION = 16;
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
-    private static final float Z_NEAR = 0.1f;
+    private static final float Z_NEAR = 1.3f;
     private static final float Z_FAR = 500f;
     private final static int WATER_JETS_START = 160;
     private final static int WATER_JETS_END = 165;
@@ -48,6 +49,7 @@ public class SceneRenderer {
     private static Mesh virtualWaterSurfaceMesh;
     private static Shader virtualFountainShader;
     private static Shader virtualWaterShader;
+    private static Shader virtualWaterSurfaceShader;
     private static int meshCounter = 0;
     private final Activity activity;
     private final TrackingStateHelper trackingStateHelper;
@@ -56,6 +58,7 @@ public class SceneRenderer {
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
     private SoundPoolHelper soundPoolHelper;
+    private boolean loaded = false;
 
     public SceneRenderer(Activity activity) {
         this.activity = activity;
@@ -66,7 +69,7 @@ public class SceneRenderer {
             soundPoolHelper = new SoundPoolHelper(activity);
         }
     }
-    
+
     /**
      * Sets up the virtual scene by initializing the background renderer, frame buffer,
      * cubemap filter, textures, meshes, and shaders.
@@ -75,6 +78,11 @@ public class SceneRenderer {
      */
     public void setupScene(CustomRender render) {
         try {
+            if(!loaded) {
+                activity.runOnUiThread(() -> Toast.makeText(activity, "Loading meshes...",
+                        Toast.LENGTH_LONG).show());
+            }
+
             backgroundRenderer = new BackgroundRenderer();
             virtualSceneFramebuffer = new Framebuffer(1, 1);
 
@@ -100,7 +108,8 @@ public class SceneRenderer {
                     Texture.WrapMode.CLAMP_TO_EDGE,
                     Texture.ColorFormat.SRGB);
 
-            virtualFountainMesh = Mesh.createFromAsset(render, "models/Fountain.obj");
+            virtualFountainMesh = Mesh.createFromAsset(activity, render,
+                    "models/Fountain.obj");
 
             virtualFountainShader =
                     Shader.createFromAssets(
@@ -127,11 +136,15 @@ public class SceneRenderer {
                 virtualWaterShader = Shader.createFromAssets(
                         render, "shaders/water.vert",
                         "shaders/water.frag", null);
-                virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
+                virtualWaterSurfaceShader = Shader.createFromAssets(
+                        render, "shaders/water_surface.vert",
+                        "shaders/water_surface.frag", null);
+
+                virtualWaterSurfaceMesh = Mesh.createFromAsset(activity, render,
                         "models/Water_Surface.obj");
 
                 for (int i = WATER_JETS_START; i < WATER_JETS_END; i++) {
-                    VIRTUAL_WATER_JET_MESHES.add(Mesh.createFromAsset(render,
+                    VIRTUAL_WATER_JET_MESHES.add(Mesh.createFromAsset(activity, render,
                             "models/animation/Water_Jets" + i + ".obj"));
                 }
             }
@@ -217,7 +230,7 @@ public class SceneRenderer {
                     frame.getLightEstimate().getEnvironmentalHdrMainLightIntensity());
             virtualFountainShader.setVec3("u_ViewLightDirection",
                     frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
-            
+
             render.draw(virtualFountainMesh, virtualFountainShader, virtualSceneFramebuffer);
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
@@ -243,13 +256,17 @@ public class SceneRenderer {
         };
         virtualWaterShader.setMat3("u_NormalView", normalMatrix);
         virtualWaterShader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
+        virtualWaterSurfaceShader.setMat3("u_NormalView", normalMatrix);
+        virtualWaterSurfaceShader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
 
         float[] lightEstimate = frame.getLightEstimate().getEnvironmentalHdrMainLightDirection();
         float[] cameraPosition = camera.getPose().getTranslation();
         virtualWaterShader.setVec3("u_LightDirection", lightEstimate);
         virtualWaterShader.setVec3("u_CameraPosition", cameraPosition);
+        virtualWaterSurfaceShader.setVec3("u_LightDirection", lightEstimate);
+        virtualWaterSurfaceShader.setVec3("u_CameraPosition", cameraPosition);
 
-        render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
+        render.draw(virtualWaterSurfaceMesh, virtualWaterSurfaceShader, virtualSceneFramebuffer);
         render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
                 virtualSceneFramebuffer);
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
