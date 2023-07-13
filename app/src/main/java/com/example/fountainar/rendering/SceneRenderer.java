@@ -2,6 +2,7 @@ package com.example.fountainar.rendering;
 
 import android.app.Activity;
 import android.opengl.Matrix;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.fountainar.R;
@@ -37,7 +38,7 @@ public class SceneRenderer {
     private static final float[] MODEL_VIEW_PROJECTION_MATRIX = new float[16];
     private static final int CUBEMAP_RESOLUTION = 16;
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
-    private static final float Z_NEAR = 0.1f;
+    private static final float Z_NEAR = 1.5f;
     private static final float Z_FAR = 500f;
     private final static int WATER_JETS_START = 160;
     private final static int WATER_JETS_END = 165;
@@ -66,7 +67,7 @@ public class SceneRenderer {
             soundPoolHelper = new SoundPoolHelper(activity);
         }
     }
-
+    
     /**
      * Sets up the virtual scene by initializing the background renderer, frame buffer,
      * cubemap filter, textures, meshes, and shaders.
@@ -213,6 +214,10 @@ public class SceneRenderer {
                     0, MODEL_VIEW_MATRIX, 0);
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     MODEL_VIEW_PROJECTION_MATRIX);
+            virtualFountainShader.setVec3("u_LightIntensity",
+                            frame.getLightEstimate().getEnvironmentalHdrMainLightIntensity());
+            virtualFountainShader.setVec3("u_ViewLightDirection",
+                            frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
 
             render.draw(virtualFountainMesh, virtualFountainShader, virtualSceneFramebuffer);
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
@@ -248,6 +253,8 @@ public class SceneRenderer {
         render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
         render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
                 virtualSceneFramebuffer);
+        render.draw(virtualWaterSurfaceMesh, virtualWaterShader, virtualSceneFramebuffer);
+
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
         soundPoolHelper.play();
