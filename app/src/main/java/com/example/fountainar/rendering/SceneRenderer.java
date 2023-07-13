@@ -213,7 +213,11 @@ public class SceneRenderer {
                     0, MODEL_VIEW_MATRIX, 0);
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     MODEL_VIEW_PROJECTION_MATRIX);
-
+            virtualFountainShader.setVec3("u_LightIntensity",
+                    frame.getLightEstimate().getEnvironmentalHdrMainLightIntensity());
+            virtualFountainShader.setVec3("u_ViewLightDirection",
+                    frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
+            
             render.draw(virtualFountainMesh, virtualFountainShader, virtualSceneFramebuffer);
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
