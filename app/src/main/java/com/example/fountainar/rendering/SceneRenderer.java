@@ -20,6 +20,7 @@ import com.google.ar.core.exceptions.CameraNotAvailableException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -67,7 +68,7 @@ public class SceneRenderer {
             soundPoolHelper = new SoundPoolHelper(activity);
         }
     }
-    
+
     /**
      * Sets up the virtual scene by initializing the background renderer, frame buffer,
      * cubemap filter, textures, meshes, and shaders.
