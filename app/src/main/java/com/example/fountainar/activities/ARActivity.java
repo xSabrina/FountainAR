@@ -146,8 +146,10 @@ public class ARActivity extends AppCompatActivity implements
      * using {@link ARCoreHelper#setupSession()}.
      */
     private void setupSessionElements() {
-        arCoreHelper.setupSession();
-        session = arCoreHelper.updatedSession();
+        if(session == null) {
+            arCoreHelper.setupSession();
+            session = arCoreHelper.updatedSession();
+        }
     }
 
     @Override
@@ -179,8 +181,6 @@ public class ARActivity extends AppCompatActivity implements
                     CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
                 Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG).show();
                 CameraPermissionHelper.launchPermissionSettings(this);
-            } else {
-                setupSessionElements();
             }
         } else if (requestCode == LocationPermissionHelper.LOCATION_PERMISSION_CODE) {
             if (LocationPermissionHelper.hasNoFineLocationPermission(this) ||
