@@ -6,14 +6,14 @@ import android.widget.RadioGroup;
 /**
  * A question item with its associated properties and methods.
  */
-public class QuestionItem {
+public class TAMQuestionItem {
     private final String QUESTION;
     
     private RadioGroup answerGroup;
     private int backgroundColor;
     private int selectedId = -1;
 
-    public QuestionItem(String question) {
+    public TAMQuestionItem(String question) {
         this.QUESTION = question;
     }
 
