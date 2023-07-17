@@ -102,11 +102,6 @@ public class ARCoreHelper {
                 configureSession();
                 session.resume();
             } else {
-                if (CameraPermissionHelper.hasNoCameraPermission(activity)
-                        || LocationPermissionHelper.hasNoFineLocationPermission(activity)) {
-                    return;
-                }
-
                 message = "ARCore session is null";
             }
         } catch (CameraNotAvailableException e) {
@@ -150,16 +145,6 @@ public class ARCoreHelper {
                     return;
                 case INSTALLED:
                     break;
-            }
-
-            if (CameraPermissionHelper.hasNoCameraPermission(activity)) {
-                CameraPermissionHelper.requestCameraPermission(activity);
-                return;
-            }
-
-            if (LocationPermissionHelper.hasNoFineLocationPermission(activity)) {
-                LocationPermissionHelper.requestFineLocationPermission(activity);
-                return;
             }
 
             session = new Session(activity);
