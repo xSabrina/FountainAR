@@ -49,14 +49,12 @@ public class GeospatialHelper {
     public static long localizingStartTimestamp;
     public static State state = State.UNINITIALIZED;
     private final Activity ACTIVITY;
-    private final QuizHelper QUIZHELPER;
     private final FusedLocationProviderClient FUSED_LOCATION_CLIENT;
     private Session session;
 
     public GeospatialHelper(Activity activity) {
         this.ACTIVITY = activity;
         FUSED_LOCATION_CLIENT = LocationServices.getFusedLocationProviderClient(activity);
-        QUIZHELPER = new QuizHelper(activity);
     }
 
     public void setSession(Session session) {
@@ -276,8 +274,6 @@ public class GeospatialHelper {
                             ARActivity.anchor = session.createAnchor(combinedPose);
                         }
                     });
-
-            QUIZHELPER.setupQuiz();
         } else {
             placeAnchor(earth);
         }

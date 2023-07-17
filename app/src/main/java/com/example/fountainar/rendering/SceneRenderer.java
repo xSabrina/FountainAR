@@ -40,8 +40,8 @@ public class SceneRenderer {
     private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
     private static final float Z_NEAR = 1.3f;
     private static final float Z_FAR = 500f;
-    private final static int WATER_JETS_START = 160;
-    private final static int WATER_JETS_END = 165;
+    private final static int WATER_JETS_START = 170;
+    private final static int WATER_JETS_END = 175;
 
     private static boolean isSubjectGroupWithAnimation = false;
     private static BackgroundRenderer backgroundRenderer;
@@ -59,6 +59,7 @@ public class SceneRenderer {
     private SpecularCubemapFilter cubemapFilter;
     private SoundPoolHelper soundPoolHelper;
     private boolean loaded = false;
+    private boolean sceneSet = false;
 
     public SceneRenderer(Activity activity) {
         this.activity = activity;
@@ -78,8 +79,8 @@ public class SceneRenderer {
      */
     public void setupScene(CustomRender render) {
         try {
-            if(!loaded) {
-                activity.runOnUiThread(() -> Toast.makeText(activity, "Loading meshes...",
+            if (!loaded) {
+                activity.runOnUiThread(() -> Toast.makeText(activity, "3D-Modelle werden geladen...",
                         Toast.LENGTH_LONG).show());
             }
 
@@ -108,7 +109,7 @@ public class SceneRenderer {
                     Texture.WrapMode.CLAMP_TO_EDGE,
                     Texture.ColorFormat.SRGB);
 
-            virtualFountainMesh = Mesh.createFromAsset(activity, render,
+            virtualFountainMesh = Mesh.createFromAsset(render,
                     "models/Fountain.obj");
 
             virtualFountainShader =
@@ -140,17 +141,18 @@ public class SceneRenderer {
                         render, "shaders/water_surface.vert",
                         "shaders/water_surface.frag", null);
 
-                virtualWaterSurfaceMesh = Mesh.createFromAsset(activity, render,
+                virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/Water_Surface.obj");
 
                 for (int i = WATER_JETS_START; i < WATER_JETS_END; i++) {
-                    VIRTUAL_WATER_JET_MESHES.add(Mesh.createFromAsset(activity, render,
+                    VIRTUAL_WATER_JET_MESHES.add(Mesh.createFromAsset(render,
                             "models/animation/Water_Jets" + i + ".obj"));
                 }
             }
 
             backgroundRenderer.setUseDepthVisualization(render, false);
             backgroundRenderer.setUseOcclusion(render, true);
+            sceneSet = true;
         } catch (IOException e) {
             Log.e(TAG, "Failed to read a required asset file", e);
             ARActivity.snackbarHelper.showError(activity,
@@ -193,6 +195,7 @@ public class SceneRenderer {
 
         try {
             drawVirtualObjects(camera, render, anchor);
+            loaded = true;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -224,6 +227,7 @@ public class SceneRenderer {
                     rotationModelMatrix, 0);
             Matrix.multiplyMM(MODEL_VIEW_PROJECTION_MATRIX, 0, PROJECTION_MATRIX,
                     0, MODEL_VIEW_MATRIX, 0);
+
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     MODEL_VIEW_PROJECTION_MATRIX);
             virtualFountainShader.setVec3("u_LightIntensity",
@@ -241,7 +245,7 @@ public class SceneRenderer {
     }
 
     /**
-     * Sets up the rendering for the water related objects.
+     * Sets up the rendering and sound for the water related objects.
      *
      * @param camera The AR camera.
      * @param render The custom render object.
@@ -254,17 +258,16 @@ public class SceneRenderer {
                 MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
                 MODEL_VIEW_MATRIX[8], MODEL_VIEW_MATRIX[9], MODEL_VIEW_MATRIX[10]
         };
+
         virtualWaterShader.setMat3("u_NormalView", normalMatrix);
         virtualWaterShader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
-        virtualWaterSurfaceShader.setMat3("u_NormalView", normalMatrix);
-        virtualWaterSurfaceShader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
+        virtualWaterSurfaceShader.setMat4("u_ModelViewProjection",
+                MODEL_VIEW_PROJECTION_MATRIX);
 
-        float[] lightEstimate = frame.getLightEstimate().getEnvironmentalHdrMainLightDirection();
-        float[] cameraPosition = camera.getPose().getTranslation();
-        virtualWaterShader.setVec3("u_LightDirection", lightEstimate);
-        virtualWaterShader.setVec3("u_CameraPosition", cameraPosition);
-        virtualWaterSurfaceShader.setVec3("u_LightDirection", lightEstimate);
-        virtualWaterSurfaceShader.setVec3("u_CameraPosition", cameraPosition);
+        virtualWaterShader.setVec3("u_LightDirection",
+                frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
+        virtualWaterShader.setVec3("u_CameraPosition", camera.getPose().getTranslation());
+        virtualWaterSurfaceShader.setFloat("time", System.currentTimeMillis() / 1000f);
 
         render.draw(virtualWaterSurfaceMesh, virtualWaterSurfaceShader, virtualSceneFramebuffer);
         render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
@@ -273,6 +276,7 @@ public class SceneRenderer {
 
         soundPoolHelper.play();
     }
+
 
     /**
      * Resizes the framebuffer to the specified width and height.
@@ -286,6 +290,10 @@ public class SceneRenderer {
         }
 
         virtualSceneFramebuffer.resize(width, height);
+    }
+
+    public boolean sceneSet(){
+        return sceneSet;
     }
 
     /**

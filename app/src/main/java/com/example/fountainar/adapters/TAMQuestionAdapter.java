@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fountainar.R;
-import com.example.fountainar.items.QuestionItem;
+import com.example.fountainar.items.TAMQuestionItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +29,14 @@ public class TAMQuestionAdapter
 
     private final Context CONTEXT;
     private final List<String> QUESTIONS;
-    private final List<QuestionItem> QUESTION_ITEMS = new ArrayList<>();
+    private final List<TAMQuestionItem> QUESTION_ITEMS = new ArrayList<>();
 
     public TAMQuestionAdapter(Context context, List<String> questions) {
         this.CONTEXT = context;
         this.QUESTIONS = questions;
 
         for (String question : questions) {
-            QuestionItem questionItem = new QuestionItem(question);
+            TAMQuestionItem questionItem = new TAMQuestionItem(question);
             QUESTION_ITEMS.add(questionItem);
         }
     }
@@ -111,7 +111,7 @@ public class TAMQuestionAdapter
     public List<String> getAnswerValues() {
         List<String> checkedValues = new ArrayList<>();
 
-        for (QuestionItem questionItem : QUESTION_ITEMS) {
+        for (TAMQuestionItem questionItem : QUESTION_ITEMS) {
             String answerValue = questionItem.getSelectedAnswer();
             checkedValues.add(answerValue);
         }
@@ -124,7 +124,7 @@ public class TAMQuestionAdapter
      */
     @SuppressLint("NotifyDataSetChanged")
     public void updateBackgroundColors() {
-        for (QuestionItem questionItem : QUESTION_ITEMS) {
+        for (TAMQuestionItem questionItem : QUESTION_ITEMS) {
             int color = questionItem.getSelectedAnswerId() == -1
                     ? ContextCompat.getColor(CONTEXT, R.color.red_light)
                     : ContextCompat.getColor(CONTEXT, R.color.white);
@@ -155,7 +155,7 @@ public class TAMQuestionAdapter
         }
 
         public void bind(int position) {
-            QuestionItem questionItem = QUESTION_ITEMS.get(position);
+            TAMQuestionItem questionItem = QUESTION_ITEMS.get(position);
             String question = questionItem.getQuestion();
             QUESTION_TEXT.setText(question);
             setScaleTextValues(question);

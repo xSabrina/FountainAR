@@ -42,7 +42,7 @@ public class BackPressedHandler {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.no_backing);
         builder.setMessage(R.string.study_not_backable);
-        builder.setPositiveButton("OK", (dialog, which) -> {});
+        builder.setPositiveButton("Okay", (dialog, which) -> {});
         builder.create().show();
     }
 }

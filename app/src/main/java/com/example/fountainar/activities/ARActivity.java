@@ -53,9 +53,6 @@ public class ARActivity extends AppCompatActivity implements
     private ARCoreHelper arCoreHelper;
     private GLSurfaceView surfaceView;
     private SceneRenderer sceneRenderer;
-    private boolean rendererSet = false;
-    private boolean cameraPermissionDenied = false;
-    private boolean locationPermissionDenied = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +63,9 @@ public class ARActivity extends AppCompatActivity implements
         geospatialHelper = new GeospatialHelper(this);
         displayRotationHelper = new DisplayRotationHelper(this);
         BackPressedHandler.setupBackPressedCallback(this);
+        surfaceView = findViewById(R.id.surface_view);
+        sceneRenderer = new SceneRenderer(this);
+        new CustomRender(surfaceView, this, getAssets());
     }
 
     @Override
@@ -80,6 +80,7 @@ public class ARActivity extends AppCompatActivity implements
             return;
         }
 
+        setupSession();
         sceneRenderer.drawScene(session, render, anchor);
         displayRotationHelper.updateSessionIfNeeded(session);
         Earth earth = session.getEarth();
@@ -147,13 +148,6 @@ public class ARActivity extends AppCompatActivity implements
     private void setupSessionElements() {
         arCoreHelper.setupSession();
         session = arCoreHelper.updatedSession();
-        surfaceView = findViewById(R.id.surface_view);
-
-        if (!rendererSet) {
-            sceneRenderer = new SceneRenderer(this);
-            new CustomRender(surfaceView, this, getAssets());
-            rendererSet = true;
-        }
     }
 
     @Override
@@ -177,55 +171,24 @@ public class ARActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CameraPermissionHelper.CAMERA_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG)
-                        .show();
-                handleCameraPermissionResult();
-            }
-        }
-
-        if (requestCode == LocationPermissionHelper.LOCATION_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, R.string.loc_permission_needed, Toast.LENGTH_LONG)
-                        .show();
-                handleLocationPermissionResult();
-            }
-        }
-    }
-
-    /**
-     * Handles the result of the camera permission request. If the permission rationale should be
-     * shown, the camera permission is requested again. If the permission is denied and not already
-     * marked as denied, the camera permission settings are launched.
-     */
-    private void handleCameraPermissionResult() {
-        if (CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-            CameraPermissionHelper.requestCameraPermission(this);
-        } else {
-            if (!cameraPermissionDenied) {
-                cameraPermissionDenied = true;
+            if (CameraPermissionHelper.hasNoCameraPermission(this) ||
+                    CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG).show();
                 CameraPermissionHelper.launchPermissionSettings(this);
+            } else {
+                setupSessionElements();
             }
-        }
-    }
-
-    /**
-     * Handles the result of the location permission request. If the permission rationale should be
-     * shown, the fine location permission is requested again. If the permission is denied and not
-     * already marked as denied, the location permission settings are launched.
-     */
-    private void handleLocationPermissionResult() {
-        if (LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-            LocationPermissionHelper.requestFineLocationPermission(this);
-        } else {
-            if (!locationPermissionDenied) {
-                locationPermissionDenied = true;
+        } else if (requestCode == LocationPermissionHelper.LOCATION_PERMISSION_CODE) {
+            if (LocationPermissionHelper.hasNoFineLocationPermission(this) ||
+                    LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+                Toast.makeText(this, R.string.loc_permission_needed, Toast.LENGTH_LONG).show();
                 LocationPermissionHelper.launchPermissionSettings(this);
+            } else {
+                setupSessionElements();
             }
         }
     }
@@ -237,9 +200,22 @@ public class ARActivity extends AppCompatActivity implements
         if (!sharedPreferences.getBoolean(ALLOW_GEOSPATIAL_ACCESS_KEY, false)) {
             showPrivacyNoticeDialog();
         } else {
-            setupSessionElements();
-            surfaceView.onResume();
-            displayRotationHelper.onResume();
+            if (!CameraPermissionHelper.hasNoCameraPermission(this)
+                    && !LocationPermissionHelper.hasNoFineLocationPermission(this)
+                    && systemSupportsNeededTechnology()) {
+                setupSessionElements();
+            } else {
+                if (CameraPermissionHelper.hasNoCameraPermission(this)
+                        && !CameraPermissionHelper
+                        .shouldShowRequestPermissionRationale(this)) {
+                    CameraPermissionHelper.requestCameraPermission(this);
+                }
+                if (LocationPermissionHelper.hasNoFineLocationPermission(this)
+                        && !LocationPermissionHelper
+                        .shouldShowRequestPermissionRationale(this)) {
+                    LocationPermissionHelper.requestFineLocationPermission(this);
+                }
+            }
         }
     }
 
