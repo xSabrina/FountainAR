@@ -71,7 +71,10 @@
 
     <string name="stor_permission_needed">Speicher-Zugriff für Sammlung der Studiendaten erforderlich.</string>
 
-    <!-- AR View quiz -->
+    <!-- AR View -->
+    <string name="models_loading">3D-Modell wird geladen…</string>
+
+    <!-- AR View Quiz -->
     <string name="ar_placing_object">Platzierung des 3D-Objektes</string>
     <string name="faculty_fountain">Fakultätenbrunnen, Heinrich Kirchner, 1968</string>
     <string name="ar_quiz_loading">Blicke ein wenig mit der Kamera umher, damit das 3D-Objekt des Brunnens platziert werden kann.</string>
@@ -98,6 +101,35 @@
     <string name="ar_answer_task3_3">Bronze</string>
     <string name="ar_answer_task3_4">Glas</string>
 
+    <!-- AR View Error Messages -->
+    <string name="install_arcore">Bitte installieren Sie ARCore.</string>
+    <string name="update_arcore">Bitte updaten Sie ARCore.</string>
+    <string name="update_app">Bitte updaten Sie diese App.</string>
+    <string name="ar_not_supported">Dieses Gerät unterstützt kein AR.</string>
+    <string name="ar_session_failed">AR-Sitzung konnte nicht erstellt werden.</string>
+    <string name="cam_not_available">Kamera nicht verfügbar. Versuchen Sie, die App neu zu starten.</string>
+    <string name="proguard_error">Die Standortbibliothek der Google Play-Dienste ist nicht mit Proguard verknüpft oder verschleiert.</string>
+    <string name="no_permission_fine_location">Die Android-Berechtigung für genaue Standortermittlung wurde nicht erteilt.</string>
+    <string name="geospatial_not_supported">Dieses Gerät unterstützt die Geospatial-API nicht.</string>
+    <string name="cam_or_network_error">Kamerafehler oder die Internetberechtigung wurde nicht erteilt.</string>
+    <string name="session_create_or_config_error">Fehler beim Konfigurieren und Fortsetzen der Sitzung.</string>
+    <string name="vps_check_error">Fehler beim Überprüfen der VPS-Verfügbarkeit.</string>
+    <string name="cam_permission_needed">Kameraberechtigung erforderlich.</string>
+    <string name="cubemap_filter_failed">Fehler beim Aufsetzen des Cubemap-Filters: </string>
+    <string name="back_rend_failed">Fehler beim Aufsetzen des Renderings: </string>
+    <string name="read_asset_failed">Fehler beim Lesen eines erforderlichen Assets: </string>
+    <string name="opengl_version_required">Die App benötigt OpenGl Version 3.0 oder neuer.</string>
+    <string name="loc_permission_needed">Genaue Standortberechtigung erforderlich</string>
+    <string name="read_stor_needed">Lesen im externen Speicher erforderlich</string>
+    <string name="write_stor_needed">Schreiben im externen Speicher erforderlich.</string>
+    <string name="cam_and_loc_needed">Diese App benötigt Kamera-und Standortberechtigung.</string>
+    <string name="error_create_anchor">Fehler beim Erstellen des Terrain-Ankers</string>
+    <string translatable="false" name="depth_use_explanation">When Depth is enabled on supported devices, virtual objects adapt to the environment by blending in with the real world.</string>
+    <string translatable="false" name="button_text_enable_depth">Enable</string>
+    <string translatable="false" name="button_text_disable_depth">Disable</string>
+    <string translatable="false" name="options_title_with_depth">Your device supports depth</string>
+    <string translatable="false" name="options_title_without_depth">Your device does not support depth</string>
+
     <!-- TAM Questionnaire -->
     <string name="tam_questionnaire">Technologieakzeptanz-Fragebogen</string>
     <string name="tam_instructions">Abschließend geben Sie bitte an, wie sehr Sie jeder der folgenden Aussagen auf der vorgegebenen Skala zustimmen beziehungsweise wie Sie die Anwendung bewerten. Im Sinne der Verwendung eines anerkannten Fragebogens handelt es sich um eine englische Originalfassung.</string>
@@ -105,6 +137,8 @@
     <string name="tam_strongly_disagree">Strongly\nDisagree</string>
     <string name="tam_strongly_agree">Strongly\nAgree</string>
     <string name="tam_numeric_scale">1 \t\t\u0020\u0020 2\t\t\t\u0020\u00203 \t\t\t\u00204\t\t\t5\t\t\t\u0020 6\t\t\t 7</string>
+    <string name="tam_finished_button">Fertig</string>
+    <string name="tam_time_spent">"Time spent for this questionnaire in seconds: "</string>
 
     <string name="tam_pu1">By using the app, I can more quickly and easily find 3D models of art objects.</string>
     <string name="tam_pu2">By using the app, I learn more about art objects.</string>
@@ -138,10 +172,6 @@
     <string name="tam_bi7">I intend to use the app in my hometown.</string>
     <string name="tam_bi8">I predict that I will use the app in my hometown.</string>
 
-    <string name="tam_finished_button">Fertig</string>
-
-    <string name="tam_time_spent">"Time spent for this questionnaire in seconds: "</string>
-
     <!-- End Activity -->
     <string name="study_end">Der Studiendurchlauf ist hiermit beendet.\n\nVielen Dank für Ihre Teilnahme!</string>
     <string name="error_loading_3D_model">3D Model can not be loaded</string>
@@ -158,27 +188,6 @@
     <string name="continue_button">Weiter</string>
     <string name="agree_to_share">Alles klar</string>
 
-    <!-- ARCore session error messages -->
-    <string name="install_arcore">Bitte installieren Sie ARCore.</string>
-    <string name="update_arcore">Bitte updaten Sie ARCore.</string>
-    <string name="update_app">Bitte updaten Sie diese App.</string>
-    <string name="ar_not_supported">Dieses Gerät unterstützt kein AR.</string>
-    <string name="ar_session_failed">AR-Sitzung konnte nicht erstellt werden.</string>
-    <string name="cam_not_available">Kamera nicht verfügbar. Versuchen Sie, die App neu zu starten.</string>
-    <string name="proguard_error">Die Standortbibliothek der Google Play-Dienste ist nicht mit Proguard verknüpft oder verschleiert.</string>
-    <string name="no_permission_fine_location">Die Android-Berechtigung für genaue Standortermittlung wurde nicht erteilt.</string>
-    <string name="geospatial_not_supported">Dieses Gerät unterstützt die Geospatial-API nicht.</string>
-    <string name="cam_or_network_error">Kamerafehler oder die Internetberechtigung wurde nicht erteilt.</string>
-    <string name="session_create_or_config_error">Fehler beim Konfigurieren und Fortsetzen der Sitzung.</string>
-    <string name="vps_check_error">Fehler beim Überprüfen der VPS-Verfügbarkeit.</string>
-    <string name="cam_permission_needed">Kameraberechtigung erforderlich.</string>
-    <string name="read_asset_failed">Fehler beim Lesen eines erforderlichen Assets: </string>
-    <string name="opengl_version_required">Die App benötigt OpenGl Version 3.0 oder neuer.</string>
-    <string name="loc_permission_needed">Genaue Standortberechtigung erforderlich</string>
-    <string name="read_stor_needed">Lesen im externen Speicher erforderlich</string>
-    <string name="write_stor_needed">Schreiben im externen Speicher erforderlich.</string>
-    <string name="cam_and_loc_needed">Diese App benötigt Kamera-und Standortberechtigung.</string>
-    <string name="error_create_anchor">Fehler beim Erstellen des Terrain-Ankers</string>
 
     <!-- Study Data To Save -->
     <string name="time_spent_questionnaire">Time spent for this questionnaire in seconds: </string>
