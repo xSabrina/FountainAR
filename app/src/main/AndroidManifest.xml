@@ -39,7 +39,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FountainAR"
 
-        tools:targetApi="tiramisu">
+        android:targetSdkVersion="30">
 
         <activity
             android:name=".activities.MainActivity"
