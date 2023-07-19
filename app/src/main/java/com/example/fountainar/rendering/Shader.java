@@ -47,7 +47,6 @@ public class Shader implements Closeable {
     private int maxTextureUnit = 0;
     private boolean depthTest = true;
     private boolean depthWrite = true;
-    private boolean blendingEnabled = false;
     private BlendFactor sourceRgbBlend = BlendFactor.ONE;
     private BlendFactor destRgbBlend = BlendFactor.ZERO;
     private BlendFactor sourceAlphaBlend = BlendFactor.ONE;
@@ -601,6 +600,9 @@ public class Shader implements Closeable {
 
     public int getVertShader() {
         return vertexShaderId;
+    }
+
+    public void setVec2(String u_resolution, int widthPixels, int heightPixels) {
     }
 
     /**
