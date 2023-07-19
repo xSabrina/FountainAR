@@ -187,4 +187,33 @@ public class Texture implements Closeable {
 
     return result;
   }
+
+  public void update(int index, Bitmap bitmap) {
+    GLES30.glBindTexture(Target.TEXTURE_CUBE_MAP.glesEnum, index);
+    GLError.maybeThrowGLException("Failed to bind texture", "glBindTexture");
+
+    GLES30.glTexImage2D(
+            GLES30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + index,
+            0,
+            ColorFormat.LINEAR.glesEnum,
+            bitmap.getWidth(),
+            bitmap.getHeight(),
+            0,
+            GLES30.GL_RGBA,
+            GLES30.GL_UNSIGNED_BYTE,
+            ByteBuffer.wrap(getBitmapPixels(bitmap))
+    );
+    GLError.maybeThrowGLException("Failed to update texture data", "glTexImage2D");
+
+    GLES30.glGenerateMipmap(Target.TEXTURE_CUBE_MAP.glesEnum);
+    GLError.maybeThrowGLException("Failed to generate mipmaps", "glGenerateMipmap");
+  }
+
+  private byte[] getBitmapPixels(Bitmap bitmap) {
+    int bytesPerPixel = 4; // Assuming 4 bytes per pixel (RGBA)
+    int bufferSize = bitmap.getWidth() * bitmap.getHeight() * bytesPerPixel;
+    ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+    bitmap.copyPixelsToBuffer(buffer);
+    return buffer.array();
+  }
 }
