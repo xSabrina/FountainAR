@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -23,6 +22,7 @@ import com.example.fountainar.helpers.DisplayRotationHelper;
 import com.example.fountainar.helpers.FullScreenHelper;
 import com.example.fountainar.helpers.GeospatialHelper;
 import com.example.fountainar.helpers.LocationPermissionHelper;
+import com.example.fountainar.helpers.QuizHelper;
 import com.example.fountainar.helpers.SnackbarHelper;
 import com.example.fountainar.rendering.CustomRender;
 import com.example.fountainar.rendering.SceneRenderer;
@@ -51,6 +51,7 @@ public class ARActivity extends AppCompatActivity implements
     private SharedPreferences sharedPreferences;
     private DisplayRotationHelper displayRotationHelper;
     private ARCoreHelper arCoreHelper;
+    private QuizHelper quizHelper;
     private GLSurfaceView surfaceView;
     private SceneRenderer sceneRenderer;
 
@@ -60,6 +61,7 @@ public class ARActivity extends AppCompatActivity implements
         sharedPreferences = getSharedPreferences(ALLOW_GEOSPATIAL_ACCESS_KEY, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_ar);
         arCoreHelper = new ARCoreHelper(this);
+        quizHelper = new QuizHelper(this);
         geospatialHelper = new GeospatialHelper(this);
         displayRotationHelper = new DisplayRotationHelper(this);
         BackPressedHandler.setupBackPressedCallback(this);
@@ -82,6 +84,11 @@ public class ARActivity extends AppCompatActivity implements
 
         setupSession();
         sceneRenderer.drawScene(session, render, anchor);
+
+        if(anchor != null) {
+            quizHelper.setupQuiz();
+        }
+
         displayRotationHelper.updateSessionIfNeeded(session);
         Earth earth = session.getEarth();
 
@@ -146,7 +153,7 @@ public class ARActivity extends AppCompatActivity implements
      * using {@link ARCoreHelper#setupSession()}.
      */
     private void setupSessionElements() {
-        if(session == null) {
+        if (session == null) {
             arCoreHelper.setupSession();
             session = arCoreHelper.updatedSession();
         }
@@ -173,19 +180,22 @@ public class ARActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CameraPermissionHelper.CAMERA_PERMISSION_CODE) {
             if (CameraPermissionHelper.hasNoCameraPermission(this) ||
                     CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                Toast.makeText(this, R.string.cam_permission_needed, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.cam_permission_needed,
+                        Toast.LENGTH_LONG).show();
                 CameraPermissionHelper.launchPermissionSettings(this);
             }
         } else if (requestCode == LocationPermissionHelper.LOCATION_PERMISSION_CODE) {
             if (LocationPermissionHelper.hasNoFineLocationPermission(this) ||
                     LocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                Toast.makeText(this, R.string.loc_permission_needed, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.loc_permission_needed,
+                        Toast.LENGTH_LONG).show();
                 LocationPermissionHelper.launchPermissionSettings(this);
             } else {
                 setupSessionElements();
@@ -217,6 +227,9 @@ public class ARActivity extends AppCompatActivity implements
                 }
             }
         }
+
+        surfaceView.onResume();
+        displayRotationHelper.onResume();
     }
 
     /**
