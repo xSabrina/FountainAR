@@ -328,6 +328,10 @@ public class SpecularCubemapFilter implements Closeable {
         return LD_CUBEMAP;
     }
 
+    public Texture getRadianceCubemapTexture() {
+        return RADIANCE_CUBEMAP;
+    }
+
     private void initializeLdCubemap() {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_CUBE_MAP, LD_CUBEMAP.getTextureId());
         GLError.maybeThrowGLException("Could not bind LD cubemap texture", "glBindTexture");

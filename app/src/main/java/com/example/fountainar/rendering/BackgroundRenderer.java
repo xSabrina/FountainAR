@@ -63,6 +63,7 @@ public class BackgroundRenderer {
     private boolean useDepthVisualization;
     private boolean useOcclusion;
     private float aspectRatio;
+    private Texture reflectionTexture;
 
     /**
      * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
@@ -85,8 +86,6 @@ public class BackgroundRenderer {
                 virtualSceneTexCoordsVertexBuffer};
         MESH = new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
     }
-
-
 
     /**
      * Sets whether the background camera image should be replaced with a depth visualization
@@ -192,8 +191,10 @@ public class BackgroundRenderer {
      */
     public void drawVirtualScene(
             CustomRender render, Framebuffer virtualSceneFramebuffer, float zNear, float zFar) {
-        occlusionShader.setTexture("u_VirtualSceneColorTexture",
-                virtualSceneFramebuffer.getColorTexture());
+        reflectionTexture = virtualSceneFramebuffer.getColorTexture();
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, reflectionTexture.getTextureId());
+        occlusionShader.setTexture("u_VirtualSceneColorTexture", reflectionTexture);
 
         if (useOcclusion) {
             occlusionShader

@@ -51,19 +51,18 @@ public class SceneRenderer {
     private static Shader virtualWaterShader;
     private static Shader virtualWaterSurfaceShader;
     private static int meshCounter = 0;
-    private final Activity activity;
-    private final TrackingStateHelper trackingStateHelper;
+    private final Activity ACTIVITY;
+    private final TrackingStateHelper TRACKING_STATE_HELPER;
     public Framebuffer virtualSceneFramebuffer;
     private Frame frame;
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
     private SoundPoolHelper soundPoolHelper;
     private boolean loaded = false;
-    private boolean sceneSet = false;
 
     public SceneRenderer(Activity activity) {
-        this.activity = activity;
-        trackingStateHelper = new TrackingStateHelper(activity);
+        this.ACTIVITY = activity;
+        TRACKING_STATE_HELPER = new TrackingStateHelper(activity);
 
         if (DemographicQuestionnaire.probNum % 2 == 0) {
             isSubjectGroupWithAnimation = true;
@@ -80,7 +79,7 @@ public class SceneRenderer {
     public void setupScene(CustomRender render) {
         try {
             if (!loaded) {
-                activity.runOnUiThread(() -> Toast.makeText(activity, "3D-Modelle werden geladen...",
+                ACTIVITY.runOnUiThread(() -> Toast.makeText(ACTIVITY, "3D-Modelle werden geladen...",
                         Toast.LENGTH_LONG).show());
             }
 
@@ -90,11 +89,6 @@ public class SceneRenderer {
             cubemapFilter =
                     new SpecularCubemapFilter(
                             render, CUBEMAP_RESOLUTION, CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES);
-
-            Texture dfgTexture = new Texture(
-                    Texture.Target.TEXTURE_2D,
-                    Texture.WrapMode.CLAMP_TO_EDGE,
-                    false);
 
             Texture virtualFountainTexture =
                     Texture.createFromAsset(
@@ -110,7 +104,7 @@ public class SceneRenderer {
                     Texture.ColorFormat.SRGB);
 
             virtualFountainMesh = Mesh.createFromAsset(render,
-                    "models/Fountain.obj");
+                    "models/fountain.obj");
 
             virtualFountainShader =
                     Shader.createFromAssets(
@@ -130,8 +124,7 @@ public class SceneRenderer {
                             .setTexture("u_RoughnessMetallicAmbientOcclusionTexture",
                                     virtualFountainTexture)
                             .setTexture("u_Cubemap",
-                                    cubemapFilter.getFilteredCubemapTexture())
-                            .setTexture("u_DfgTexture", dfgTexture);
+                                    cubemapFilter.getFilteredCubemapTexture());
 
             if (isSubjectGroupWithAnimation) {
                 virtualWaterShader = Shader.createFromAssets(
@@ -152,10 +145,9 @@ public class SceneRenderer {
 
             backgroundRenderer.setUseDepthVisualization(render, false);
             backgroundRenderer.setUseOcclusion(render, true);
-            sceneSet = true;
         } catch (IOException e) {
             Log.e(TAG, "Failed to read a required asset file", e);
-            ARActivity.snackbarHelper.showError(activity,
+            ARActivity.snackbarHelper.showError(ACTIVITY,
                     String.valueOf(R.string.read_asset_failed) + e);
         }
     }
@@ -179,14 +171,14 @@ public class SceneRenderer {
             frame = session.update();
         } catch (CameraNotAvailableException e) {
             Log.e(TAG, "Camera not available during onDrawFrame", e);
-            ARActivity.snackbarHelper.showError(activity,
+            ARActivity.snackbarHelper.showError(ACTIVITY,
                     String.valueOf(R.string.cam_not_available));
             return;
         }
 
         Camera camera = frame.getCamera();
         backgroundRenderer.updateDisplayGeometry(frame);
-        trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
+        TRACKING_STATE_HELPER.updateKeepScreenOnFlag(camera.getTrackingState());
         backgroundRenderer.drawBackground(render);
 
         if (camera.getTrackingState() != TrackingState.TRACKING) {
@@ -239,6 +231,7 @@ public class SceneRenderer {
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             if (isSubjectGroupWithAnimation) {
+                cubemapFilter.update(frame.getLightEstimate().acquireEnvironmentalHdrCubeMap());
                 setupWater(camera, render);
             }
         }
@@ -253,21 +246,9 @@ public class SceneRenderer {
     private void setupWater(Camera camera, CustomRender render) {
         meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
 
-        float[] normalMatrix = {
-                MODEL_VIEW_MATRIX[0], MODEL_VIEW_MATRIX[1], MODEL_VIEW_MATRIX[2],
-                MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
-                MODEL_VIEW_MATRIX[8], MODEL_VIEW_MATRIX[9], MODEL_VIEW_MATRIX[10]
-        };
-
-        virtualWaterShader.setMat3("u_NormalView", normalMatrix);
-        virtualWaterShader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
-        virtualWaterSurfaceShader.setMat4("u_ModelViewProjection",
-                MODEL_VIEW_PROJECTION_MATRIX);
-
-        virtualWaterShader.setVec3("u_LightDirection",
-                frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
-        virtualWaterShader.setVec3("u_CameraPosition", camera.getPose().getTranslation());
-        virtualWaterSurfaceShader.setFloat("time", System.currentTimeMillis() / 1000f);
+        setShaderUniforms(camera, virtualWaterShader);
+        setShaderUniforms(camera, virtualWaterSurfaceShader);
+        virtualWaterSurfaceShader.setTexture("u_ReflectionTexture", cubemapFilter.getFilteredCubemapTexture());
 
         render.draw(virtualWaterSurfaceMesh, virtualWaterSurfaceShader, virtualSceneFramebuffer);
         render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
@@ -275,6 +256,21 @@ public class SceneRenderer {
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
         soundPoolHelper.play();
+    }
+
+    private void setShaderUniforms(Camera camera, Shader shader) {
+        float[] normalMatrix = {
+                MODEL_VIEW_MATRIX[0], MODEL_VIEW_MATRIX[1], MODEL_VIEW_MATRIX[2],
+                MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
+                MODEL_VIEW_MATRIX[8], MODEL_VIEW_MATRIX[9], MODEL_VIEW_MATRIX[10]
+        };
+
+        shader.setMat3("u_NormalView", normalMatrix);
+        shader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
+
+        shader.setVec3("u_LightDirection",
+                frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
+        shader.setVec3("u_CameraPosition", camera.getPose().getTranslation());
     }
 
 
@@ -290,10 +286,6 @@ public class SceneRenderer {
         }
 
         virtualSceneFramebuffer.resize(width, height);
-    }
-
-    public boolean sceneSet(){
-        return sceneSet;
     }
 
     /**

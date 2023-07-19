@@ -173,4 +173,24 @@ public class Framebuffer implements Closeable {
     int getFramebufferId() {
         return FRAME_BUFFER_ID[0];
     }
+    /**
+     * Binds the framebuffer and updates the texture if needed.
+     */
+    public void bind() {
+        if (FRAME_BUFFER_ID[0] == 0) {
+            GLES30.glGenFramebuffers(1, FRAME_BUFFER_ID, 0);
+            GLError.maybeThrowGLException("Framebuffer creation failed", "glGenFramebuffers");
+        }
+
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FRAME_BUFFER_ID[0]);
+        GLError.maybeThrowGLException("Failed to bind framebuffer", "glBindFramebuffer");
+    }
+
+    /**
+     * Unbinds the framebuffer.
+     */
+    public void unbind() {
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
+        GLError.maybeThrowGLException("Failed to unbind framebuffer", "glBindFramebuffer");
+    }
 }
