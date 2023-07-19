@@ -188,8 +188,14 @@ public class ARCoreHelper {
         Config config = session.getConfig();
         config.setGeospatialMode(Config.GeospatialMode.ENABLED);
         config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
-        config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        depthSettings.setUseDepthForOcclusion(true);
+
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+            depthSettings.setUseDepthForOcclusion(true);
+        } else {
+            config.setDepthMode(Config.DepthMode.DISABLED);
+        }
+
         session.configure(config);
     }
 
