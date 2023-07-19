@@ -15,6 +15,9 @@
  */
 package com.example.fountainar.rendering;
 
+import android.media.Image;
+import android.opengl.GLES30;
+
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 
@@ -59,6 +62,7 @@ public class BackgroundRenderer {
     private Shader occlusionShader;
     private boolean useDepthVisualization;
     private boolean useOcclusion;
+    private float aspectRatio;
 
     /**
      * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
@@ -133,23 +137,18 @@ public class BackgroundRenderer {
             if (this.useOcclusion == useOcclusion) {
                 return;
             }
-
             occlusionShader.close();
             occlusionShader = null;
             this.useOcclusion = useOcclusion;
         }
-
         HashMap<String, String> defines = new HashMap<>();
         defines.put("USE_OCCLUSION", useOcclusion ? "1" : "0");
         occlusionShader =
-                Shader.createFromAssets(render, "shaders/occlusion.vert",
-                                "shaders/occlusion.frag", defines)
+                Shader.createFromAssets(render, "shaders/occlusion.vert", "shaders/occlusion.frag", defines)
                         .setDepthTest(false)
                         .setDepthWrite(false)
                         .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
-
         if (useOcclusion) {
-            float aspectRatio = 0;
             occlusionShader
                     .setTexture("u_CameraDepthTexture", CAMERA_DEPTH_TEXTURE)
                     .setFloat("u_DepthAspectRatio", aspectRatio);
