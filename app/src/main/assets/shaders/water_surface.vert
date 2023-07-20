@@ -1,21 +1,19 @@
 #version 300 es
 
-precision mediump float;
-
+uniform mat4 u_ModelView;
 uniform mat4 u_ModelViewProjection;
-uniform mat3 u_NormalView;
 
-in vec4 a_Position;
-in vec3 a_Normal;
-in vec2 a_TexCoord;
+layout(location = 0) in vec4 a_Position;
+layout(location = 1) in vec2 a_TexCoord;
+layout(location = 2) in vec3 a_Normal;
 
-out vec3 v_Position;
-out vec3 v_Normal;
+out vec3 v_ViewPosition;
+out vec3 v_ViewNormal;
 out vec2 v_TexCoord;
 
 void main() {
-  gl_Position = u_ModelViewProjection * a_Position;
-  v_Position = a_Position.xyz;
-  v_Normal = normalize(u_NormalView * a_Normal);
+  v_ViewPosition = (u_ModelView * a_Position).xyz;
+  v_ViewNormal = normalize((u_ModelView * vec4(a_Normal, 0.0)).xyz);
   v_TexCoord = a_TexCoord;
+  gl_Position = u_ModelViewProjection * a_Position;
 }

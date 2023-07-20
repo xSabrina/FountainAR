@@ -1,47 +1,196 @@
 #version 300 es
+
 precision mediump float;
 
-in vec3 v_Normal;
-in vec3 v_Position;
+const int kNumberOfRoughnessLevels = NUMBER_OF_MIPMAP_LEVELS;
+
+uniform vec3 u_LightIntensity;
+uniform vec3 u_ViewLightDirection;
+uniform vec3 u_SphericalHarmonicsCoefficients[9];
+uniform samplerCube u_Cubemap;
+uniform sampler2D u_DfgTexture;
+uniform mat4 u_ViewInverse;
+uniform bool u_LightEstimateIsValid;
+
+struct MaterialParameters {
+    vec3 diffuse;
+    float perceptualRoughness;
+    float roughness;
+    float metallic;
+    float ambientOcclusion;
+    vec3 f0;
+    vec2 dfg;
+    vec3 energyCompensation;
+};
+
+struct ShadingParameters {
+    float normalDotView;
+    float normalDotHalfway;
+    float normalDotLight;
+    float viewDotHalfway;
+    float oneMinusNormalDotHalfwaySquared;
+
+    vec3 worldNormalDirection;
+    vec3 worldReflectDirection;
+};
+
+in vec3 v_ViewPosition;
+in vec3 v_ViewNormal;
 in vec2 v_TexCoord;
 
-out vec4 o_FragColor;
+layout(location = 0) out vec4 o_FragColor;
 
-uniform vec3 u_LightDirection;
-uniform vec3 u_CameraPosition;
-uniform sampler2D u_ReflectionTexture;
+const float kPi = 3.14159265359;
 
-const float shininess = 64.0;
-const vec3 waterColor = vec3(0.2, 0.5, 1.0);
-const float waterTransparency = 0.5;
-const float distortionStrength = 0.03;
-const float lightIntensity = 0.8;
+vec3 Pbr_CalculateMainLightRadiance(const ShadingParameters shading,
+const MaterialParameters material,
+const vec3 mainLightIntensity) {
+    // Lambertian diffuse
+    vec3 diffuseTerm = material.diffuse / kPi;
+
+    // Note that if we were not using the HDR cubemap from ARCore for specular
+    // lighting, we would be adding a specular contribution from the main light
+    // here. See the top of the file for a more detailed explanation.
+
+    return diffuseTerm * mainLightIntensity * shading.normalDotLight;
+}
+
+vec3 Pbr_CalculateDiffuseEnvironmentalRadiance(const vec3 normal,
+const vec3 coefficients[9]) {
+    // See HelloArActivity.updateSphericalHarmonicsCoefficients() for more
+    // information about this calculation.
+    vec3 radiance = coefficients[0] + coefficients[1] * (normal.y) +
+    coefficients[2] * (normal.z) + coefficients[3] * (normal.x) +
+    coefficients[4] * (normal.y * normal.x) +
+    coefficients[5] * (normal.y * normal.z) +
+    coefficients[6] * (3.0 * normal.z * normal.z - 1.0) +
+    coefficients[7] * (normal.z * normal.x) +
+    coefficients[8] * (normal.x * normal.x - normal.y * normal.y);
+    return max(radiance, 0.0);
+}
+
+vec3 Pbr_CalculateSpecularEnvironmentalRadiance(
+const ShadingParameters shading, const MaterialParameters material,
+const samplerCube cubemap) {
+    // Lagarde and de Rousiers 2014, "Moving Frostbite to PBR"
+    float specularAO =
+    clamp(pow(shading.normalDotView + material.ambientOcclusion,
+    exp2(-16.0 * material.roughness - 1.0)) -
+    1.0 + material.ambientOcclusion,
+    0.0, 1.0);
+    // Combine DFG and LD terms
+    float lod =
+    material.perceptualRoughness * float(kNumberOfRoughnessLevels - 1);
+    vec3 LD = textureLod(cubemap, shading.worldReflectDirection, lod).rgb;
+    vec3 E = mix(material.dfg.xxx, material.dfg.yyy, material.f0);
+    return E * LD * specularAO * material.energyCompensation;
+}
+
+vec3 Pbr_CalculateEnvironmentalRadiance(
+const ShadingParameters shading, const MaterialParameters material,
+const vec3 sphericalHarmonicsCoefficients[9], const samplerCube cubemap) {
+    // The lambertian diffuse BRDF term (1/pi) is baked into
+    // HelloArActivity.sphericalHarmonicsFactors.
+    vec3 diffuseTerm =
+    Pbr_CalculateDiffuseEnvironmentalRadiance(
+    shading.worldNormalDirection, sphericalHarmonicsCoefficients) *
+    material.diffuse * material.ambientOcclusion;
+
+    vec3 specularTerm =
+    Pbr_CalculateSpecularEnvironmentalRadiance(shading, material, cubemap);
+
+    return diffuseTerm + specularTerm;
+}
+
+void Pbr_CreateShadingParameters(const in vec3 viewNormal,
+const in vec3 viewPosition,
+const in vec4 viewLightDirection,
+const in mat4 viewInverse,
+out ShadingParameters shading) {
+    vec3 normalDirection = normalize(viewNormal);
+    vec3 viewDirection = -normalize(viewPosition);
+    vec3 lightDirection = normalize(viewLightDirection.xyz);
+    vec3 halfwayDirection = normalize(viewDirection + lightDirection);
+
+    // Clamping the minimum bound yields better results with values less than or
+    // equal to 0, which would otherwise cause discontinuity in the geometry
+    // factor. Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline
+    // for The Order: 1886"
+    shading.normalDotView = max(dot(normalDirection, viewDirection), 1e-4);
+    shading.normalDotHalfway =
+    clamp(dot(normalDirection, halfwayDirection), 0.0, 1.0);
+    shading.normalDotLight =
+    clamp(dot(normalDirection, lightDirection), 0.0, 1.0);
+    shading.viewDotHalfway =
+    clamp(dot(viewDirection, halfwayDirection), 0.0, 1.0);
+
+    // The following calculation can be proven as being equivalent to 1-(N.H)^2 by
+    // using Lagrange's identity.
+    //
+    // ||a x b||^2 = ||a||^2 ||b||^2 - (a . b)^2
+    //
+    // Since we're using unit vectors: ||N x H||^2 = 1 - (N . H)^2
+    //
+    // We are calculating it in this way to preserve floating point precision.
+    vec3 NxH = cross(normalDirection, halfwayDirection);
+    shading.oneMinusNormalDotHalfwaySquared = dot(NxH, NxH);
+
+    shading.worldNormalDirection = (viewInverse * vec4(normalDirection, 0.0)).xyz;
+    vec3 reflectDirection = reflect(-viewDirection, normalDirection);
+    shading.worldReflectDirection =
+    (viewInverse * vec4(reflectDirection, 0.0)).xyz;
+}
+
+void Pbr_CreateMaterialParameters(const in vec2 texCoord,
+const in ShadingParameters shading,
+out MaterialParameters material) {
+    vec3 albedo = vec3(0.0, 0.3, 0.6);
+    float perceptualRoughness = 0.0;
+    float metallic = 0.0;
+    float ambientOcclusion = 1.0;
+
+    const float kMinPerceptualRoughness = 0.089;
+    material.perceptualRoughness = max(perceptualRoughness, kMinPerceptualRoughness);
+    material.roughness = material.perceptualRoughness * material.perceptualRoughness;
+    material.metallic = metallic;
+    material.ambientOcclusion = ambientOcclusion;
+
+    material.diffuse = albedo * (1.0 - material.metallic);
+    material.f0 = mix(vec3(0.04), albedo, material.metallic);
+    material.dfg = textureLod(u_DfgTexture, vec2(shading.normalDotView, material.perceptualRoughness), 0.0).xy;
+
+    material.energyCompensation = 1.0 + material.f0 * (1.0 / material.dfg.y - 1.0);
+}
+
+vec3 LinearToSrgb(const vec3 color) {
+    vec3 kGamma = vec3(1.0 / 2.2);
+    return clamp(pow(color, kGamma), 0.0, 1.0);
+}
 
 void main() {
-    vec3 normal = normalize(v_Normal);
-    vec3 lightDirection = normalize(u_LightDirection);
-    vec3 viewDirection = normalize(u_CameraPosition - v_Position);
-    vec3 halfVector = normalize(lightDirection + viewDirection);
+    vec2 texCoord = vec2(v_TexCoord.x, 1.0 - v_TexCoord.y);
 
-    vec3 ambientColor = vec3(0.2, 0.2, 0.2);
-    float ambientIntensity = dot(ambientColor, waterColor);
-    vec3 ambient = ambientIntensity * waterColor;
+    if (u_LightEstimateIsValid) {
+        vec3 waterColor = vec3(0.0, 0.3, 0.6);
+        float waterAlpha = 0.5;
+        float waterRoughness = 0.01;
 
-    float diffuse = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuseColor = vec3(1.0, 1.0, 1.0);
-    vec3 diffuseLight = diffuseColor * waterColor * diffuse * lightIntensity;
+        ShadingParameters shading;
+        vec4 mainLightDirectionWithAlpha = vec4(u_ViewLightDirection, 1.0);
+        Pbr_CreateShadingParameters(v_ViewNormal, v_ViewPosition,
+        mainLightDirectionWithAlpha, u_ViewInverse, shading);
 
-    float specular = pow(max(dot(reflect(-lightDirection, normal), viewDirection), 0.0), shininess);
-    vec3 specularColor = vec3(1.0, 1.0, 1.0);
-    vec3 specularLight = specularColor * specular * lightIntensity;
+        MaterialParameters material;
+        Pbr_CreateMaterialParameters(texCoord, shading, material);
 
-    vec3 finalColor = ambient + diffuseLight + specularLight;
-    finalColor = pow(finalColor, vec3(0.4545));
+        vec3 mainLightRadiance = Pbr_CalculateMainLightRadiance(shading, material,
+        u_LightIntensity);
+        vec3 environmentalRadiance = Pbr_CalculateEnvironmentalRadiance(shading, material,
+        u_SphericalHarmonicsCoefficients, u_Cubemap);
+        vec3 radiance = mainLightRadiance + environmentalRadiance;
 
-    vec2 texCoord = vec2(0.5, 0.5) + v_TexCoord / 2.0;
-    vec4 reflectionColor = texture(u_ReflectionTexture, texCoord);
-
-    finalColor = mix(finalColor, reflectionColor.rgb, waterTransparency);
-
-    o_FragColor = vec4(finalColor, waterTransparency);
+        o_FragColor = vec4(LinearToSrgb(radiance), waterAlpha);
+    } else {
+        o_FragColor = vec4(0.6, 0.8, 1.0, 1.0);
+    }
 }

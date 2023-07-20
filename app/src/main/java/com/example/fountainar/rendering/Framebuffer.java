@@ -48,21 +48,20 @@ public class Framebuffer implements Closeable {
                             Texture.Target.TEXTURE_2D,
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             false);
-
-            // Set parameters of the depth texture so that it's readable by shaders.
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, DEPTH_TEXTURE.getTextureId());
             GLError.maybeThrowGLException("Failed to bind depth texture", "glBindTexture");
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_COMPARE_MODE, GLES30.GL_NONE);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_COMPARE_MODE,
+                    GLES30.GL_NONE);
             GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER,
+                    GLES30.GL_NEAREST);
             GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
-            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_NEAREST);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER,
+                    GLES30.GL_NEAREST);
             GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
 
-            // Set initial dimensions.
             resize(width, height);
 
-            // Create framebuffer object and bind to the color and depth textures.
             GLES30.glGenFramebuffers(1, FRAME_BUFFER_ID, 0);
             GLError.maybeThrowGLException("Framebuffer creation failed", "glGenFramebuffers");
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FRAME_BUFFER_ID[0]);
@@ -86,7 +85,8 @@ public class Framebuffer implements Closeable {
 
             int status = GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER);
             if (status != GLES30.GL_FRAMEBUFFER_COMPLETE) {
-                throw new IllegalStateException("Framebuffer construction not complete: code " + status);
+                throw new IllegalStateException("Framebuffer construction not complete: code "
+                        + status);
             }
         } catch (Throwable t) {
             close();
@@ -98,7 +98,8 @@ public class Framebuffer implements Closeable {
     public void close() {
         if (FRAME_BUFFER_ID[0] != 0) {
             GLES30.glDeleteFramebuffers(1, FRAME_BUFFER_ID, 0);
-            GLError.maybeLogGLError(Log.WARN, TAG, "Failed to free framebuffer", "glDeleteFramebuffers");
+            GLError.maybeLogGLError(Log.WARN, TAG, "Failed to free framebuffer",
+                    "glDeleteFramebuffers");
             FRAME_BUFFER_ID[0] = 0;
         }
 
@@ -115,7 +116,6 @@ public class Framebuffer implements Closeable {
         this.width = width;
         this.height = height;
 
-        // Color texture
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, COLOR_TEXTURE.getTextureId());
         GLError.maybeThrowGLException("Failed to bind color texture", "glBindTexture");
 
@@ -173,6 +173,7 @@ public class Framebuffer implements Closeable {
     int getFramebufferId() {
         return FRAME_BUFFER_ID[0];
     }
+
     /**
      * Binds the framebuffer and updates the texture if needed.
      */
@@ -193,4 +194,17 @@ public class Framebuffer implements Closeable {
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
         GLError.maybeThrowGLException("Failed to unbind framebuffer", "glBindFramebuffer");
     }
+
+    /** Attach a texture to the framebuffer. */
+    public void attachTexture(Texture texture) {
+        GLES30.glFramebufferTexture2D(
+                GLES30.GL_FRAMEBUFFER,
+                GLES30.GL_COLOR_ATTACHMENT0,
+                GLES30.GL_TEXTURE_2D,
+                texture.getTextureId(),
+                0);
+        GLError.maybeThrowGLException("Failed to attach texture to framebuffer",
+                "glFramebufferTexture2D");
+    }
+
 }

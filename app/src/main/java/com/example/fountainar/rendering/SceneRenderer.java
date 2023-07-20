@@ -97,7 +97,7 @@ public class SceneRenderer {
         try {
             if (!loaded) {
                 ACTIVITY.runOnUiThread(() -> Toast.makeText(ACTIVITY,
-                        R.string.error_loading_3D_model, Toast.LENGTH_LONG).show());
+                        R.string.models_loading, Toast.LENGTH_LONG).show());
             }
 
             backgroundRenderer = new BackgroundRenderer();
@@ -107,7 +107,7 @@ public class SceneRenderer {
             setupLightingElements(render);
             setupFountainObject(render);
 
-            if(isSubjectGroupWithAnimation) {
+            if (isSubjectGroupWithAnimation) {
                 setupWaterObjects(render);
             }
         } catch (IOException e) {
@@ -122,7 +122,7 @@ public class SceneRenderer {
      *
      * @param render The CustomRender object for rendering the scene.
      * @throws RuntimeException if setup fails or there are I/O exceptions.
-     * @throws IOException if there is an error reading the "models/dfg.raw" file.
+     * @throws IOException      if there is an error reading the "models/dfg.raw" file.
      */
     private void setupLightingElements(CustomRender render) throws IOException {
         try {
@@ -186,12 +186,18 @@ public class SceneRenderer {
 
             virtualFountainMesh = Mesh.createFromAsset(render, "models/fountain.obj");
 
-            HashMap<String, String> shaderParams = new HashMap<>();
-            shaderParams.put("NUMBER_OF_MIPMAP_LEVELS",
-                    Integer.toString(cubemapFilter.getNumberOfMipmapLevels()));
+
             virtualFountainShader = Shader.createFromAssets(render,
                             "shaders/environmental_hdr.vert",
-                            "shaders/environmental_hdr.frag", shaderParams)
+                            "shaders/environmental_hdr.frag",
+                            new HashMap<String, String>() {
+                                {
+                                    put(
+                                            "NUMBER_OF_MIPMAP_LEVELS",
+                                            Integer.toString(
+                                                    cubemapFilter.getNumberOfMipmapLevels()));
+                                }
+                            })
                     .setTexture("u_AlbedoTexture", virtualFountainAlbedoTexture)
                     .setTexture("u_RoughnessMetallicAmbientOcclusionTexture",
                             virtualFountainPbrTexture)
@@ -215,9 +221,20 @@ public class SceneRenderer {
                 virtualWaterShader = Shader.createFromAssets(
                         render, "shaders/water.vert",
                         "shaders/water.frag", null);
+
                 virtualWaterSurfaceShader = Shader.createFromAssets(
-                        render, "shaders/water_surface.vert",
-                        "shaders/water_surface.frag", null);
+                                render, "shaders/water_surface.vert",
+                                "shaders/water_surface.frag",
+                                new HashMap<String, String>() {
+                                    {
+                                        put(
+                                                "NUMBER_OF_MIPMAP_LEVELS",
+                                                Integer.toString(
+                                                        cubemapFilter.getNumberOfMipmapLevels()));
+                                    }
+                                })
+                        .setTexture("u_Cubemap", cubemapFilter.getFilteredCubemapTexture())
+                        .setTexture("u_DfgTexture", dfgTexture);
                 virtualWaterSurfaceMesh = Mesh.createFromAsset(render,
                         "models/water_surface.obj");
 
@@ -281,9 +298,13 @@ public class SceneRenderer {
      */
     private void drawVirtualObjects(Camera camera, CustomRender render, Anchor anchor)
             throws IOException {
+        virtualSceneFramebuffer.bind();
         camera.getProjectionMatrix(PROJECTION_MATRIX, 0, Z_NEAR, Z_FAR);
         camera.getViewMatrix(VIEW_MATRIX, 0);
-        updateLightEstimation(virtualFountainShader, frame.getLightEstimate());
+        LightEstimate lightEstimate = frame.getLightEstimate();
+
+        updateLightEstimation(virtualFountainShader, lightEstimate);
+
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
 
         if (anchor != null) {
@@ -300,7 +321,6 @@ public class SceneRenderer {
 
             virtualFountainShader.setMat4("u_ModelViewProjection",
                     MODEL_VIEW_PROJECTION_MATRIX);
-            LightEstimate lightEstimate = frame.getLightEstimate();
             virtualFountainShader.setVec3("u_LightIntensity",
                     lightEstimate.getEnvironmentalHdrMainLightIntensity());
             virtualFountainShader.setVec3("u_ViewLightDirection",
@@ -310,6 +330,7 @@ public class SceneRenderer {
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             if (isSubjectGroupWithAnimation) {
+                updateLightEstimation(virtualWaterSurfaceShader, lightEstimate);
                 setupWater(camera, render);
             }
         }
@@ -323,15 +344,23 @@ public class SceneRenderer {
      */
     private void setupWater(Camera camera, CustomRender render) {
         meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
+        LightEstimate lightEstimate = frame.getLightEstimate();
+
         setShaderUniforms(camera, virtualWaterShader);
-        setShaderUniforms(camera, virtualWaterSurfaceShader);
-        virtualWaterSurfaceShader.setTexture("u_ReflectionTexture",
-                cubemapFilter.getFilteredCubemapTexture());
+        virtualWaterSurfaceShader.setMat4("u_ModelViewProjection",
+                MODEL_VIEW_PROJECTION_MATRIX);
+        virtualWaterSurfaceShader.setVec3("u_LightIntensity",
+                lightEstimate.getEnvironmentalHdrMainLightIntensity());
+        virtualWaterSurfaceShader.setVec3("u_ViewLightDirection",
+                lightEstimate.getEnvironmentalHdrMainLightDirection());
+
         render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
                 virtualSceneFramebuffer);
         render.draw(virtualWaterSurfaceMesh, virtualWaterSurfaceShader, virtualSceneFramebuffer);
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
         soundPoolHelper.play();
+
     }
 
     /**
@@ -409,7 +438,6 @@ public class SceneRenderer {
         shader.setVec3("u_CameraPosition", camera.getPose().getTranslation());
     }
 
-
     /**
      * Resizes the framebuffer to the specified width and height.
      *
@@ -423,6 +451,7 @@ public class SceneRenderer {
 
         virtualSceneFramebuffer.resize(width, height);
     }
+
 
     /**
      * Pauses the soundPool if it is initialized.
