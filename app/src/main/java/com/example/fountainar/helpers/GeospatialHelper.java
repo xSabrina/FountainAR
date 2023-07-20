@@ -256,7 +256,7 @@ public class GeospatialHelper {
             Pose planePose = plane.getCenterPose();
             Anchor planeAnchor = plane.createAnchor(planePose);
 
-            double latitude = geospatialPose.getLatitude();
+           double latitude = geospatialPose.getLatitude();
             double longitude = geospatialPose.getLongitude();
 
             float[] quaternion = geospatialPose.getEastUpSouthQuaternion();

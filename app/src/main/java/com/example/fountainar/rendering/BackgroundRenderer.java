@@ -15,9 +15,6 @@
  */
 package com.example.fountainar.rendering;
 
-import android.media.Image;
-import android.opengl.GLES30;
-
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 
@@ -36,9 +33,11 @@ public class BackgroundRenderer {
 
     private static final int COORDS_BUFFER_SIZE = 2 * 4 * 4;
     private static final FloatBuffer NDC_QUAD_COORDS_BUFFER =
-            ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
+            ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
     private static final FloatBuffer VIRTUAL_SCENE_TEX_COORDS_BUFFER =
-            ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
+            ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
 
     static {
         NDC_QUAD_COORDS_BUFFER.put(
@@ -62,8 +61,6 @@ public class BackgroundRenderer {
     private Shader occlusionShader;
     private boolean useDepthVisualization;
     private boolean useOcclusion;
-    private float aspectRatio;
-    private Texture reflectionTexture;
 
     /**
      * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
@@ -75,6 +72,7 @@ public class BackgroundRenderer {
                 Texture.WrapMode.CLAMP_TO_EDGE, false);
         CAMERA_DEPTH_TEXTURE = new Texture(Texture.Target.TEXTURE_2D,
                 Texture.WrapMode.CLAMP_TO_EDGE, false);
+
         VertexBuffer screenCoordsVertexBuffer = new VertexBuffer(2,
                 NDC_QUAD_COORDS_BUFFER);
         CAMERA_TEX_COORDS_VERT_BUFFER = new VertexBuffer(2, null);
@@ -84,6 +82,7 @@ public class BackgroundRenderer {
                 screenCoordsVertexBuffer,
                 CAMERA_TEX_COORDS_VERT_BUFFER,
                 virtualSceneTexCoordsVertexBuffer};
+
         MESH = new Mesh(Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers);
     }
 
@@ -109,8 +108,10 @@ public class BackgroundRenderer {
                     Texture.ColorFormat.LINEAR);
 
             backgroundShader = Shader.createFromAssets(render,
-                            "shaders/background_show_depth_color_visualization.vert",
-                            "shaders/background_show_depth_color_visualization.frag",
+                            "shaders/" +
+                                    "background_show_depth_color_visualization.vert",
+                            "shaders/" +
+                                    "background_show_depth_color_visualization.frag",
                             null)
                     .setTexture("u_CameraDepthTexture", CAMERA_DEPTH_TEXTURE)
                     .setTexture("u_ColorMap", depthColorPaletteTexture)
@@ -143,14 +144,15 @@ public class BackgroundRenderer {
         HashMap<String, String> defines = new HashMap<>();
         defines.put("USE_OCCLUSION", useOcclusion ? "1" : "0");
         occlusionShader =
-                Shader.createFromAssets(render, "shaders/occlusion.vert", "shaders/occlusion.frag", defines)
+                Shader.createFromAssets(render, "shaders/occlusion.vert",
+                                "shaders/occlusion.frag", defines)
                         .setDepthTest(false)
                         .setDepthWrite(false)
-                        .setBlend(Shader.BlendFactor.SRC_ALPHA, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
+                        .setBlend(Shader.BlendFactor.SRC_ALPHA,
+                                Shader.BlendFactor.ONE_MINUS_SRC_ALPHA);
         if (useOcclusion) {
             occlusionShader
-                    .setTexture("u_CameraDepthTexture", CAMERA_DEPTH_TEXTURE)
-                    .setFloat("u_DepthAspectRatio", aspectRatio);
+                    .setTexture("u_CameraDepthTexture", CAMERA_DEPTH_TEXTURE);
         }
     }
 
@@ -191,10 +193,9 @@ public class BackgroundRenderer {
      */
     public void drawVirtualScene(
             CustomRender render, Framebuffer virtualSceneFramebuffer, float zNear, float zFar) {
-        reflectionTexture = virtualSceneFramebuffer.getColorTexture();
-        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, reflectionTexture.getTextureId());
-        occlusionShader.setTexture("u_VirtualSceneColorTexture", reflectionTexture);
+
+        occlusionShader.setTexture("u_VirtualSceneColorTexture",
+                virtualSceneFramebuffer.getColorTexture());
 
         if (useOcclusion) {
             occlusionShader
@@ -213,5 +214,4 @@ public class BackgroundRenderer {
     public Texture getCameraColorTexture() {
         return CAMERA_COLOR_TEXTURE;
     }
-
 }
