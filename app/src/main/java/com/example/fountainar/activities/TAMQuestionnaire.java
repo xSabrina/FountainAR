@@ -85,7 +85,8 @@ public class TAMQuestionnaire extends AppCompatActivity {
     /**
      * Sets up the finish button click listener.
      * When clicked, checks if all questions have been answered and saves the answers to a file.
-     * Redirects the user to the EndActivity if all questions have been answered, otherwise shows a toast.
+     * Redirects the user to the EndActivity if all questions have been answered, otherwise shows a
+     * toast.
      */
     @SuppressLint("NotifyDataSetChanged")
     private void setupFinishButton() {

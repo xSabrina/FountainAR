@@ -19,15 +19,13 @@ public class EndActivity extends AppCompatActivity {
     }
 
     /**
-     * Sets up the exit button and defines its click behavior.
-     * When the exit button is clicked, it closes the application.
+     * Sets up the exit button and to close the application on click.
      */
     private void setupExitButton() {
-        ImageButton btn1 = findViewById(R.id.exit_button);
+        ImageButton finishButton = findViewById(R.id.exit_button);
 
-        btn1.setOnClickListener(v -> {
-            finish();
-            System.exit(0);
+        finishButton.setOnClickListener(v -> {
+            finishAffinity();
         });
     }
 }

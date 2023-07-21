@@ -18,7 +18,6 @@ struct MaterialParameters {
     float roughness;
     float metallic;
     float ambientOcclusion;
-
     vec3 f0;
     vec2 dfg;
     vec3 energyCompensation;
@@ -67,8 +66,9 @@ const vec3 coefficients[9]) {
 vec3 Pbr_CalculateSpecularEnvironmentalRadiance(
 const ShadingParameters shading, const MaterialParameters material,
 const samplerCube cubemap) {
-    float specularAO = clamp(pow(shading.normalDotView + material.ambientOcclusion,
-        exp2(-16.0 * material.roughness - 1.0)) - 1.0 + material.ambientOcclusion, 0.0, 1.0);
+    float specularAO =
+    clamp(pow(shading.normalDotView + material.ambientOcclusion,
+    exp2(-16.0 * material.roughness - 1.0)) - 1.0 + material.ambientOcclusion, 0.0, 1.0);
     float lod = material.perceptualRoughness * float(kNumberOfRoughnessLevels - 1);
     vec3 LD = textureLod(cubemap, shading.worldReflectDirection, lod).rgb;
     vec3 E = mix(material.dfg.xxx, material.dfg.yyy, material.f0);
@@ -79,9 +79,12 @@ const samplerCube cubemap) {
 vec3 Pbr_CalculateEnvironmentalRadiance(
 const ShadingParameters shading, const MaterialParameters material,
 const vec3 sphericalHarmonicsCoefficients[9], const samplerCube cubemap) {
-    vec3 diffuseTerm = Pbr_CalculateDiffuseEnvironmentalRadiance(shading.worldNormalDirection,
-        sphericalHarmonicsCoefficients) * material.diffuse * material.ambientOcclusion;
-    vec3 specularTerm = Pbr_CalculateSpecularEnvironmentalRadiance(shading, material, cubemap);
+    vec3 diffuseTerm =
+    Pbr_CalculateDiffuseEnvironmentalRadiance(
+    shading.worldNormalDirection, sphericalHarmonicsCoefficients) *
+    material.diffuse * material.ambientOcclusion;
+    vec3 specularTerm =
+    Pbr_CalculateSpecularEnvironmentalRadiance(shading, material, cubemap);
 
     return diffuseTerm + specularTerm;
 }
@@ -95,6 +98,7 @@ out ShadingParameters shading) {
     vec3 viewDirection = -normalize(viewPosition);
     vec3 lightDirection = normalize(viewLightDirection.xyz);
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
+
     shading.normalDotView = max(dot(normalDirection, viewDirection), 1e-4);
     shading.normalDotHalfway = clamp(dot(normalDirection, halfwayDirection), 0.0, 1.0);
     shading.normalDotLight = clamp(dot(normalDirection, lightDirection), 0.0, 1.0);
@@ -105,18 +109,20 @@ out ShadingParameters shading) {
 
     shading.worldNormalDirection = (viewInverse * vec4(normalDirection, 0.0)).xyz;
     vec3 reflectDirection = reflect(-viewDirection, normalDirection);
-    shading.worldReflectDirection = (viewInverse * vec4(reflectDirection, 0.0)).xyz;
+    shading.worldReflectDirection =
+    (viewInverse * vec4(reflectDirection, 0.0)).xyz;
 }
 
 void Pbr_CreateMaterialParameters(const in vec2 texCoord,
 const in ShadingParameters shading,
 out MaterialParameters material) {
-    vec3 albedo = vec3(0.0, 0.3, 0.6);
-    float perceptualRoughness = 0.0;
-    float metallic = 0.0;
+    vec3 albedo = vec3(0.2, 0.6, 0.6);
+    float perceptualRoughness = 0.2;
+    float metallic = 0.1;
     float ambientOcclusion = 1.0;
-
+    albedo = vec3(albedo.x, albedo.y + sin(texCoord.y * 10.0) * 0.05, albedo.z);
     const float kMinPerceptualRoughness = 0.089;
+
     material.perceptualRoughness = max(perceptualRoughness, kMinPerceptualRoughness);
     material.roughness = material.perceptualRoughness * material.perceptualRoughness;
     material.metallic = metallic;
@@ -125,13 +131,14 @@ out MaterialParameters material) {
     material.diffuse = albedo * (1.0 - material.metallic);
     material.f0 = mix(vec3(0.04), albedo, material.metallic);
     material.dfg = textureLod(u_DfgTexture, vec2(shading.normalDotView,
-        material.perceptualRoughness), 0.0).xy;
+    material.perceptualRoughness), 0.0).xy;
+
     material.energyCompensation = 1.0 + material.f0 * (1.0 / material.dfg.y - 1.0);
 }
 
+
 vec3 LinearToSrgb(const vec3 color) {
     vec3 kGamma = vec3(1.0 / 2.2);
-
     return clamp(pow(color, kGamma), 0.0, 1.0);
 }
 
@@ -139,22 +146,20 @@ void main() {
     vec2 texCoord = vec2(v_TexCoord.x, 1.0 - v_TexCoord.y);
 
     if (u_LightEstimateIsValid) {
-        vec3 waterColor = vec3(0.0, 0.3, 0.6);
         float waterAlpha = 0.5;
-        float waterRoughness = 0.01;
 
         ShadingParameters shading;
         vec4 mainLightDirectionWithAlpha = vec4(u_ViewLightDirection, 1.0);
-        Pbr_CreateShadingParameters(v_ViewNormal, v_ViewPosition, mainLightDirectionWithAlpha,
-            u_ViewInverse, shading);
+        Pbr_CreateShadingParameters(v_ViewNormal, v_ViewPosition,
+        mainLightDirectionWithAlpha, u_ViewInverse, shading);
 
         MaterialParameters material;
         Pbr_CreateMaterialParameters(texCoord, shading, material);
 
         vec3 mainLightRadiance = Pbr_CalculateMainLightRadiance(shading, material,
-            u_LightIntensity);
+        u_LightIntensity);
         vec3 environmentalRadiance = Pbr_CalculateEnvironmentalRadiance(shading, material,
-            u_SphericalHarmonicsCoefficients, u_Cubemap);
+        u_SphericalHarmonicsCoefficients, u_Cubemap);
         vec3 radiance = mainLightRadiance + environmentalRadiance;
 
         o_FragColor = vec4(LinearToSrgb(radiance), waterAlpha);
