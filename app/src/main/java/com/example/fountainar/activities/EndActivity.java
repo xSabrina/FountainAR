@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.fountainar.R;
 import com.example.fountainar.handlers.BackPressedHandler;
 
+/**
+ * Activity to display the end screen of the FountainAR app and handling closing the entire app
+ * through an exit button.
+ */
+
 public class EndActivity extends AppCompatActivity {
 
     @Override
@@ -24,8 +29,6 @@ public class EndActivity extends AppCompatActivity {
     private void setupExitButton() {
         ImageButton finishButton = findViewById(R.id.exit_button);
 
-        finishButton.setOnClickListener(v -> {
-            finishAffinity();
-        });
+        finishButton.setOnClickListener(v -> finishAffinity());
     }
 }

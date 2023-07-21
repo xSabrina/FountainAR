@@ -69,10 +69,8 @@ public class ARActivity extends AppCompatActivity implements
         sceneRenderer = new SceneRenderer(this);
         new CustomRender(surfaceView, this, getAssets());
 
-        runOnUiThread(() -> {
-            Toast.makeText(ARActivity.this, R.string.models_loading,
-                    Toast.LENGTH_LONG).show();
-        });
+        runOnUiThread(() -> Toast.makeText(ARActivity.this, R.string.models_loading,
+                Toast.LENGTH_LONG).show());
     }
 
     @Override

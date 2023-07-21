@@ -48,20 +48,6 @@ public final class CameraPermissionHelper {
     }
 
     /**
-     * Checks, if the array of given permissions contains the location permission.
-     */
-    public static boolean hasCameraPermissionsResponseInResult(String[] permissions) {
-        for (String permission : permissions) {
-            if (CAMERA_PERMISSION.equals(permission)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
      * Checks, if showing the rationale for this permission is needed.
      */
     public static boolean shouldShowRequestPermissionRationale(Activity activity) {

@@ -48,19 +48,6 @@ public final class LocationPermissionHelper {
     }
 
     /**
-     * Checks, if the array of given permissions contains the location permission.
-     */
-    public static boolean hasFineLocationPermissionsResponseInResult(String[] permissions) {
-        for (String permission : permissions) {
-            if (LOCATION_PERMISSION.equals(permission)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Checks, if we need to show the rationale for this permission.
      */
     public static boolean shouldShowRequestPermissionRationale(Activity activity) {
