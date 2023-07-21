@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.fountainar.R;
 import com.example.fountainar.activities.ARActivity;
@@ -74,7 +73,6 @@ public class SceneRenderer {
     private boolean hasSetTextureNames = false;
     private SpecularCubemapFilter cubemapFilter;
     private SoundPoolHelper soundPoolHelper;
-    private boolean loaded = false;
     private Texture dfgTexture;
 
     public SceneRenderer(Activity activity) {
@@ -95,11 +93,6 @@ public class SceneRenderer {
      */
     public void setupScene(CustomRender render) {
         try {
-            if (!loaded) {
-                ACTIVITY.runOnUiThread(() -> Toast.makeText(ACTIVITY,
-                        R.string.models_loading, Toast.LENGTH_LONG).show());
-            }
-
             backgroundRenderer = new BackgroundRenderer();
             backgroundRenderer.setUseDepthVisualization(render, false);
             backgroundRenderer.setUseOcclusion(render, true);
@@ -280,7 +273,6 @@ public class SceneRenderer {
         if (camera.getTrackingState() == TrackingState.TRACKING) {
             try {
                 drawVirtualObjects(camera, render, anchor);
-                loaded = true;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

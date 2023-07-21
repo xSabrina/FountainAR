@@ -68,6 +68,11 @@ public class ARActivity extends AppCompatActivity implements
         surfaceView = findViewById(R.id.surface_view);
         sceneRenderer = new SceneRenderer(this);
         new CustomRender(surfaceView, this, getAssets());
+
+        runOnUiThread(() -> {
+            Toast.makeText(ARActivity.this, R.string.models_loading,
+                    Toast.LENGTH_LONG).show();
+        });
     }
 
     @Override
@@ -128,8 +133,8 @@ public class ARActivity extends AppCompatActivity implements
 
     /**
      * Checks if the system supports the required technology (OpenGL ES 3.0 and ARCore).
-     * If the system meets the requirements, returns true. Otherwise, displays a toast message
-     * and finishes the activity.
+     * If the system does not meet the requirements, it displays a toast message and finishes the
+     * activity.
      *
      * @return true if the system supports the required technology.
      */
