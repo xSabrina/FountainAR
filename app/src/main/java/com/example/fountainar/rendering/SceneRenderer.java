@@ -298,7 +298,6 @@ public class SceneRenderer {
      */
     private void drawVirtualObjects(Camera camera, CustomRender render, Anchor anchor)
             throws IOException {
-        virtualSceneFramebuffer.bind();
         camera.getProjectionMatrix(PROJECTION_MATRIX, 0, Z_NEAR, Z_FAR);
         camera.getViewMatrix(VIEW_MATRIX, 0);
         LightEstimate lightEstimate = frame.getLightEstimate();
