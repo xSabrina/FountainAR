@@ -64,8 +64,9 @@ public class BackgroundRenderer {
 
     /**
      * Allocates and initializes OpenGL resources needed by the background renderer. Must be called
-     * during a {@link CustomRender.Renderer} callback, typically in {link
-     * CustomRender.Renderer#onSurfaceCreated()}.
+     * during a {@link CustomRender.Renderer} callback, typically in {@link CustomRender.Renderer
+     * #onSurfaceCreated()}.
+     * The vertex buffers are used without try-with-resources, because they need to stay open.
      */
     public BackgroundRenderer() {
         CAMERA_COLOR_TEXTURE = new Texture(Texture.Target.TEXTURE_EXTERNAL_OES,

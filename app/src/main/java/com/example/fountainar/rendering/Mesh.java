@@ -107,6 +107,7 @@ public class Mesh implements Closeable {
      * <p>The {@link Mesh} will be constructed with three attributes, indexed in the order of local
      * coordinates (location 0, vec3), texture coordinates (location 1, vec2), and vertex normals
      * (location 2, vec3).
+     * The vertex buffers are used without try-with-resources, because they need to stay open.
      */
     public static Mesh createFromAsset(CustomRender render, String assetFileName) throws IOException {
       ExecutorService executorService = Executors.newFixedThreadPool(3);
