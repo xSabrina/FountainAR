@@ -27,7 +27,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -57,6 +56,9 @@ public class GeospatialHelper {
         FUSED_LOCATION_CLIENT = LocationServices.getFusedLocationProviderClient(activity);
     }
 
+    /**
+     * Sets the AR-session for the geospatial calculations.
+     */
     public void setSession(Session session) {
         this.session = session;
     }
@@ -87,7 +89,8 @@ public class GeospatialHelper {
     }
 
     /**
-     * Checks the availability of VPS (Visual Positioning System) based on the given latitude and longitude.
+     * Checks the availability of VPS (Visual Positioning System) based on the given latitude and
+     * longitude.
      *
      * @param latitude  The latitude coordinate.
      * @param longitude The longitude coordinate.
@@ -197,7 +200,7 @@ public class GeospatialHelper {
             state = State.LOCALIZED;
 
             if (ARActivity.anchor == null) {
-                placeAnchor(earth);
+                createAnchor(earth);
             }
 
             return;
@@ -232,7 +235,7 @@ public class GeospatialHelper {
     /**
      * Creates a terrain anchor at given world coordinates using earth object.
      */
-    private void placeAnchor(Earth earth) {
+    private void createAnchor(Earth earth) {
         if (earth.getTrackingState() != TrackingState.TRACKING) {
             return;
         }
@@ -256,7 +259,7 @@ public class GeospatialHelper {
             Pose planePose = plane.getCenterPose();
             Anchor planeAnchor = plane.createAnchor(planePose);
 
-           double latitude = geospatialPose.getLatitude();
+            double latitude = geospatialPose.getLatitude();
             double longitude = geospatialPose.getLongitude();
 
             float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
@@ -275,7 +278,7 @@ public class GeospatialHelper {
                         }
                     });
         } else {
-            placeAnchor(earth);
+            createAnchor(earth);
         }
     }
 
@@ -285,15 +288,13 @@ public class GeospatialHelper {
     private Pose combinePoses(Pose pose1, Pose pose2) {
         float[] combinedTranslation = new float[3];
         float[] combinedRotationQuaternion = new float[4];
-
-        // Combine translations
         float[] translation1 = pose1.getTranslation();
         float[] translation2 = pose2.getTranslation();
+
         for (int i = 0; i < 3; i++) {
             combinedTranslation[i] = translation1[i] + translation2[i];
         }
 
-        // Combine rotations
         float[] rotationQuaternion1 = pose1.getRotationQuaternion();
         float[] rotationQuaternion2 = pose2.getRotationQuaternion();
         combinedRotationQuaternion[0] = rotationQuaternion1[0] + rotationQuaternion2[0];
