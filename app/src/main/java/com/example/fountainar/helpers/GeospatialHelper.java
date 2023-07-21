@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * Helper for geospatial operations and ARCore functionality.
+ * Helper for geospatial operations and anchor related ARCore functionality.
  */
 public class GeospatialHelper {
 
@@ -273,7 +273,8 @@ public class GeospatialHelper {
                     quaternion[3],
                     (earthAnchor, state) -> {
                         if (state == Anchor.TerrainAnchorState.SUCCESS) {
-                            Pose combinedPose = combinePoses(planeAnchor.getPose(), earthAnchor.getPose());
+                            Pose combinedPose = combinePoses(planeAnchor.getPose(),
+                                    earthAnchor.getPose());
                             ARActivity.anchor = session.createAnchor(combinedPose);
                         }
                     });
