@@ -20,7 +20,9 @@ import android.util.Log;
 
 import java.io.Closeable;
 
-/** A framebuffer associated with a texture. */
+/**
+ * A framebuffer associated with a texture.
+ */
 public class Framebuffer implements Closeable {
     private static final String TAG = Framebuffer.class.getSimpleName();
     private final int[] FRAME_BUFFER_ID = {0};
@@ -48,14 +50,18 @@ public class Framebuffer implements Closeable {
                             Texture.Target.TEXTURE_2D,
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             false);
+
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, DEPTH_TEXTURE.getTextureId());
             GLError.maybeThrowGLException("Failed to bind depth texture", "glBindTexture");
+
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_COMPARE_MODE,
                     GLES30.GL_NONE);
             GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
+
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER,
                     GLES30.GL_NEAREST);
             GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
+
             GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER,
                     GLES30.GL_NEAREST);
             GLError.maybeThrowGLException("Failed to set texture parameter", "glTexParameteri");
@@ -64,8 +70,10 @@ public class Framebuffer implements Closeable {
 
             GLES30.glGenFramebuffers(1, FRAME_BUFFER_ID, 0);
             GLError.maybeThrowGLException("Framebuffer creation failed", "glGenFramebuffers");
+
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FRAME_BUFFER_ID[0]);
             GLError.maybeThrowGLException("Failed to bind framebuffer", "glBindFramebuffer");
+
             GLES30.glFramebufferTexture2D(
                     GLES30.GL_FRAMEBUFFER,
                     GLES30.GL_COLOR_ATTACHMENT0,
@@ -74,6 +82,7 @@ public class Framebuffer implements Closeable {
                     0);
             GLError.maybeThrowGLException(
                     "Failed to bind color texture to framebuffer", "glFramebufferTexture2D");
+
             GLES30.glFramebufferTexture2D(
                     GLES30.GL_FRAMEBUFFER,
                     GLES30.GL_DEPTH_ATTACHMENT,
@@ -94,6 +103,10 @@ public class Framebuffer implements Closeable {
         }
     }
 
+    /**
+     * Deletes the framebuffer if valid and closes the associated color and depth textures to avoid
+     * memory leaks.
+     */
     @Override
     public void close() {
         if (FRAME_BUFFER_ID[0] != 0) {
@@ -107,7 +120,9 @@ public class Framebuffer implements Closeable {
         DEPTH_TEXTURE.close();
     }
 
-    /** Resizes the framebuffer to the given dimensions. */
+    /**
+     * Resizes the framebuffer to the given dimensions.
+     */
     public void resize(int width, int height) {
         if (this.width == width && this.height == height) {
             return;
@@ -131,7 +146,6 @@ public class Framebuffer implements Closeable {
                 null);
         GLError.maybeThrowGLException("Failed to specify color texture format", "glTexImage2D");
 
-        // Depth texture
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, DEPTH_TEXTURE.getTextureId());
         GLError.maybeThrowGLException("Failed to bind depth texture", "glBindTexture");
 
@@ -145,66 +159,42 @@ public class Framebuffer implements Closeable {
                 GLES30.GL_DEPTH_COMPONENT,
                 GLES30.GL_FLOAT,
                 null);
-
         GLError.maybeThrowGLException("Failed to specify depth texture format", "glTexImage2D");
     }
 
-    /** Returns the color texture associated with this framebuffer. */
+    /**
+     * Returns the color texture associated with this framebuffer.
+     */
     public Texture getColorTexture() {
         return COLOR_TEXTURE;
     }
 
-    /** Returns the depth texture associated with this framebuffer. */
+    /**
+     * Returns the depth texture associated with this framebuffer.
+     */
     public Texture getDepthTexture() {
         return DEPTH_TEXTURE;
     }
 
-    /** Returns the width of the framebuffer. */
+    /**
+     * Returns the width of the framebuffer.
+     */
     public int getWidth() {
         return width;
     }
 
-    /** Returns the height of the framebuffer. */
+    /**
+     * Returns the height of the framebuffer.
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * Returns the id of the framebuffer.
+     */
     /* package-private */
     int getFramebufferId() {
         return FRAME_BUFFER_ID[0];
     }
-
-    /**
-     * Binds the framebuffer and updates the texture if needed.
-     */
-    public void bind() {
-        if (FRAME_BUFFER_ID[0] == 0) {
-            GLES30.glGenFramebuffers(1, FRAME_BUFFER_ID, 0);
-            GLError.maybeThrowGLException("Framebuffer creation failed", "glGenFramebuffers");
-        }
-
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FRAME_BUFFER_ID[0]);
-        GLError.maybeThrowGLException("Failed to bind framebuffer", "glBindFramebuffer");
-    }
-
-    /**
-     * Unbinds the framebuffer.
-     */
-    public void unbind() {
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-        GLError.maybeThrowGLException("Failed to unbind framebuffer", "glBindFramebuffer");
-    }
-
-    /** Attach a texture to the framebuffer. */
-    public void attachTexture(Texture texture) {
-        GLES30.glFramebufferTexture2D(
-                GLES30.GL_FRAMEBUFFER,
-                GLES30.GL_COLOR_ATTACHMENT0,
-                GLES30.GL_TEXTURE_2D,
-                texture.getTextureId(),
-                0);
-        GLError.maybeThrowGLException("Failed to attach texture to framebuffer",
-                "glFramebufferTexture2D");
-    }
-
 }
