@@ -59,7 +59,7 @@ public class SceneRenderer {
     private static Mesh virtualFountainMesh;
     private static Mesh virtualWaterSurfaceMesh;
     private static Shader virtualFountainShader;
-    private static Shader virtualWaterShader;
+    private static Shader virtualWaterJetsShader;
     private static Shader virtualWaterSurfaceShader;
     private static int meshCounter = 0;
     private final float[] SPHERICAL_HARMONIC_COEFFICIENTS = new float[9 * 3];
@@ -93,6 +93,7 @@ public class SceneRenderer {
      */
     public void setupScene(CustomRender render) {
         try {
+
             backgroundRenderer = new BackgroundRenderer();
             backgroundRenderer.setUseDepthVisualization(render, false);
             backgroundRenderer.setUseOcclusion(render, true);
@@ -179,18 +180,12 @@ public class SceneRenderer {
 
             virtualFountainMesh = Mesh.createFromAsset(render, "models/fountain.obj");
 
-
+            HashMap<String, String> shaderParams = new HashMap<>();
+            shaderParams.put("NUMBER_OF_MIPMAP_LEVELS",
+                    Integer.toString(cubemapFilter.getNumberOfMipmapLevels()));
             virtualFountainShader = Shader.createFromAssets(render,
                             "shaders/environmental_hdr.vert",
-                            "shaders/environmental_hdr.frag",
-                            new HashMap<String, String>() {
-                                {
-                                    put(
-                                            "NUMBER_OF_MIPMAP_LEVELS",
-                                            Integer.toString(
-                                                    cubemapFilter.getNumberOfMipmapLevels()));
-                                }
-                            })
+                            "shaders/environmental_hdr.frag", shaderParams)
                     .setTexture("u_AlbedoTexture", virtualFountainAlbedoTexture)
                     .setTexture("u_RoughnessMetallicAmbientOcclusionTexture",
                             virtualFountainPbrTexture)
@@ -211,10 +206,9 @@ public class SceneRenderer {
     private void setupWaterObjects(CustomRender render) {
         try {
             if (isSubjectGroupWithAnimation) {
-                virtualWaterShader = Shader.createFromAssets(
+                virtualWaterJetsShader = Shader.createFromAssets(
                         render, "shaders/water.vert",
                         "shaders/water.frag", null);
-
                 virtualWaterSurfaceShader = Shader.createFromAssets(
                                 render, "shaders/water_surface.vert",
                                 "shaders/water_surface.frag",
@@ -273,6 +267,7 @@ public class SceneRenderer {
         if (camera.getTrackingState() == TrackingState.TRACKING) {
             try {
                 drawVirtualObjects(camera, render, anchor);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -293,8 +288,11 @@ public class SceneRenderer {
         camera.getProjectionMatrix(PROJECTION_MATRIX, 0, Z_NEAR, Z_FAR);
         camera.getViewMatrix(VIEW_MATRIX, 0);
         LightEstimate lightEstimate = frame.getLightEstimate();
-
         updateLightEstimation(virtualFountainShader, lightEstimate);
+
+        if (isSubjectGroupWithAnimation) {
+            updateLightEstimation(virtualWaterSurfaceShader, lightEstimate);
+        }
 
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
 
@@ -310,48 +308,15 @@ public class SceneRenderer {
             Matrix.multiplyMM(MODEL_VIEW_PROJECTION_MATRIX, 0, PROJECTION_MATRIX,
                     0, MODEL_VIEW_MATRIX, 0);
 
-            virtualFountainShader.setMat4("u_ModelViewProjection",
-                    MODEL_VIEW_PROJECTION_MATRIX);
-            virtualFountainShader.setVec3("u_LightIntensity",
-                    lightEstimate.getEnvironmentalHdrMainLightIntensity());
-            virtualFountainShader.setVec3("u_ViewLightDirection",
-                    lightEstimate.getEnvironmentalHdrMainLightDirection());
+            setupHDRUniforms(virtualFountainShader, lightEstimate);
 
             render.draw(virtualFountainMesh, virtualFountainShader, virtualSceneFramebuffer);
             backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
 
             if (isSubjectGroupWithAnimation) {
-                updateLightEstimation(virtualWaterSurfaceShader, lightEstimate);
-                setupWater(camera, render);
+                setupWater(camera, render, lightEstimate);
             }
         }
-    }
-
-    /**
-     * Sets up the rendering and sound for the water related objects.
-     *
-     * @param camera The AR camera.
-     * @param render The custom render object.
-     */
-    private void setupWater(Camera camera, CustomRender render) {
-        meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
-        LightEstimate lightEstimate = frame.getLightEstimate();
-
-        setShaderUniforms(camera, virtualWaterShader);
-        virtualWaterSurfaceShader.setMat4("u_ModelViewProjection",
-                MODEL_VIEW_PROJECTION_MATRIX);
-        virtualWaterSurfaceShader.setVec3("u_LightIntensity",
-                lightEstimate.getEnvironmentalHdrMainLightIntensity());
-        virtualWaterSurfaceShader.setVec3("u_ViewLightDirection",
-                lightEstimate.getEnvironmentalHdrMainLightDirection());
-
-        render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterShader,
-                virtualSceneFramebuffer);
-        render.draw(virtualWaterSurfaceMesh, virtualWaterSurfaceShader, virtualSceneFramebuffer);
-        backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-
-        soundPoolHelper.play();
-
     }
 
     /**
@@ -408,14 +373,48 @@ public class SceneRenderer {
     }
 
     /**
-     * Sets the shader uniforms for a given shader to control various rendering parameters.
-     * The uniforms set include the normal matrix, model-view-projection matrix,
-     * light direction, and camera position.
+     * Sets the shader uniforms for a given shader that uses hdr lighting.
      *
-     * @param camera The AR camera used for rendering.
-     * @param shader The shader to set the uniforms for.
+     * @param shader        The shader to set the uniforms for.
+     * @param lightEstimate LightEstimate to calculate the values for the uniforms.
      */
-    private void setShaderUniforms(Camera camera, Shader shader) {
+    private void setupHDRUniforms(Shader shader, LightEstimate lightEstimate) {
+        shader.setMat4("u_ModelViewProjection",
+                MODEL_VIEW_PROJECTION_MATRIX);
+        shader.setVec3("u_LightIntensity",
+                lightEstimate.getEnvironmentalHdrMainLightIntensity());
+        shader.setVec3("u_ViewLightDirection",
+                lightEstimate.getEnvironmentalHdrMainLightDirection());
+    }
+
+    /**
+     * Sets up the rendering and sound for the water related objects.
+     *
+     * @param camera The AR camera.
+     * @param render The custom render object.
+     */
+    private void setupWater(Camera camera, CustomRender render, LightEstimate lightEstimate) {
+        meshCounter = (meshCounter + 1) % VIRTUAL_WATER_JET_MESHES.size();
+
+        setupWaterJetsUniforms(camera, virtualWaterJetsShader, lightEstimate);
+        setupHDRUniforms(virtualWaterSurfaceShader, lightEstimate);
+
+        render.draw(VIRTUAL_WATER_JET_MESHES.get(meshCounter), virtualWaterJetsShader,
+                virtualSceneFramebuffer);
+        render.draw(virtualWaterSurfaceMesh, virtualWaterSurfaceShader, virtualSceneFramebuffer);
+        backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
+
+        soundPoolHelper.play();
+    }
+
+    /**
+     * Sets the shader uniforms for the water jets.
+     *
+     * @param camera        The AR camera used for rendering.
+     * @param shader        The shader to set the uniforms for.
+     * @param lightEstimate LightEstimate to calculate the values for the uniforms.
+     */
+    private void setupWaterJetsUniforms(Camera camera, Shader shader, LightEstimate lightEstimate) {
         float[] normalMatrix = {
                 MODEL_VIEW_MATRIX[0], MODEL_VIEW_MATRIX[1], MODEL_VIEW_MATRIX[2],
                 MODEL_VIEW_MATRIX[4], MODEL_VIEW_MATRIX[5], MODEL_VIEW_MATRIX[6],
@@ -425,9 +424,10 @@ public class SceneRenderer {
         shader.setMat3("u_NormalView", normalMatrix);
         shader.setMat4("u_ModelViewProjection", MODEL_VIEW_PROJECTION_MATRIX);
         shader.setVec3("u_LightDirection",
-                frame.getLightEstimate().getEnvironmentalHdrMainLightDirection());
+                lightEstimate.getEnvironmentalHdrMainLightDirection());
         shader.setVec3("u_CameraPosition", camera.getPose().getTranslation());
     }
+
 
     /**
      * Resizes the framebuffer to the specified width and height.
@@ -442,7 +442,6 @@ public class SceneRenderer {
 
         virtualSceneFramebuffer.resize(width, height);
     }
-
 
     /**
      * Pauses the soundPool if it is initialized.

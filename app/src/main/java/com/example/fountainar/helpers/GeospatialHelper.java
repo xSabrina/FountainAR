@@ -261,8 +261,8 @@ public class GeospatialHelper {
 
             float[] quaternion = geospatialPose.getEastUpSouthQuaternion();
             earth.resolveAnchorOnTerrainAsync(
-                    LATITUDE,
-                    LONGITUDE,
+                    geospatialPose.getLatitude(),
+                    geospatialPose.getLongitude(),
                     0.0f,
                     quaternion[0],
                     quaternion[1],

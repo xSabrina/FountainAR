@@ -36,7 +36,7 @@
     <string name="dq_q4_alternative_answer_hint">Sprache…</string>
 
     <string name="dq_q5">Beruf:</string>
-    <string name="dq_q5_student">Student/-in mit Fachrichtung:</string>
+    <string name="dq_q5_student">Student/-in mit Fachrichtung: </string>
     <string name="dq_q5_student_subject_hint">Studienfach…</string>
     <string name="dq_q5_pupil">Schüler/-in</string>
     <string name="dq_q5_employee">Angestellte/-r</string>
